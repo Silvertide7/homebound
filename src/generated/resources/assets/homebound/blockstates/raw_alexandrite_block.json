@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "homebound:block/raw_alexandrite_block"
+    }
+  }
+}

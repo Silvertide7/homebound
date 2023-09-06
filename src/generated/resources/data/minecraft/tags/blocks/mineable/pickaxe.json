@@ -1,0 +1,11 @@
+{
+  "values": [
+    "homebound:alexandrite_block",
+    "homebound:raw_alexandrite_block",
+    "homebound:alexandrite_ore",
+    "homebound:deepslate_alexandrite_ore",
+    "homebound:end_stone_alexandrite_ore",
+    "homebound:nether_alexandrite_ore",
+    "homebound:sound_block"
+  ]
+}

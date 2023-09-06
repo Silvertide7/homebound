@@ -1,0 +1,32 @@
+{
+  "item.homebound.alexandrite": "Alexandrite",
+  "item.homebound.raw_alexandrite": "Raw Alexandrite",
+  "item.homebound.metal_detector": "Metal Detector",
+  "item.homebound.kohlrabi": "Kohlrabi",
+  "item.homebound.peat_brick": "Peat Brick",
+
+  "item.homebound.metal_detector.no_valuables": "No valuables found",
+
+  "block.homebound.alexandrite_block": "Block of Alexandrite",
+  "block.homebound.raw_alexandrite_block": "Block of Raw Alexandrite",
+  "block.homebound.alexandrite_ore": "Alexandrite Ore",
+  "block.homebound.deepslate_alexandrite_ore": "Deepslate Alexandrite Ore",
+  "block.homebound.end_stone_alexandrite_ore": "End Stone Alexandrite Ore",
+  "block.homebound.nether_alexandrite_ore": "Nether Alexandrite Ore",
+  "block.homebound.sound_block": "Sound Block",
+  "block.homebound.alexandrite_stairs": "Alexandrite Stairs",
+  "block.homebound.alexandrite_slab": "Alexandrite Slab",
+  "block.homebound.alexandrite_pressure_plate": "Alexandrite Pressure Plate",
+  "block.homebound.alexandrite_button": "Alexandrite Button",
+  "block.homebound.alexandrite_fence": "Alexandrite Fence",
+  "block.homebound.alexandrite_fence_gate": "Alexandrite Gate",
+  "block.homebound.alexandrite_wall": "Alexandrite Wall",
+  "block.homebound.alexandrite_door": "Alexandrite Door",
+  "block.homebound.alexandrite_trap_door": "Alexandrite Trap Door",
+
+  "creativetab.course_tab": "Course Tab",
+
+  "tooltip.homebound.metal_detector.tooltip.shift": "Right Click on Blocks to find Valuables!",
+  "tooltip.homebound.metal_detector.tooltip": "Press §eSHIFT§r for more Information",
+  "tooltip.homebound.sound_block": "Plays nice sounds when walking or right-clicking."
+}

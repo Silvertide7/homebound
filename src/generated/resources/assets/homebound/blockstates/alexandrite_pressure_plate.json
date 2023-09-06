@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "homebound:block/alexandrite_pressure_plate"
+    },
+    "powered=true": {
+      "model": "homebound:block/alexandrite_pressure_plate_down"
+    }
+  }
+}
