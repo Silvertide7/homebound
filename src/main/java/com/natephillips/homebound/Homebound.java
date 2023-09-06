@@ -2,7 +2,7 @@ package com.natephillips.homebound;
 
 import com.mojang.logging.LogUtils;
 import com.natephillips.homebound.block.ModBlocks;
-import com.natephillips.homebound.item.ModCreativeModeTabs;
+import com.natephillips.homebound.tabs.ModCreativeModeTabs;
 import com.natephillips.homebound.item.ModItems;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;

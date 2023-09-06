@@ -20,18 +20,7 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        simpleItem(ModItems.ALEXANDRITE);
-        simpleItem(ModItems.RAW_ALEXANDRITE);
-        simpleItem(ModItems.KOHLRABI);
-        simpleItem(ModItems.METAL_DETECTOR);
-        simpleItem(ModItems.PEAT_BRICK);
-        simpleItem(ModItems.PEAT_BRICK);
-
-        buttonItem(ModBlocks.ALEXANDRITE_BUTTON, ModBlocks.ALEXANDRITE_BLOCK);
-        fenceItem(ModBlocks.ALEXANDRITE_FENCE, ModBlocks.ALEXANDRITE_BLOCK);
-        wallItem(ModBlocks.ALEXANDRITE_WALL, ModBlocks.ALEXANDRITE_BLOCK);
-
-        simpleBlockItem(ModBlocks.ALEXANDRITE_DOOR);
+        simpleItem(ModItems.HOMEBOUND_GEM);
     }
 
     public void buttonItem(RegistryObject<Block> block, RegistryObject<Block> baseBlock) {
