@@ -52,8 +52,7 @@ public class CapabilityRegistry {
             Player oldPlayer = event.getOriginal();
             oldPlayer.revive();
             getHome(oldPlayer).ifPresent(oldHome -> getHome(event.getEntity()).ifPresent(newHome -> {
-                newHome.setHomePos(oldHome.getHomePos());
-                newHome.setDimension(oldHome.getDimension());
+                newHome.setWarpPos(oldHome.getWarpPos());
                 newHome.setCooldown(oldHome.getCooldown());
             }));
             event.getOriginal().invalidateCaps();

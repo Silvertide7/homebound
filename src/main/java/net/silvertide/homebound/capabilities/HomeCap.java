@@ -8,31 +8,22 @@ import javax.annotation.Nullable;
 
 public class HomeCap implements IHomeCap{
     @Nullable
-    private BlockPos homePos;
-
-    @Nullable
-    ResourceLocation dimension;
-
+    private WarpPos warpPos;
     private int cooldown;
 
     @Override
-    public BlockPos getHomePos() {
-        return this.homePos == null ? null : this.homePos;
+    public WarpPos getWarpPos() {
+        return this.warpPos == null ? null : this.warpPos;
     }
 
     @Override
-    public void setHomePos(@Nullable BlockPos pos) {
-        this.homePos = pos;
+    public void setWarpPos(WarpPos warpPos) {
+        this.warpPos = warpPos;
     }
 
     @Override
-    public void setDimension(@Nullable ResourceLocation dimension) {
-        this.dimension = dimension;
-    }
-
-    @Override
-    public ResourceLocation getDimension() {
-        return this.dimension == null ? null : this.dimension;
+    public void setWarpPos(BlockPos pos, ResourceLocation dimension) {
+        this.warpPos = new WarpPos(pos, dimension);
     }
 
     @Override
@@ -57,35 +48,17 @@ public class HomeCap implements IHomeCap{
 
     @Override
     public void clearHome() {
-        this.homePos = null;
-        this.dimension = null;
-    }
-
-    @Override
-    public String toString() {
-        if (this.homePos == null) return "None";
-        String dimension = this.dimension.toString();
-
-        // Find the index of the first occurrence of ":"
-        int indexOfColon = dimension.indexOf(":");
-
-        if (indexOfColon != -1) {
-            // Use substring to get the part of the string after the ":"
-            String result = dimension.substring(indexOfColon + 1);
-            return result.substring(0, 1).toUpperCase() + result.substring(1).toLowerCase() + " - X: " + this.homePos.getX() + " Y: " + this.homePos.getY() + " Z: " + this.homePos.getZ();
-        } else {
-            return dimension;
-        }
+        this.warpPos = null;
     }
 
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        if(this.homePos != null && this.dimension != null) {
-            nbt.putInt("xPos", getHomePos().getX());
-            nbt.putInt("yPos", getHomePos().getY());
-            nbt.putInt("zPos", getHomePos().getZ());
-            nbt.putString("dimension", getDimension().toString());
+        if(this.warpPos != null) {
+            nbt.putInt("xPos", this.warpPos.blockPos().getX());
+            nbt.putInt("yPos", this.warpPos.blockPos().getY());
+            nbt.putInt("zPos", this.warpPos.blockPos().getZ());
+            nbt.putString("dimension", this.warpPos.dimension().toString());
         }
 
         nbt.putInt("cooldown", getCooldown());
@@ -95,8 +68,10 @@ public class HomeCap implements IHomeCap{
     @Override
     public void deserializeNBT(CompoundTag nbt) {
         if(nbt.contains("xPos") && nbt.contains("dimension")) {
-            setHomePos( new BlockPos(nbt.getInt("xPos"), nbt.getInt("yPos"), nbt.getInt("zPos")));
-            setDimension(new ResourceLocation(nbt.getString("dimension")));
+            setWarpPos(
+                    new BlockPos(nbt.getInt("xPos"), nbt.getInt("yPos"), nbt.getInt("zPos")),
+                    new ResourceLocation(nbt.getString("dimension"))
+            );
         } else {
             clearHome();
         }

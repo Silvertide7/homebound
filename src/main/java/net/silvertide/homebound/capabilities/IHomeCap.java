@@ -6,10 +6,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public interface IHomeCap extends INBTSerializable<CompoundTag> {
-    BlockPos getHomePos();
-    void setHomePos(BlockPos pos);
-    ResourceLocation getDimension();
-    void setDimension(ResourceLocation dimension);
+    WarpPos getWarpPos();
+    void setWarpPos(WarpPos warpPos);
+    void setWarpPos(BlockPos pos, ResourceLocation dimension);
     int getCooldown();
     void setCooldown(int cooldown);
     boolean hasCooldown();

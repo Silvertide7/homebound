@@ -15,7 +15,7 @@ public class ModCreativeModeTabs {
 
     public static final RegistryObject<CreativeModeTab> COURSE_TAB = CREATIVE_MODE_TABS.register("homebound_tab",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.HOMEBOUND_GEM.get()))
-                    .title(Component.translatable("creativetab.course_tab"))
+                    .title(Component.translatable("creativetab.homebound_tab"))
                     .displayItems((displayParameters, output) -> {
                         // Items
                         output.accept(ModItems.HOMEBOUND_GEM.get());
