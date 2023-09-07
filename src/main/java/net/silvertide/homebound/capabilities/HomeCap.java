@@ -63,8 +63,19 @@ public class HomeCap implements IHomeCap{
 
     @Override
     public String toString() {
-        if(this.homePos == null) return "None";
-        return this.dimension + " - X: " + this.homePos.getX() + " Y: " + this.homePos.getY() + " Z: " + this.homePos.getZ();
+        if (this.homePos == null) return "None";
+        String dimension = this.dimension.toString();
+
+        // Find the index of the first occurrence of ":"
+        int indexOfColon = dimension.indexOf(":");
+
+        if (indexOfColon != -1) {
+            // Use substring to get the part of the string after the ":"
+            String result = dimension.substring(indexOfColon + 1);
+            return result.substring(0, 1).toUpperCase() + result.substring(1).toLowerCase() + " - X: " + this.homePos.getX() + " Y: " + this.homePos.getY() + " Z: " + this.homePos.getZ();
+        } else {
+            return dimension;
+        }
     }
 
     @Override
