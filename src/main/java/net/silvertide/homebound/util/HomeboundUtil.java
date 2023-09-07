@@ -2,7 +2,6 @@ package net.silvertide.homebound.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -11,13 +10,11 @@ import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.WarpPos;
-import net.silvertide.homebound.setup.CapabilityRegistry;
 
 import java.util.Collections;
 import java.util.Random;

@@ -1,7 +1,7 @@
 package net.silvertide.homebound.datagen;
 
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.block.ModBlocks;
+import net.silvertide.homebound.block.BlockRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.*;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
@@ -17,7 +17,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        blockWithItem(ModBlocks.SOUND_BLOCK);
+        blockWithItem(BlockRegistry.SOUND_BLOCK);
     }
 
     private void blockItem(RegistryObject<Block> blockRegistryObject, String appendix) {

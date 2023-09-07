@@ -1,7 +1,7 @@
 package net.silvertide.homebound.datagen;
 
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.item.ModItems;
+import net.silvertide.homebound.item.ItemRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -19,7 +19,7 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        simpleItem(ModItems.HOMEBOUND_GEM);
+        simpleItem(ItemRegistry.HOMEBOUND_GEM);
     }
 
     public void buttonItem(RegistryObject<Block> block, RegistryObject<Block> baseBlock) {

@@ -2,7 +2,7 @@ package net.silvertide.homebound.block;
 
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.block.custom.SoundBlock;
-import net.silvertide.homebound.item.ModItems;
+import net.silvertide.homebound.item.ItemRegistry;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
@@ -14,7 +14,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-public class ModBlocks {
+public class BlockRegistry {
 
     public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Homebound.MOD_ID);
     public static final RegistryObject<Block> SOUND_BLOCK = registerBlock("sound_block",
@@ -26,7 +26,7 @@ public class ModBlocks {
         return toReturn;
     }
     private static <T extends Block> RegistryObject<Item> registerBlockItem(String name, RegistryObject<T> block) {
-        return ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+        return ItemRegistry.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
     }
 
     public static void register(IEventBus eventBus) {

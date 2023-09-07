@@ -1,7 +1,6 @@
 package net.silvertide.homebound.capabilities;
 
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.setup.CapabilityRegistry;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

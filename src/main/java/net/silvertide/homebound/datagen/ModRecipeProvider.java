@@ -1,7 +1,7 @@
 package net.silvertide.homebound.datagen;
 
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.item.ModItems;
+import net.silvertide.homebound.item.ItemRegistry;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
@@ -22,7 +22,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> pWriter) {
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.HOMEBOUND_GEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.HOMEBOUND_GEM.get())
                 .define('D', Ingredient.of(Items.DIAMOND))
                 .define('P', Ingredient.of(Items.ENDER_PEARL))
                 .define('E', Ingredient.of(Items.EMERALD))
@@ -30,7 +30,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("AEA")
                 .pattern("DPD")
                 .pattern("AEA")
-                .unlockedBy("has_homebound_gem", inventoryTrigger(ItemPredicate.Builder.item().of(ModItems.HOMEBOUND_GEM.get()).build()))
+                .unlockedBy("has_homebound_gem", inventoryTrigger(ItemPredicate.Builder.item().of(ItemRegistry.HOMEBOUND_GEM.get()).build()))
                 .save(pWriter);
 
     }

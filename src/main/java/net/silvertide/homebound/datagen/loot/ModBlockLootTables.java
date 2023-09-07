@@ -1,6 +1,6 @@
 package net.silvertide.homebound.datagen.loot;
 
-import net.silvertide.homebound.block.ModBlocks;
+import net.silvertide.homebound.block.BlockRegistry;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
@@ -15,11 +15,11 @@ public class ModBlockLootTables extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
-        this.dropSelf(ModBlocks.SOUND_BLOCK.get());
+        this.dropSelf(BlockRegistry.SOUND_BLOCK.get());
     }
 
     @Override
     protected Iterable<Block> getKnownBlocks() {
-        return ModBlocks.BLOCKS.getEntries().stream().map(RegistryObject::get)::iterator;
+        return BlockRegistry.BLOCKS.getEntries().stream().map(RegistryObject::get)::iterator;
     }
 }

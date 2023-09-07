@@ -1,9 +1,9 @@
 package net.silvertide.homebound;
 
 import com.mojang.logging.LogUtils;
-import net.silvertide.homebound.block.ModBlocks;
-import net.silvertide.homebound.tabs.ModCreativeModeTabs;
-import net.silvertide.homebound.item.ModItems;
+import net.silvertide.homebound.block.BlockRegistry;
+import net.silvertide.homebound.tabs.TabRegistry;
+import net.silvertide.homebound.item.ItemRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -34,10 +34,10 @@ public class Homebound
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        ModCreativeModeTabs.register(modEventBus);
+        TabRegistry.register(modEventBus);
 
-        ModItems.register(modEventBus);
-        ModBlocks.register(modEventBus);
+        ItemRegistry.register(modEventBus);
+        BlockRegistry.register(modEventBus);
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);

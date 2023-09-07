@@ -6,7 +6,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.setup.CapabilityRegistry;
+import net.silvertide.homebound.capabilities.CapabilityRegistry;
 
 @Mod.EventBusSubscriber(modid = Homebound.MOD_ID)
 public class HomeboundEventHandler {

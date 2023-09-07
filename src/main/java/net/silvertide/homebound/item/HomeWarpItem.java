@@ -9,9 +9,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.silvertide.homebound.capabilities.CapabilityRegistry;
 import net.silvertide.homebound.capabilities.WarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
-import net.silvertide.homebound.setup.CapabilityRegistry;
 import net.silvertide.homebound.util.HomeboundUtil;
 
 public class HomeWarpItem extends Item {
