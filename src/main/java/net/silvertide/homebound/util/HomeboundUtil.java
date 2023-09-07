@@ -1,12 +1,9 @@
 package net.silvertide.homebound.util;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
@@ -15,23 +12,18 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
+import net.silvertide.homebound.capabilities.WarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public final class HomeboundUtil {
     private static final Random SOUND_RNG = new Random();
     private HomeboundUtil(){}
-    public static void warp(Entity entity, WarpPos warpPos){
+    public static void warp(Entity entity, WarpPos warpPos) {
         entity.fallDistance = 0f;
 
         BlockPos destinationPos = warpPos.blockPos();
@@ -40,9 +32,9 @@ public final class HomeboundUtil {
         double currX = entity.getX();
         double currY = entity.getY();
         double currZ = entity.getZ();
-        double destX = destinationPos.getX();
-        double destY = destinationPos.getY();
-        double destZ = destinationPos.getZ();
+        double destX = destinationPos.getX()+0.5;
+        double destY = destinationPos.getY()+1.0;
+        double destZ = destinationPos.getZ()+0.5;
         boolean inSameDimension = entity.level().dimension().location().equals(destinationDim);
         ServerLevel destLevel = inSameDimension ?
                 originalLevel instanceof ServerLevel s ? s : null :
@@ -77,7 +69,11 @@ public final class HomeboundUtil {
         playSound(destLevel, destX, destY, destZ);
     }
 
+//    public boolean canPlayerWarp(WarpCap warpCap){
+//
+//    }
+
     private static void playSound(Level level, double x, double y, double z){
-        level.playSound(null, x, y, z, SoundEvents.AMBIENT_UNDERWATER_LOOP, SoundSource.PLAYERS, 20, 0.95f+SOUND_RNG.nextFloat()*0.1f);
+        level.playSound(null, x, y, z, SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 20, 0.95f+SOUND_RNG.nextFloat()*0.1f);
     }
 }

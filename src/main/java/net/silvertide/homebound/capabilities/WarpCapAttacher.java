@@ -14,11 +14,11 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class HomeCapAttacher {
-    private static class HomeCapProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+public class WarpCapAttacher {
+    private static class WarpCapProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
         public static final ResourceLocation IDENTIFIER = new ResourceLocation(Homebound.MOD_ID, "player_home");
-        private final IHomeCap backend = new HomeCap();
-        private final LazyOptional<IHomeCap> optionalData = LazyOptional.of(() -> backend);
+        private final IWarpCap backend = new WarpCap();
+        private final LazyOptional<IWarpCap> optionalData = LazyOptional.of(() -> backend);
         @NotNull
         @Override
         public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
@@ -40,8 +40,8 @@ public class HomeCapAttacher {
         }
     }
     public static void attach(final AttachCapabilitiesEvent<Entity> event) {
-        final HomeCapProvider provider = new HomeCapProvider();
-        event.addCapability(HomeCapProvider.IDENTIFIER, provider);
+        final WarpCapProvider provider = new WarpCapProvider();
+        event.addCapability(WarpCapProvider.IDENTIFIER, provider);
     }
 }
 

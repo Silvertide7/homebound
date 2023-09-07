@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 
-public class HomeCap implements IHomeCap{
+public class WarpCap implements IWarpCap {
     @Nullable
     private WarpPos warpPos;
     private int cooldown;
