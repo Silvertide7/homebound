@@ -1,7 +1,7 @@
-package com.natephillips.homebound.datagen;
+package net.silvertide.homebound.datagen;
 
-import com.natephillips.homebound.Homebound;
-import com.natephillips.homebound.block.ModBlocks;
+import net.silvertide.homebound.Homebound;
+import net.silvertide.homebound.block.ModBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.*;
 import net.minecraftforge.client.model.generators.BlockStateProvider;

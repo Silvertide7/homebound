@@ -1,6 +1,6 @@
-package com.natephillips.homebound.datagen;
+package net.silvertide.homebound.datagen;
 
-import com.natephillips.homebound.Homebound;
+import net.silvertide.homebound.Homebound;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;

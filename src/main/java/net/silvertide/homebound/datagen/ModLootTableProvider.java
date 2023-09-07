@@ -1,6 +1,6 @@
-package com.natephillips.homebound.datagen;
+package net.silvertide.homebound.datagen;
 
-import com.natephillips.homebound.datagen.loot.ModBlockLootTables;
+import net.silvertide.homebound.datagen.loot.ModBlockLootTables;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;

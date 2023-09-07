@@ -1,8 +1,7 @@
-package com.natephillips.homebound.datagen;
+package net.silvertide.homebound.datagen;
 
-import com.natephillips.homebound.Homebound;
-import com.natephillips.homebound.block.ModBlocks;
-import com.natephillips.homebound.item.ModItems;
+import net.silvertide.homebound.Homebound;
+import net.silvertide.homebound.item.ModItems;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;

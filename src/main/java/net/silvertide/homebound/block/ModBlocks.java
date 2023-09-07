@@ -1,15 +1,12 @@
-package com.natephillips.homebound.block;
+package net.silvertide.homebound.block;
 
-import com.natephillips.homebound.Homebound;
-import com.natephillips.homebound.block.custom.SoundBlock;
-import com.natephillips.homebound.item.ModItems;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.valueproviders.UniformInt;
+import net.silvertide.homebound.Homebound;
+import net.silvertide.homebound.block.custom.SoundBlock;
+import net.silvertide.homebound.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

@@ -1,4 +1,4 @@
-package com.natephillips.homebound.block.custom;
+package net.silvertide.homebound.block.custom;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;

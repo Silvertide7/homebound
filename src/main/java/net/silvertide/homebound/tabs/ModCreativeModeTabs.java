@@ -1,8 +1,7 @@
-package com.natephillips.homebound.tabs;
+package net.silvertide.homebound.tabs;
 
-import com.natephillips.homebound.Homebound;
-import com.natephillips.homebound.block.ModBlocks;
-import com.natephillips.homebound.item.ModItems;
+import net.silvertide.homebound.Homebound;
+import net.silvertide.homebound.item.ModItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;

@@ -1,7 +1,6 @@
-package com.natephillips.homebound.datagen.loot;
+package net.silvertide.homebound.datagen.loot;
 
-import com.natephillips.homebound.block.ModBlocks;
-import com.natephillips.homebound.item.ModItems;
+import net.silvertide.homebound.block.ModBlocks;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;

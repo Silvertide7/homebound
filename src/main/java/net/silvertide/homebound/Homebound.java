@@ -1,9 +1,9 @@
-package com.natephillips.homebound;
+package net.silvertide.homebound;
 
 import com.mojang.logging.LogUtils;
-import com.natephillips.homebound.block.ModBlocks;
-import com.natephillips.homebound.tabs.ModCreativeModeTabs;
-import com.natephillips.homebound.item.ModItems;
+import net.silvertide.homebound.block.ModBlocks;
+import net.silvertide.homebound.tabs.ModCreativeModeTabs;
+import net.silvertide.homebound.item.ModItems;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;

@@ -1,6 +1,6 @@
-package com.natephillips.homebound.util;
+package net.silvertide.homebound.util;
 
-import com.natephillips.homebound.Homebound;
+import net.silvertide.homebound.Homebound;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;

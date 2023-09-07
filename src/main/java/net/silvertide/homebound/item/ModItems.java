@@ -1,7 +1,7 @@
-package com.natephillips.homebound.item;
+package net.silvertide.homebound.item;
 
-import com.natephillips.homebound.Homebound;
-import com.natephillips.homebound.item.custom.HomeboundGem;
+import net.silvertide.homebound.Homebound;
+import net.silvertide.homebound.item.custom.HomeboundGem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
