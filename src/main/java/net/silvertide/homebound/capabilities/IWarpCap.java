@@ -9,9 +9,13 @@ public interface IWarpCap extends INBTSerializable<CompoundTag> {
     WarpPos getWarpPos();
     void setWarpPos(WarpPos warpPos);
     void setWarpPos(BlockPos pos, ResourceLocation dimension);
-    int getCooldown();
-    void setCooldown(int cooldown);
+    int getHomeCooldown();
+    void setHomeCooldown(int cooldown);
+    boolean hasHomeCooldown();
+    int getItemCooldown();
+    void setItemCooldown(int cooldown);
+    boolean hasItemCooldown();
     boolean hasCooldown();
-    void decrementCooldown();
+    void decrementCooldowns();
     void clearHome();
 }

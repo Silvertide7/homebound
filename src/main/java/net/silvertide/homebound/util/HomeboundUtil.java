@@ -2,6 +2,7 @@ package net.silvertide.homebound.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -10,12 +11,13 @@ import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.capabilities.WarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
+import net.silvertide.homebound.setup.CapabilityRegistry;
 
 import java.util.Collections;
 import java.util.Random;
@@ -23,6 +25,30 @@ import java.util.Random;
 public final class HomeboundUtil {
     private static final Random SOUND_RNG = new Random();
     private HomeboundUtil(){}
+
+    public static String formatDimension(String dimString) {
+        int indexOfColon = dimString.indexOf(":");
+        if (indexOfColon != -1) {
+            // Use substring to get the part of the string after the ":"
+            String result = dimString.substring(indexOfColon + 1);
+            return result.substring(0, 1).toUpperCase() + result.substring(1).toLowerCase();
+        } else {
+            return dimString;
+        }
+    }
+
+    public static String formatTime(int seconds) {
+        if (seconds < 0) {
+            return "Invalid input"; // Handle negative input if needed
+        }
+
+        int hours = seconds / 3600;
+        int remainingSeconds = seconds % 3600;
+        int minutes = remainingSeconds / 60;
+        int remainingSecs = remainingSeconds % 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, remainingSecs);
+    }
     public static void warp(Entity entity, WarpPos warpPos) {
         entity.fallDistance = 0f;
 
@@ -68,10 +94,6 @@ public final class HomeboundUtil {
         playSound(originalLevel, currX, currY, currZ);
         playSound(destLevel, destX, destY, destZ);
     }
-
-//    public boolean canPlayerWarp(WarpCap warpCap){
-//
-//    }
 
     private static void playSound(Level level, double x, double y, double z){
         level.playSound(null, x, y, z, SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 20, 0.95f+SOUND_RNG.nextFloat()*0.1f);
