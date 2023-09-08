@@ -64,8 +64,12 @@ public class WarpCap implements IWarpCap {
 
     @Override
     public void decrementCooldowns() {
-        if(this.homeCooldown > 0) setHomeCooldown(this.homeCooldown - 1);
-        if(this.itemCooldown > 0) setItemCooldown(this.itemCooldown - 1);
+        if(this.homeCooldown > 0) {
+            setHomeCooldown(this.homeCooldown - 1);
+        }
+        if(this.itemCooldown > 0) {
+            setItemCooldown(this.itemCooldown - 1);
+        }
     }
 
     @Override
