@@ -18,9 +18,19 @@ import org.slf4j.Logger;
 
 /*
 TODO:
-- Figure out why player tick is happening twice.
-- Reduce player cooldown time if theyre off the server.
-- Taking damage stops item channeling
+- Reduce player cooldown time if theyre off the server. - use gameTime
+- Hover text
+- create initial homebound stones / textures
+- configs
+- finish variable distance stone
+- add text for when you take damage
+- add use animation / delay to setting home?
+--- initial release ---
+- curios integration
+- keybind to use item
+- add attributes for cooldown reduction, use time
+- enchantments
+- clean up sounds and particles
  */
 @Mod(Homebound.MOD_ID)
 public class Homebound

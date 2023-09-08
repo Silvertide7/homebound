@@ -10,11 +10,15 @@ import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
+import net.silvertide.homebound.capabilities.CapabilityRegistry;
+import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Random;
@@ -22,6 +26,15 @@ import java.util.Random;
 public final class HomeboundUtil {
     private static final Random SOUND_RNG = new Random();
     private HomeboundUtil(){}
+
+    @Nullable
+    public static IWarpCap getWarpCap(Player player) {
+        return CapabilityRegistry.getHome(player).orElse(null);
+    }
+
+    public static WarpPos buildWarpPos(Player player, Level level) {
+        return new WarpPos(player.getOnPos(), level.dimension().location());
+    }
 
     public static String formatDimension(String dimString) {
         int indexOfColon = dimString.indexOf(":");
@@ -46,6 +59,11 @@ public final class HomeboundUtil {
 
         return String.format("%02d:%02d:%02d", hours, minutes, remainingSecs);
     }
+
+    /*
+        This function was largely copied from Tictim's Hearthstone mod, an objectively and subjectively
+        better mod.
+     */
     public static void warp(Entity entity, WarpPos warpPos) {
         entity.fallDistance = 0f;
 

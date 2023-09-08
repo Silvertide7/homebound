@@ -3,6 +3,9 @@ package net.silvertide.homebound.capabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.silvertide.homebound.util.HomeboundUtil;
 
 import javax.annotation.Nullable;
 
@@ -25,6 +28,11 @@ public class WarpCap implements IWarpCap {
     @Override
     public void setWarpPos(BlockPos pos, ResourceLocation dimension) {
         this.warpPos = new WarpPos(pos, dimension);
+    }
+
+    @Override
+    public void setWarpPos(Player player, Level level) {
+        this.warpPos = HomeboundUtil.buildWarpPos(player, level);
     }
 
     @Override
