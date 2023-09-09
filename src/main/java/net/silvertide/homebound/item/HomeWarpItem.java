@@ -1,5 +1,6 @@
 package net.silvertide.homebound.item;
 
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -15,6 +16,8 @@ import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.util.HomeWarpItemMode;
 import net.silvertide.homebound.util.HomeboundUtil;
 import net.silvertide.homebound.util.ParticleUtil;
+
+import java.util.List;
 
 public class HomeWarpItem extends Item {
     private final int DAMAGE_COOLDOWN = 5;
@@ -145,13 +148,13 @@ public class HomeWarpItem extends Item {
     }
 
     public String getCooldownMessage(int cooldownRemaining) {
-        return "You haven't yet recovered from the last warp. [" + HomeboundUtil.formatTime(cooldownRemaining) + "]";
+        return "§cYou haven't recovered. [" + HomeboundUtil.formatTime(cooldownRemaining) + "]§r";
     }
     private String getDimensionMessage(String currDim, String warpDim) {
-        return "Can't warp between dimensions. [Current: " + HomeboundUtil.formatDimension(currDim) + ", Home: " + HomeboundUtil.formatDimension(warpDim) + "]";
+        return "§cCan't warp between dimensions.§r";
     }
     public String getDistanceMessage(int distance) {
-        return "You are too far from your home. [Current: " + distance + ", Max: " + this.maxDistance + "]";
+        return "§cToo far from home. [" + distance + " / " + this.maxDistance + "]§r";
     }
     @Override
     public int getUseDuration(ItemStack pStack) {
@@ -168,6 +171,20 @@ public class HomeWarpItem extends Item {
     @Override
     public boolean isRepairable(ItemStack stack) {
         return false;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        if(Screen.hasShiftDown()){
+            pTooltipComponents.add(Component.literal("To set your home crouch and channel the item for §e" + this.SET_HOME_DURATION/20 + "§r seconds."));
+            pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(this.cooldown) + "§r"));
+            pTooltipComponents.add(Component.literal("§aMax Warp Distance: " + this.maxDistance + " blocks§r"));
+            pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (this.canDimTravel ? "Yes" : "No") + "§r"));
+        } else {
+            pTooltipComponents.add(Component.literal("Find your way home."));
+            pTooltipComponents.add(Component.literal("Press §eSHIFT§r for more information"));
+        }
+        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
     }
 
     public static class Properties {
