@@ -190,7 +190,7 @@ public class HomeWarpItem extends Item {
     }
 
     public static class Properties {
-        int cooldown = 3600;
+        int cooldown = 1800;
         int useDuration = 80;
         int maxDistance = 0;
         boolean canDimTravel = true;

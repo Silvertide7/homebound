@@ -18,10 +18,10 @@ import org.slf4j.Logger;
 /*
 TODO:
 - create initial homebound stones / textures
-- See if you can stop the item from automatically using itself over and over
-- configs
+- stop the item from automatically using itself over and over
 - finish variable distance stone
 --- initial release ---
+- configs
 - curios integration
 - keybind to use item
 - add attributes for cooldown reduction, use time
