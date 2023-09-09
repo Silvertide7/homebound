@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -106,11 +107,16 @@ public final class HomeboundUtil {
                 entity.remove(Entity.RemovalReason.CHANGED_DIMENSION);
             }
         }
-        playSound(originalLevel, currX, currY, currZ);
-        playSound(destLevel, destX, destY, destZ);
+        playSound(originalLevel, currX, currY, currZ, SoundEvents.BLAZE_SHOOT);
+        playSound(destLevel, destX, destY, destZ, SoundEvents.BLAZE_SHOOT);
     }
 
-    private static void playSound(Level level, double x, double y, double z){
-        level.playSound(null, x, y, z, SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 20, 0.95f+SOUND_RNG.nextFloat()*0.1f);
+    public static void playSound(Level level, double x, double y, double z, SoundEvent soundEvent){
+        level.playSound(null, x, y, z, soundEvent, SoundSource.PLAYERS, 20, 0.95f+SOUND_RNG.nextFloat()*0.1f);
     }
+
+    public static void playSound(Level level, Player player, SoundEvent soundEvent){
+        playSound(level, player.getX(), player.getY(), player.getZ(), soundEvent);
+    }
+
 }

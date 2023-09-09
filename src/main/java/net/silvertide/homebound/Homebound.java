@@ -17,17 +17,15 @@ import org.slf4j.Logger;
 
 /*
 TODO:
-- Hover text
 - create initial homebound stones / textures
+- See if you can stop the item from automatically using itself over and over
 - configs
 - finish variable distance stone
-- add text for when you take damage
 --- initial release ---
 - curios integration
 - keybind to use item
 - add attributes for cooldown reduction, use time
 - enchantments
-- clean up sounds and particles
  */
 @Mod(Homebound.MOD_ID)
 public class Homebound

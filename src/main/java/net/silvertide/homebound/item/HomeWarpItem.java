@@ -4,6 +4,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -100,17 +101,19 @@ public class HomeWarpItem extends Item {
                 this.playerHealth = player.getHealth();
             } else if(player.getHealth() < this.playerHealth) {
                 player.stopUsingItem();
-                player.sendSystemMessage(Component.literal("Warp cancelled."));
+                player.sendSystemMessage(Component.literal("§cWarp cancelled.§r"));
                 CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
                     long gameTime = player.level().getGameTime();
                     if (!warpCap.hasCooldown(gameTime)) {
                         warpCap.setCooldown(gameTime, DAMAGE_COOLDOWN);
                     }
                 });
-
-            } else if(entity.getRandom().nextInt()%3==0) {
+            } else if(pRemainingUseDuration%5==0) {
                 ServerLevel serverLevel = (ServerLevel) pLevel;
-                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.ELECTRIC_SPARK, 2);
+                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, 10);
+                if(this.itemMode == HomeWarpItemMode.WARP_HOME && entity.getRandom().nextInt()%4==0) {
+                    HomeboundUtil.playSound(serverLevel, player, SoundEvents.BLAZE_BURN);
+                }
             }
         }
     }
@@ -123,21 +126,20 @@ public class HomeWarpItem extends Item {
             IWarpCap playerWarpCap = HomeboundUtil.getWarpCap(player);
             if(playerWarpCap == null) return pStack;
 
+            ServerLevel serverLevel = (ServerLevel) pLevel;
             if(this.itemMode == HomeWarpItemMode.SET_HOME) {
-                player.sendSystemMessage(Component.literal("Home set."));
+                player.sendSystemMessage(Component.literal("§aHome set.§r"));
                 CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
                     warpCap.setWarpPos(player, pLevel);
                 });
-                ServerLevel serverLevel = (ServerLevel) pLevel;
-                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.ELECTRIC_SPARK, 10);
+                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.CRIT, 20);
             } else {
                 HomeboundUtil.warp(player, playerWarpCap.getWarpPos());
 
                 if (!player.getAbilities().instabuild) {
                     playerWarpCap.setCooldown(player.level().getGameTime(), getCooldown(player, pLevel));
                 }
-                ServerLevel serverLevel = (ServerLevel)pLevel;
-                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.ENCHANT, 10);
+                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, 30);
             }
         }
         return pStack;
