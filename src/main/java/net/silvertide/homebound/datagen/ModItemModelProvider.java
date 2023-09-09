@@ -22,31 +22,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ItemRegistry.HOMEBOUND_GEM);
     }
 
-    public void buttonItem(RegistryObject<Block> block, RegistryObject<Block> baseBlock) {
-        fromBaseItem(block, baseBlock, "block/button_inventory", "texture");
-    }
-
-    public void fenceItem(RegistryObject<Block> block, RegistryObject<Block> baseBlock) {
-        fromBaseItem(block, baseBlock, "block/fence_inventory", "texture");
-    }
-
-    public void wallItem(RegistryObject<Block> block, RegistryObject<Block> baseBlock) {
-        fromBaseItem(block, baseBlock, "block/wall_inventory", "wall");
-    }
-
-
-    public void fromBaseItem(RegistryObject<Block> block, RegistryObject<Block> baseBlock, String mcLoc, String texture) {
-        this.withExistingParent(ForgeRegistries.BLOCKS.getKey(block.get()).getPath(), mcLoc(mcLoc))
-                .texture(texture, new ResourceLocation(Homebound.MOD_ID, "block/" + ForgeRegistries.BLOCKS.getKey(baseBlock.get()).getPath()));
-    }
-
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {
         return withExistingParent(item.getId().getPath(),
             new ResourceLocation("item/generated")).texture("layer0", new ResourceLocation(Homebound.MOD_ID, "item/" + item.getId().getPath()));
     }
 
-    private ItemModelBuilder simpleBlockItem(RegistryObject<Block> item) {
-        return withExistingParent(item.getId().getPath(),
-                new ResourceLocation("item/generated")).texture("layer0", new ResourceLocation(Homebound.MOD_ID, "item/" + item.getId().getPath()));
-    }
 }

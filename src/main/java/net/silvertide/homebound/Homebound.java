@@ -1,7 +1,6 @@
 package net.silvertide.homebound;
 
 import com.mojang.logging.LogUtils;
-import net.silvertide.homebound.block.BlockRegistry;
 import net.silvertide.homebound.tabs.TabRegistry;
 import net.silvertide.homebound.item.ItemRegistry;
 import net.minecraftforge.api.distmarker.Dist;
@@ -47,7 +46,6 @@ public class Homebound
         TabRegistry.register(modEventBus);
 
         ItemRegistry.register(modEventBus);
-        BlockRegistry.register(modEventBus);
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);

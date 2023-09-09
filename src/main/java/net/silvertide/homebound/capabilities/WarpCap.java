@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 public class WarpCap implements IWarpCap {
     @Nullable
     private WarpPos warpPos;
-    private int homeCooldown;
-    private int itemCooldown;
+    private int cooldown;
+    private long lastWarpTimestamp;
 
     @Override
     public WarpPos getWarpPos() {
@@ -36,50 +36,30 @@ public class WarpCap implements IWarpCap {
     }
 
     @Override
-    public int getHomeCooldown() {
-        return this.homeCooldown;
+    public int getCooldown() {
+        return this.cooldown;
     }
 
     @Override
-    public void setHomeCooldown(int cooldown) {
-        this.homeCooldown = Math.max(cooldown, 0);
+    public void setCooldown(long timestamp, int cooldown) {
+        this.lastWarpTimestamp = timestamp;
+        this.cooldown = Math.max(cooldown, 0);
     }
 
     @Override
-    public boolean hasHomeCooldown() {
-        return this.homeCooldown > 0;
+    public int getRemainingCooldown(long currTime) {
+        return this.cooldown - (int) calculateTimePassed(currTime);
     }
 
     @Override
-    public int getItemCooldown() {
-        return this.itemCooldown;
+    public long getLastWarpTimestamp() {
+        return this.lastWarpTimestamp;
     }
 
     @Override
-    public void setItemCooldown(int cooldown) {
-        this.itemCooldown = Math.max(cooldown, 0);
+    public boolean hasCooldown(long currTime) {
+        return calculateTimePassed(currTime) < this.cooldown;
     }
-
-    @Override
-    public boolean hasItemCooldown() {
-        return this.itemCooldown > 0;
-    }
-
-    @Override
-    public boolean hasCooldown() {
-        return this.homeCooldown > 0 || this.itemCooldown > 0;
-    }
-
-    @Override
-    public void decrementCooldowns() {
-        if(this.homeCooldown > 0) {
-            setHomeCooldown(this.homeCooldown - 1);
-        }
-        if(this.itemCooldown > 0) {
-            setItemCooldown(this.itemCooldown - 1);
-        }
-    }
-
     @Override
     public void clearHome() {
         this.warpPos = null;
@@ -95,8 +75,8 @@ public class WarpCap implements IWarpCap {
             nbt.putString("dimension", this.warpPos.dimension().toString());
         }
 
-        nbt.putInt("homeCooldown", getHomeCooldown());
-        nbt.putInt("itemCooldown", getItemCooldown());
+        nbt.putInt("cooldown", getCooldown());
+        nbt.putLong("lastUsedTimestamp", getLastWarpTimestamp());
         return nbt;
     }
 
@@ -110,7 +90,10 @@ public class WarpCap implements IWarpCap {
         } else {
             clearHome();
         }
-        setHomeCooldown(nbt.getInt("homeCooldown"));
-        setItemCooldown(nbt.getInt("itemCooldown"));
+        setCooldown(nbt.getLong("lastUsedTimestamp"), nbt.getInt("cooldown"));
+    }
+
+    private long calculateTimePassed(long currTime) {
+        return (currTime - this.lastWarpTimestamp)/20;
     }
 }
