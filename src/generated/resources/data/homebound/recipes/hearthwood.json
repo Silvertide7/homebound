@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "H": {
+      "item": "homebound:homeward_shard"
+    },
+    "L": {
+      "tag": "minecraft:logs"
+    }
+  },
+  "pattern": [
+    "LLL",
+    "LHL",
+    "LLL"
+  ],
+  "result": {
+    "item": "homebound:hearthwood"
+  },
+  "show_notification": true
+}

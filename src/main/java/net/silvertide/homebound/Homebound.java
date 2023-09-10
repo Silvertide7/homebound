@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 
 /*
 TODO:
-- create initial homebound stones / textures
+- create initial homebound stones / textures / recipes
 - stop the item from automatically using itself over and over
 - finish variable distance stone
 --- initial release ---
@@ -26,6 +26,7 @@ TODO:
 - keybind to use item
 - add attributes for cooldown reduction, use time
 - enchantments
+- Create a gem that leaves a portal for other players to go through
  */
 @Mod(Homebound.MOD_ID)
 public class Homebound

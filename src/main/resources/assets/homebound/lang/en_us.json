@@ -1,9 +1,12 @@
 {
-  "item.homebound.homebound_gem": "Homebound Gem",
+  "item.homebound.homeward_bone": "Homeward Bone",
+  "item.homebound.homeward_shard": "Homeward Shard",
+  "item.homebound.hearthwood": "Hearthwood",
+  "item.homebound.havenwood": "Havenwood",
+  "item.homebound.homeward_gem": "Homeward Gem",
+  "item.homebound.homeward_stone": "Homeward Stone",
+  "item.homebound.havenstone": "Havenstone",
+  "item.homebound.nexus_stone": "Nexus Stone",
 
-  "creativetab.homebound_tab": "Homebound",
-
-  "tooltip.homebound.metal_detector.tooltip.shift": "Right Click on Blocks to find Valuables!",
-  "tooltip.homebound.metal_detector.tooltip": "Press §eSHIFT§r for more Information",
-  "tooltip.homebound.sound_block": "Plays nice sounds when walking or right-clicking."
+  "creativetab.homebound_tab": "Homebound"
 }

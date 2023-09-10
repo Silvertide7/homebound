@@ -5,23 +5,17 @@
     "A": {
       "item": "minecraft:amethyst_shard"
     },
-    "D": {
-      "item": "minecraft:diamond"
-    },
-    "E": {
-      "item": "minecraft:emerald"
-    },
     "P": {
       "item": "minecraft:ender_pearl"
     }
   },
   "pattern": [
-    "AEA",
-    "DPD",
-    "AEA"
+    "AAA",
+    "APA",
+    "AAA"
   ],
   "result": {
-    "item": "homebound:homebound_gem"
+    "item": "homebound:homeward_shard"
   },
   "show_notification": true
 }

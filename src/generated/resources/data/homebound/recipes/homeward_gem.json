@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "H": {
+      "item": "homebound:homeward_shard"
+    }
+  },
+  "pattern": [
+    "EHE",
+    "EHE",
+    "   "
+  ],
+  "result": {
+    "item": "homebound:homeward_gem"
+  },
+  "show_notification": true
+}

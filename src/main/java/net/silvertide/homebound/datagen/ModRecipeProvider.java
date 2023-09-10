@@ -1,5 +1,6 @@
 package net.silvertide.homebound.datagen;
 
+import net.minecraft.tags.ItemTags;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.item.ItemRegistry;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -22,36 +23,41 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> pWriter) {
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.HOMEBOUND_GEM.get())
-                .define('D', Ingredient.of(Items.DIAMOND))
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.HOMEWARD_BONE.get())
+                .define('B', Ingredient.of(Items.BONE))
                 .define('P', Ingredient.of(Items.ENDER_PEARL))
-                .define('E', Ingredient.of(Items.EMERALD))
-                .define('A', Ingredient.of(Items.AMETHYST_SHARD))
-                .pattern("AEA")
-                .pattern("DPD")
-                .pattern("AEA")
-                .unlockedBy("has_homebound_gem", inventoryTrigger(ItemPredicate.Builder.item().of(ItemRegistry.HOMEBOUND_GEM.get()).build()))
+                .pattern(" B ")
+                .pattern("BPB")
+                .pattern(" B ")
+                .unlockedBy("has_ender_pearl", has(Items.ENDER_PEARL))
                 .save(pWriter);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.HOMEWARD_SHARD.get())
+                .define('P', Ingredient.of(Items.ENDER_PEARL))
+                .define('A', Ingredient.of(Items.AMETHYST_SHARD))
+                .pattern("AAA")
+                .pattern("APA")
+                .pattern("AAA")
+                .unlockedBy("has_ender_pearl", has(Items.ENDER_PEARL))
+                .save(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.HOMEWARD_GEM.get())
+                .define('H', Ingredient.of(ItemRegistry.HOMEWARD_SHARD.get()))
+                .define('E', Ingredient.of(Items.EMERALD))
+                .pattern("EHE")
+                .pattern("EHE")
+                .pattern("   ")
+                .unlockedBy("has_homeward_shard", inventoryTrigger(ItemPredicate.Builder.item().of(ItemRegistry.HOMEWARD_SHARD.get()).build()))
+                .save(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.HEARTHWOOD.get())
+                .define('H', Ingredient.of(ItemRegistry.HOMEWARD_SHARD.get()))
+                .define('L', ItemTags.LOGS)
+                .pattern("LLL")
+                .pattern("LHL")
+                .pattern("LLL")
+                .unlockedBy("has_homeward_shard", inventoryTrigger(ItemPredicate.Builder.item().of(ItemRegistry.HOMEWARD_SHARD.get()).build()))
+                .save(pWriter);
     }
-
-    protected static void oreSmelting(Consumer<FinishedRecipe> pFinishedRecipeConsumer, List<ItemLike> pIngredients, RecipeCategory pCategory, ItemLike pResult,
-                                      float pExperience, int pCookingTIme, String pGroup) {
-        oreCooking(pFinishedRecipeConsumer, RecipeSerializer.SMELTING_RECIPE, pIngredients, pCategory, pResult, pExperience, pCookingTIme, pGroup, "_from_smelting");
-    }
-
-    protected static void oreBlasting(Consumer<FinishedRecipe> pFinishedRecipeConsumer, List<ItemLike> pIngredients, RecipeCategory pCategory, ItemLike pResult,
-                                      float pExperience, int pCookingTime, String pGroup) {
-        oreCooking(pFinishedRecipeConsumer, RecipeSerializer.BLASTING_RECIPE, pIngredients, pCategory, pResult, pExperience, pCookingTime, pGroup, "_from_blasting");
-    }
-
-    protected static void oreCooking(Consumer<FinishedRecipe> pFinishedRecipeConsumer, RecipeSerializer<? extends AbstractCookingRecipe> pCookingSerializer,
-                                     List<ItemLike> pIngredients, RecipeCategory pCategory, ItemLike pResult, float pExperience, int pCookingTime, String pGroup, String pRecipeName) {
-        for(ItemLike itemlike : pIngredients) {
-            SimpleCookingRecipeBuilder.generic(Ingredient.of(itemlike), pCategory, pResult, pExperience, pCookingTime, pCookingSerializer).group(pGroup).unlockedBy(getHasName(itemlike),
-                    has(itemlike)).save(pFinishedRecipeConsumer, Homebound.MOD_ID + ":" + (pResult) + pRecipeName + "_" + getItemName(itemlike));
-        }
-
-    }
-
 }

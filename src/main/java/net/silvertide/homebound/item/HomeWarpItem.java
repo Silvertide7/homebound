@@ -23,19 +23,20 @@ import java.util.List;
 public class HomeWarpItem extends Item {
     private final int DAMAGE_COOLDOWN = 5;
     private final int SET_HOME_DURATION = 40;
-
     private HomeWarpItemMode itemMode;
     private int useDuration;
     private int cooldown;
     private int maxDistance;
     private boolean canDimTravel;
     private float playerHealth;
+    private boolean isConsumed;
     public HomeWarpItem(Properties properties) {
         super(new Item.Properties().stacksTo(1).rarity(properties.rarity));
         this.useDuration = properties.useDuration;
         this.maxDistance = properties.maxDistance;
         this.canDimTravel = properties.canDimTravel;
         this.cooldown = properties.cooldown;
+        this.isConsumed = properties.isConsumed;
         this.itemMode = HomeWarpItemMode.SET_HOME;
     }
     @Override
@@ -52,45 +53,21 @@ public class HomeWarpItem extends Item {
             }
             // If not crouching then attempt to start warping.
             else {
-                boolean canWarp = true;
-                IWarpCap playerWarpCap = HomeboundUtil.getWarpCap(player);
-                if(playerWarpCap == null) return InteractionResultHolder.consume(itemstack);
-                // Check all the cases that would not allow a player to warp.
-                if (playerWarpCap.getWarpPos() == null) {
-                    player.sendSystemMessage(Component.literal("No home set"));
-                    canWarp = false;
-                } else if (!player.getAbilities().instabuild) {
-                    // Check cooldown
-                    long gameTime = player.level().getGameTime();
-                    boolean hasCooldown = playerWarpCap.hasCooldown(gameTime);
-                    if (hasCooldown) {
-                        int timeRemaining = playerWarpCap.getRemainingCooldown(gameTime);
-                        player.sendSystemMessage(Component.literal(getCooldownMessage(timeRemaining)));
-                        canWarp = false;
+                CapabilityRegistry.getHome(player).ifPresent(playerWarpCap -> {
+                    boolean canWarp = isHomeSet(player, playerWarpCap) &&
+                            (player.getAbilities().instabuild ||
+                        (hasNoCooldown(player, playerWarpCap)
+                        && checkDimensionalTravel(player, level, playerWarpCap)
+                        && withinMaxDistance(player, level, playerWarpCap)));
+
+                    if (canWarp) {
+                        this.itemMode = HomeWarpItemMode.WARP_HOME;
+                        player.startUsingItem(pUsedHand);
                     }
-                    // Check dimensional travel
-                    else if (!this.canDimTravel && !playerWarpCap.getWarpPos().isSameDimension(level.dimension().location())) {
-                        player.sendSystemMessage(Component.literal(getDimensionMessage(playerWarpCap.getWarpPos().dimension().toString(), level.dimension().location().toString())));
-                        canWarp = false;
-                    }
-                    // Check max distance
-                    else if (maxDistance > 0) {
-                        int distanceFromWarp = playerWarpCap.getWarpPos().calculateDistance(new WarpPos(player.getOnPos(), level.dimension().location()));
-                        if (distanceFromWarp > maxDistance) {
-                            player.sendSystemMessage(Component.literal(getDistanceMessage(distanceFromWarp)));
-                            canWarp = false;
-                        }
-                    }
-                }
-                // Start casting warp
-                if (canWarp) {
-                    this.itemMode = HomeWarpItemMode.WARP_HOME;
-                    player.startUsingItem(pUsedHand);
-                    return InteractionResultHolder.success(itemstack);
-                }
+                });
             }
         }
-        return InteractionResultHolder.consume(itemstack);
+        return InteractionResultHolder.fail(itemstack);
     }
 
     @Override
@@ -108,9 +85,12 @@ public class HomeWarpItem extends Item {
                         warpCap.setCooldown(gameTime, DAMAGE_COOLDOWN);
                     }
                 });
-            } else if(pRemainingUseDuration%5==0) {
+            }
+
+            if(pRemainingUseDuration%5==0) {
                 ServerLevel serverLevel = (ServerLevel) pLevel;
-                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, 10);
+                int scalingParticles = (this.useDuration - pRemainingUseDuration)/10;
+                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, scalingParticles);
                 if(this.itemMode == HomeWarpItemMode.WARP_HOME && entity.getRandom().nextInt()%4==0) {
                     HomeboundUtil.playSound(serverLevel, player, SoundEvents.BLAZE_BURN);
                 }
@@ -118,31 +98,80 @@ public class HomeWarpItem extends Item {
         }
     }
 
+
     public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving) {
         Player player = pEntityLiving instanceof Player ? (Player)pEntityLiving : null;
         boolean clientSide = pLevel.isClientSide;
 
         if (player != null && !clientSide) {
-            IWarpCap playerWarpCap = HomeboundUtil.getWarpCap(player);
-            if(playerWarpCap == null) return pStack;
-
             ServerLevel serverLevel = (ServerLevel) pLevel;
             if(this.itemMode == HomeWarpItemMode.SET_HOME) {
-                player.sendSystemMessage(Component.literal("§aHome set.§r"));
-                CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
-                    warpCap.setWarpPos(player, pLevel);
-                });
-                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.CRIT, 20);
+                setHome(player, serverLevel);
             } else {
-                HomeboundUtil.warp(player, playerWarpCap.getWarpPos());
-
-                if (!player.getAbilities().instabuild) {
-                    playerWarpCap.setCooldown(player.level().getGameTime(), getCooldown(player, pLevel));
-                }
-                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, 30);
+                warpHome(player, serverLevel, pStack);
             }
         }
         return pStack;
+    }
+
+    private boolean isHomeSet(Player player, IWarpCap playerWarpCap) {
+        if (playerWarpCap.getWarpPos() == null) {
+            player.sendSystemMessage(Component.literal("No home set"));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean hasNoCooldown(Player player, IWarpCap playerWarpCap) {
+        long gameTime = player.level().getGameTime();
+        boolean hasCooldown = playerWarpCap.hasCooldown(gameTime);
+        if (hasCooldown) {
+            int timeRemaining = playerWarpCap.getRemainingCooldown(gameTime);
+            player.sendSystemMessage(Component.literal(getCooldownMessage(timeRemaining)));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkDimensionalTravel(Player player, Level level, IWarpCap playerWarpCap) {
+        if (!this.canDimTravel && !playerWarpCap.getWarpPos().isSameDimension(level.dimension().location())) {
+            player.sendSystemMessage(Component.literal(getDimensionMessage()));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean withinMaxDistance(Player player, Level level, IWarpCap playerWarpCap) {
+        if (maxDistance > 0) {
+            int distanceFromWarp = playerWarpCap.getWarpPos().calculateDistance(new WarpPos(player.getOnPos(), level.dimension().location()));
+            if (distanceFromWarp > maxDistance) {
+                player.sendSystemMessage(Component.literal(getDistanceMessage(distanceFromWarp)));
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void setHome(Player player, ServerLevel serverLevel){
+        player.sendSystemMessage(Component.literal("§aHome set.§r"));
+        CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
+            warpCap.setWarpPos(player, serverLevel);
+            ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.CRIT, 20);
+            HomeboundUtil.playSound(serverLevel, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE);
+        });
+    }
+
+    private void warpHome(Player player, ServerLevel serverLevel, ItemStack pStack) {
+        CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
+            HomeboundUtil.warp(player, warpCap.getWarpPos());
+
+            if (!player.getAbilities().instabuild) {
+                warpCap.setCooldown(player.level().getGameTime(), getCooldown(player, serverLevel));
+                if(this.isConsumed) pStack.shrink(1);
+            }
+            ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, 30);
+        });
+
     }
 
     public int getCooldown(Player player, Level level) {
@@ -152,7 +181,7 @@ public class HomeWarpItem extends Item {
     public String getCooldownMessage(int cooldownRemaining) {
         return "§cYou haven't recovered. [" + HomeboundUtil.formatTime(cooldownRemaining) + "]§r";
     }
-    private String getDimensionMessage(String currDim, String warpDim) {
+    private String getDimensionMessage() {
         return "§cCan't warp between dimensions.§r";
     }
     public String getDistanceMessage(int distance) {
@@ -164,7 +193,7 @@ public class HomeWarpItem extends Item {
     }
     @Override
     public UseAnim getUseAnimation(ItemStack pStack) {
-        return UseAnim.BOW;
+        return this.itemMode == HomeWarpItemMode.SET_HOME ? UseAnim.BRUSH : UseAnim.BOW;
     }
     @Override
     public boolean isEnchantable(ItemStack pStack) {
@@ -180,8 +209,9 @@ public class HomeWarpItem extends Item {
         if(Screen.hasShiftDown()){
             pTooltipComponents.add(Component.literal("To set your home crouch and channel the item for §e" + this.SET_HOME_DURATION/20 + "§r seconds."));
             pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(this.cooldown) + "§r"));
-            pTooltipComponents.add(Component.literal("§aMax Warp Distance: " + this.maxDistance + " blocks§r"));
+            if(this.maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax Warp Distance: " + this.maxDistance + " blocks§r"));
             pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (this.canDimTravel ? "Yes" : "No") + "§r"));
+            if(this.isConsumed) pTooltipComponents.add(Component.literal("§cThis item is consumed on use.§r"));
         } else {
             pTooltipComponents.add(Component.literal("Find your way home."));
             pTooltipComponents.add(Component.literal("Press §eSHIFT§r for more information"));
@@ -191,17 +221,18 @@ public class HomeWarpItem extends Item {
 
     public static class Properties {
         int cooldown = 1800;
-        int useDuration = 80;
+        int useDuration = 240;
         int maxDistance = 0;
-        boolean canDimTravel = true;
-        Rarity rarity = Rarity.RARE;
+        boolean canDimTravel = false;
+        Rarity rarity = Rarity.COMMON;
+        boolean isConsumed = false;
 
         public Properties cooldown(int cooldown) {
             this.cooldown = cooldown;
             return this;
         }
         public Properties useDuration(int useDuration) {
-            this.useDuration = useDuration;
+            this.useDuration = useDuration*20;
             return this;
         }
         public Properties maxDistance(int maxDistance) {
@@ -210,6 +241,10 @@ public class HomeWarpItem extends Item {
         }
         public Properties canDimTravel(boolean canDimTravel) {
             this.canDimTravel = canDimTravel;
+            return this;
+        }
+        public Properties isConsumed(boolean isConsumed) {
+            this.isConsumed = isConsumed;
             return this;
         }
         public Properties rarity(Rarity rarity){

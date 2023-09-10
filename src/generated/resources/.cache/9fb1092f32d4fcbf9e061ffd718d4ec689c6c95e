@@ -1,3 +1,9 @@
-// 1.20.1	2023-09-06T18:45:44.656105	Recipes
-16cc47e9b6f4cc25f0510e8fbaeb096b873233c4 data/homebound/advancements/recipes/misc/homebound_gem.json
-202a033170b4836d69bcada0d06d2d7e882ed8d5 data/homebound/recipes/homebound_gem.json
+// 1.20.1	2023-09-09T18:53:20.777834	Recipes
+f21f4fb03d334790d2844a159c66f70422b8d07e data/homebound/advancements/recipes/misc/hearthwood.json
+517204efe14364cdf8e70d419cc1a447efb854e2 data/homebound/advancements/recipes/misc/homeward_bone.json
+9836144b9ff6fb7fab2e65ce7e51cbf933944336 data/homebound/advancements/recipes/misc/homeward_gem.json
+06289aeaf5a3bdd51f3b2d851fc36fa9cc0b263d data/homebound/advancements/recipes/misc/homeward_shard.json
+9b7af1135a826c4ecf689c730cad78ac7b873f7f data/homebound/recipes/hearthwood.json
+9dc87f22e6ac8b39701e23ef9cfbb5e98ad9e496 data/homebound/recipes/homeward_bone.json
+ad9a5dd1c9f2b4b7417da2cd27433bb0be8e8ed6 data/homebound/recipes/homeward_gem.json
+b47b140df9bc13ce47a7db9ed78435cc6c559471 data/homebound/recipes/homeward_shard.json

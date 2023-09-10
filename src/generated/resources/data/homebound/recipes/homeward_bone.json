@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:bone"
+    },
+    "P": {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+  "pattern": [
+    " B ",
+    "BPB",
+    " B "
+  ],
+  "result": {
+    "item": "homebound:homeward_bone"
+  },
+  "show_notification": true
+}

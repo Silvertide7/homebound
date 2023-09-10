@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_homebound_gem": {
+    "has_ender_pearl": {
       "conditions": {
         "items": [
           {
             "items": [
-              "homebound:homebound_gem"
+              "minecraft:ender_pearl"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "homebound:homebound_gem"
+        "recipe": "homebound:homeward_shard"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_homebound_gem",
+      "has_ender_pearl",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "homebound:homebound_gem"
+      "homebound:homeward_shard"
     ]
   },
   "sends_telemetry_event": false
