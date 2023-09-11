@@ -21,14 +21,13 @@ import org.slf4j.Logger;
 TODO:
 - stop the item from automatically using itself over and over
 - tweak particles and sounds again
-- server commands
-- create resurrection stone
---- initial release ---
 - configs
+--- initial release ---
 - curios integration
 - keybind to use item
 - add player attributes for cooldown reduction, use time
-- enchantments
+- enchantments for cooldown reduction and use time
+- Create a gem with a 24 hour cooldown that resurrects the player at their home when dying. 30 levels to recharge it.
 - Create a gem that leaves a portal for other players to go through with you
  */
 @Mod(Homebound.MOD_ID)
