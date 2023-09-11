@@ -29,6 +29,6 @@ public record WarpPos(BlockPos blockPos, ResourceLocation dimension) {
         String dimension = this.dimension.toString();
         String coords = "X: " + this.blockPos.getX() + " Y: " + this.blockPos.getY() + " Z: " + this.blockPos.getZ();
         String dimString = HomeboundUtil.formatDimension(dimension);
-        return dimString + ": " + coords;
+        return dimString + " - " + coords;
     }
 }

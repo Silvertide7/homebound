@@ -7,6 +7,7 @@ import net.minecraft.commands.Commands;
 public class CmdRoot {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("homebound")
-                .then(CmdNodeAdmin.register(dispatcher)));
+                .then(CmdNodeAdmin.register(dispatcher))
+                .then(CmdNodeInfo.register(dispatcher)));
     }
 }

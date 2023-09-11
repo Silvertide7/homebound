@@ -32,7 +32,9 @@ public class CmdNodeAdmin {
             });
         }
         return 0;
-    }    public static int adminClearHome(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+    }
+
+    public static int adminClearHome(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         for (ServerPlayer player : EntityArgument.getPlayers(ctx, TARGET_ARG)) {
             CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
                 if(warpCap.getWarpPos() != null) warpCap.clearHome();

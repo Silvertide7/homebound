@@ -40,9 +40,13 @@ public final class HomeboundUtil {
     public static String formatDimension(String dimString) {
         int indexOfColon = dimString.indexOf(":");
         if (indexOfColon != -1) {
-            // Use substring to get the part of the string after the ":"
-            String result = dimString.substring(indexOfColon + 1);
-            return result.substring(0, 1).toUpperCase() + result.substring(1).toLowerCase();
+            String dimName = dimString.substring(indexOfColon + 1);
+            String[] dimWords = dimName.split("_");
+
+            for(int i = 0; i < dimWords.length; i++) {
+                dimWords[i] = dimWords[i].substring(0, 1).toUpperCase() + dimWords[i].substring(1).toLowerCase();
+            }
+            return String.join(" ", dimWords);
         } else {
             return dimString;
         }
