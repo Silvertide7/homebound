@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_homeward_gem": {
+    "has_homeward_stone": {
       "conditions": {
         "items": [
           {
             "items": [
-              "homebound:homeward_gem"
+              "homebound:homeward_stone"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "homebound:hearthwood"
+        "recipe": "homebound:haven_stone"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_homeward_gem",
+      "has_homeward_stone",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "homebound:hearthwood"
+      "homebound:haven_stone"
     ]
   },
   "sends_telemetry_event": false

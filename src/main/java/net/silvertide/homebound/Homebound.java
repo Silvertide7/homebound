@@ -1,6 +1,8 @@
 package net.silvertide.homebound;
 
 import com.mojang.logging.LogUtils;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.silvertide.homebound.commands.CmdRoot;
 import net.silvertide.homebound.tabs.TabRegistry;
 import net.silvertide.homebound.item.ItemRegistry;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,17 +19,17 @@ import org.slf4j.Logger;
 
 /*
 TODO:
-- create initial homebound stones / textures / recipes
 - stop the item from automatically using itself over and over
-- finish variable distance stone
+- tweak particles and sounds again
+- server commands
 - create resurrection stone
 --- initial release ---
 - configs
 - curios integration
 - keybind to use item
-- add attributes for cooldown reduction, use time
+- add player attributes for cooldown reduction, use time
 - enchantments
-- Create a gem that leaves a portal for other players to go through
+- Create a gem that leaves a portal for other players to go through with you
  */
 @Mod(Homebound.MOD_ID)
 public class Homebound
@@ -55,6 +57,7 @@ public class Homebound
         modEventBus.addListener(this::addCreative);
     }
 
+
     private void commonSetup(final FMLCommonSetupEvent event) {
 
     }
@@ -77,6 +80,13 @@ public class Homebound
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
 
+        }
+    }
+    @Mod.EventBusSubscriber(modid=Homebound.MOD_ID, bus=Mod.EventBusSubscriber.Bus.FORGE)
+    public static class CommonSetup {
+        @SubscribeEvent
+        public static void onCommandRegister(RegisterCommandsEvent event) {
+            CmdRoot.register(event.getDispatcher());
         }
     }
 }

@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_homeward_gem": {
+    "has_dusk_stone": {
       "conditions": {
         "items": [
           {
             "items": [
-              "homebound:homeward_gem"
+              "homebound:dusk_stone"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "homebound:hearthwood"
+        "recipe": "homebound:twilight_stone"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_homeward_gem",
+      "has_dusk_stone",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "homebound:hearthwood"
+      "homebound:twilight_stone"
     ]
   },
   "sends_telemetry_event": false

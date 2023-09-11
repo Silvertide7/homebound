@@ -22,8 +22,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ItemRegistry.HEARTHWOOD);
         simpleItem(ItemRegistry.HOMEWARD_GEM);
         simpleItem(ItemRegistry.HOMEWARD_STONE);
-        simpleItem(ItemRegistry.HAVENSTONE);
-        simpleItem(ItemRegistry.NEXUS_STONE);
+        simpleItem(ItemRegistry.HAVEN_STONE);
+        simpleItem(ItemRegistry.DAWN_STONE);
+        simpleItem(ItemRegistry.SUN_STONE);
+        simpleItem(ItemRegistry.DUSK_STONE);
+        simpleItem(ItemRegistry.TWILIGHT_STONE);
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {

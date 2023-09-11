@@ -23,8 +23,11 @@ public class TabRegistry {
                         output.accept(ItemRegistry.HEARTHWOOD.get());
                         output.accept(ItemRegistry.HOMEWARD_GEM.get());
                         output.accept(ItemRegistry.HOMEWARD_STONE.get());
-                        output.accept(ItemRegistry.HAVENSTONE.get());
-                        output.accept(ItemRegistry.NEXUS_STONE.get());
+                        output.accept(ItemRegistry.HAVEN_STONE.get());
+                        output.accept(ItemRegistry.DAWN_STONE.get());
+                        output.accept(ItemRegistry.SUN_STONE.get());
+                        output.accept(ItemRegistry.DUSK_STONE.get());
+                        output.accept(ItemRegistry.TWILIGHT_STONE.get());
 
                     }).build());
     public static void register(IEventBus eventBus) {

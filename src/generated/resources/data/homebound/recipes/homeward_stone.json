@@ -2,20 +2,23 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
     "H": {
       "item": "homebound:homeward_gem"
     },
-    "L": {
-      "tag": "minecraft:logs"
+    "S": {
+      "item": "minecraft:smooth_stone"
     }
   },
   "pattern": [
-    "LLL",
-    "LHL",
-    "LLL"
+    "SDS",
+    "DHD",
+    "SDS"
   ],
   "result": {
-    "item": "homebound:hearthwood"
+    "item": "homebound:homeward_stone"
   },
   "show_notification": true
 }

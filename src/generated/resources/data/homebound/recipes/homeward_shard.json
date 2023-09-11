@@ -10,9 +10,9 @@
     }
   },
   "pattern": [
-    "AAA",
+    "   ",
     "APA",
-    "AAA"
+    "   "
   ],
   "result": {
     "item": "homebound:homeward_shard"

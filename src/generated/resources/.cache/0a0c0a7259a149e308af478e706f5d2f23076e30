@@ -1,9 +1,11 @@
-// 1.20.1	2023-09-10T09:50:14.634747	Item Models: homebound
-92b8e767a87b781211503823f45ac03bc3b6b55c assets/homebound/models/item/havenstone.json
-527459c55d5b73bfc4d36b72f8f6098e1dd33ae7 assets/homebound/models/item/havenwood.json
+// 1.20.1	2023-09-10T23:53:31.18362	Item Models: homebound
+56f419bf537ed36f2cfbd7d81d2d8269d15ae8c6 assets/homebound/models/item/dawn_stone.json
+3bf21f0e860b350062be31c4f491fd3539db4ae2 assets/homebound/models/item/dusk_stone.json
+03d82cc827fefcac18914fa9132a74cd3c02a64b assets/homebound/models/item/haven_stone.json
 adca77bd8f5435522d80dec58bb5c1015d9d8a54 assets/homebound/models/item/hearthwood.json
 f113c99d873fea7d1dd0349cbcb2bce39db8d440 assets/homebound/models/item/homeward_bone.json
 82b389c6515c8d2fe979d051775eb294006dcf92 assets/homebound/models/item/homeward_gem.json
 a14ee25ccdf50de351afe97e0eee09a0a2b5f6ea assets/homebound/models/item/homeward_shard.json
 cc2aa8f218face02228fcb12bfef56ec0cae5a8a assets/homebound/models/item/homeward_stone.json
-d4880be1f7b1f5de2f06ac3f5a2c6aad47bdbb36 assets/homebound/models/item/nexus_stone.json
+0c0f98f90a0099d442ee2e17e210fb0bfeddf08f assets/homebound/models/item/sun_stone.json
+089a5809cac680e0b4636016f9140345d8df788e assets/homebound/models/item/twilight_stone.json

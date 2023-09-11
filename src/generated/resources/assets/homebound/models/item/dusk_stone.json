@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "homebound:item/nexus_stone"
+    "layer0": "homebound:item/dusk_stone"
   }
 }

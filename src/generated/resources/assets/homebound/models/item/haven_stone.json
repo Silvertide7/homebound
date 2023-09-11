@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "homebound:item/havenstone"
+    "layer0": "homebound:item/haven_stone"
   }
 }

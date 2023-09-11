@@ -3,19 +3,19 @@
   "category": "misc",
   "key": {
     "H": {
-      "item": "homebound:homeward_gem"
+      "item": "homebound:haven_stone"
     },
-    "L": {
-      "tag": "minecraft:logs"
+    "S": {
+      "item": "minecraft:prismarine_shard"
     }
   },
   "pattern": [
-    "LLL",
-    "LHL",
-    "LLL"
+    "SSS",
+    "SHS",
+    "SSS"
   ],
   "result": {
-    "item": "homebound:hearthwood"
+    "item": "homebound:dawn_stone"
   },
   "show_notification": true
 }

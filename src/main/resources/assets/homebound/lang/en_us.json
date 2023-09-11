@@ -5,8 +5,11 @@
   "item.homebound.havenwood": "Havenwood",
   "item.homebound.homeward_gem": "Homeward Gem",
   "item.homebound.homeward_stone": "Homeward Stone",
-  "item.homebound.havenstone": "Havenstone",
-  "item.homebound.nexus_stone": "Nexus Stone",
+  "item.homebound.haven_stone": "Haven Stone",
+  "item.homebound.dawn_stone": "Dawn Stone",
+  "item.homebound.sun_stone": "Sun Stone",
+  "item.homebound.dusk_stone": "Dusk Stone",
+  "item.homebound.twilight_stone": "Twilight Stone",
 
   "creativetab.homebound_tab": "Homebound"
 }

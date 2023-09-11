@@ -22,12 +22,12 @@ import java.util.List;
 
 public class HomeWarpItem extends Item {
     private final int DAMAGE_COOLDOWN = 5;
-    private final int SET_HOME_DURATION = 40;
+    protected final int SET_HOME_DURATION = 40;
     private HomeWarpItemMode itemMode;
     private int useDuration;
     private int cooldown;
     private int maxDistance;
-    private boolean canDimTravel;
+    protected boolean canDimTravel;
     private float playerHealth;
     private boolean isConsumed;
     public HomeWarpItem(Properties properties) {
