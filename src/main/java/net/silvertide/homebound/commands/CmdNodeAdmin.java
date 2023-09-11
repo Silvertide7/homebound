@@ -18,9 +18,11 @@ public class CmdNodeAdmin {
         return Commands.literal("admin")
                 .requires(p -> p.hasPermission(2))
                 .then(Commands.argument(TARGET_ARG, EntityArgument.players())
-                        .then(Commands.literal("clear"))
-                                .then(Commands.literal("cooldown")).executes(CmdNodeAdmin::adminClearCooldown))
-                                .then(Commands.literal("home")).executes(CmdNodeAdmin::adminClearHome);
+                        .then(Commands.literal("clear")
+                            .then(Commands.literal("cooldown")
+                                .executes(CmdNodeAdmin::adminClearCooldown))
+                            .then(Commands.literal("home")
+                                    .executes(CmdNodeAdmin::adminClearHome))));
 
     }
     public static int adminClearCooldown(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

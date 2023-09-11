@@ -28,32 +28,6 @@ public class CapabilityRegistry {
     @Mod.EventBusSubscriber(modid = Homebound.MOD_ID)
     public static class EventHandler {
 
-        @SubscribeEvent
-        public static void attachCapabilities(final AttachCapabilitiesEvent<Entity> event) {
-            if (event.getObject() instanceof Player) {
-                WarpCapAttacher.attach(event);
-            }
-        }
 
-        @SubscribeEvent
-        public static void registerCapabilities(final RegisterCapabilitiesEvent event) {
-            event.register(IWarpCap.class);
-        }
-
-        /**
-         * Copy the player's home when they respawn after dying or returning from the end.
-         *
-         * @param event Player Clone event
-         */
-        @SubscribeEvent
-        public static void playerClone(PlayerEvent.Clone event) {
-            Player oldPlayer = event.getOriginal();
-            oldPlayer.revive();
-            getHome(oldPlayer).ifPresent(oldHome -> getHome(event.getEntity()).ifPresent(newHome -> {
-                newHome.setWarpPos(oldHome.getWarpPos());
-                newHome.setCooldown(oldHome.getLastWarpTimestamp(), oldHome.getCooldown());
-            }));
-            event.getOriginal().invalidateCaps();
-        }
     }
 }

@@ -1,5 +1,6 @@
 package net.silvertide.homebound.item;
 
+import com.sun.jna.platform.win32.COM.IDispatch;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -20,16 +21,18 @@ import net.silvertide.homebound.util.ParticleUtil;
 
 import java.util.List;
 
-public class HomeWarpItem extends Item {
+public class HomeWarpItem extends Item implements ISoulboundItem {
     private final int DAMAGE_COOLDOWN = 5;
     protected final int SET_HOME_DURATION = 40;
     private HomeWarpItemMode itemMode;
-    private int useDuration;
+    protected int useDuration;
     private int cooldown;
     private int maxDistance;
     protected boolean canDimTravel;
     private float playerHealth;
     private boolean isConsumed;
+    private boolean soulbound;
+
     public HomeWarpItem(Properties properties) {
         super(new Item.Properties().stacksTo(1).rarity(properties.rarity));
         this.useDuration = properties.useDuration;
@@ -37,6 +40,7 @@ public class HomeWarpItem extends Item {
         this.canDimTravel = properties.canDimTravel;
         this.cooldown = properties.cooldown;
         this.isConsumed = properties.isConsumed;
+        this.soulbound = properties.soulbound;
         this.itemMode = HomeWarpItemMode.SET_HOME;
     }
     @Override
@@ -208,15 +212,22 @@ public class HomeWarpItem extends Item {
     public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         if(Screen.hasShiftDown()){
             pTooltipComponents.add(Component.literal("To set your home crouch and channel the item for §e" + this.SET_HOME_DURATION/20 + "§r seconds."));
+            pTooltipComponents.add(Component.literal("§aCast Time: " + this.useDuration / 20 + " seconds.§r"));
             pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(this.cooldown) + "§r"));
             if(this.maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax Warp Distance: " + this.maxDistance + " blocks§r"));
             pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (this.canDimTravel ? "Yes" : "No") + "§r"));
             if(this.isConsumed) pTooltipComponents.add(Component.literal("§cThis item is consumed on use.§r"));
+            if(this.isSoulbound()) pTooltipComponents.add(Component.literal("§5This item persists death.§r"));
         } else {
             pTooltipComponents.add(Component.literal("Find your way home."));
             pTooltipComponents.add(Component.literal("Press §eSHIFT§r for more information"));
         }
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+    }
+
+    @Override
+    public boolean isSoulbound() {
+        return this.soulbound;
     }
 
     public static class Properties {
@@ -226,6 +237,7 @@ public class HomeWarpItem extends Item {
         boolean canDimTravel = false;
         Rarity rarity = Rarity.COMMON;
         boolean isConsumed = false;
+        boolean soulbound = false;
 
         public Properties cooldown(int cooldown) {
             this.cooldown = cooldown;
@@ -245,6 +257,10 @@ public class HomeWarpItem extends Item {
         }
         public Properties isConsumed(boolean isConsumed) {
             this.isConsumed = isConsumed;
+            return this;
+        }
+        public Properties isSoulbound(boolean isSoulbound) {
+            this.soulbound = isSoulbound;
             return this;
         }
         public Properties rarity(Rarity rarity){
