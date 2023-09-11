@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.util.HomeboundUtil;
 
 

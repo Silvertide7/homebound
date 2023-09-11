@@ -2,7 +2,6 @@ package net.silvertide.homebound.item;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.util.HomeboundUtil;
@@ -27,7 +26,7 @@ public class VariableCooldownWarpItem extends HomeWarpItem {
         if(!playerWarpCap.getWarpPos().isSameDimension(homePos)) return this.maxCooldown;
 
         int distanceToHome = playerWarpCap.getWarpPos().calculateDistance(homePos);
-        int variableCooldown = this.minCooldown + distanceToHome/blocksPerOneMinute*60*dimensionMultiplier;
-        return Math.min(maxCooldown, variableCooldown);
+        int variableCooldown = distanceToHome/blocksPerOneMinute*60*dimensionMultiplier;
+        return Math.min(maxCooldown, this.minCooldown + variableCooldown);
     }
 }

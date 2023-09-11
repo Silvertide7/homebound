@@ -36,28 +36,27 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.HOMEWARD_SHARD.get())
                 .define('P', Ingredient.of(Items.ENDER_PEARL))
                 .define('A', Ingredient.of(Items.AMETHYST_SHARD))
-                .pattern("AAA")
+                .pattern("   ")
                 .pattern("APA")
-                .pattern("AAA")
+                .pattern("   ")
                 .unlockedBy("has_ender_pearl", has(Items.ENDER_PEARL))
                 .save(pWriter);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.HOMEWARD_GEM.get())
                 .define('H', Ingredient.of(ItemRegistry.HOMEWARD_SHARD.get()))
-                .define('E', Ingredient.of(Items.EMERALD))
-                .pattern("EHE")
-                .pattern("EHE")
+                .pattern(" HH")
+                .pattern(" HH")
                 .pattern("   ")
                 .unlockedBy("has_homeward_shard", inventoryTrigger(ItemPredicate.Builder.item().of(ItemRegistry.HOMEWARD_SHARD.get()).build()))
                 .save(pWriter);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.HEARTHWOOD.get())
-                .define('H', Ingredient.of(ItemRegistry.HOMEWARD_SHARD.get()))
+                .define('G', Ingredient.of(ItemRegistry.HOMEWARD_GEM.get()))
                 .define('L', ItemTags.LOGS)
                 .pattern("LLL")
                 .pattern("LHL")
                 .pattern("LLL")
-                .unlockedBy("has_homeward_shard", inventoryTrigger(ItemPredicate.Builder.item().of(ItemRegistry.HOMEWARD_SHARD.get()).build()))
+                .unlockedBy("has_homeward_gem", inventoryTrigger(ItemPredicate.Builder.item().of(ItemRegistry.HOMEWARD_GEM.get()).build()))
                 .save(pWriter);
     }
 }

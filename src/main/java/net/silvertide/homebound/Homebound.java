@@ -20,6 +20,7 @@ TODO:
 - create initial homebound stones / textures / recipes
 - stop the item from automatically using itself over and over
 - finish variable distance stone
+- create resurrection stone
 --- initial release ---
 - configs
 - curios integration

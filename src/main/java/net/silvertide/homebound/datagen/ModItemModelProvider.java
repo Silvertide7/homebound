@@ -22,7 +22,6 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ItemRegistry.HEARTHWOOD);
         simpleItem(ItemRegistry.HOMEWARD_GEM);
         simpleItem(ItemRegistry.HOMEWARD_STONE);
-        simpleItem(ItemRegistry.HAVENWOOD);
         simpleItem(ItemRegistry.HAVENSTONE);
         simpleItem(ItemRegistry.NEXUS_STONE);
     }
