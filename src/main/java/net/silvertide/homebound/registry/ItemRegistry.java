@@ -1,4 +1,4 @@
-package net.silvertide.homebound.item;
+package net.silvertide.homebound.registry;
 
 import net.minecraft.world.item.Rarity;
 import net.silvertide.homebound.Homebound;
@@ -7,6 +7,9 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import net.silvertide.homebound.item.ConsumedWarpItem;
+import net.silvertide.homebound.item.HomeWarpItem;
+import net.silvertide.homebound.item.VariableCooldownWarpItem;
 
 public class ItemRegistry {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Homebound.MOD_ID);

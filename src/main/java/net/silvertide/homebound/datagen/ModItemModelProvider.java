@@ -1,7 +1,7 @@
 package net.silvertide.homebound.datagen;
 
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.item.ItemRegistry;
+import net.silvertide.homebound.registry.ItemRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;

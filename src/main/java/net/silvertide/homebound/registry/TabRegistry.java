@@ -1,7 +1,7 @@
-package net.silvertide.homebound.tabs;
+package net.silvertide.homebound.registry;
 
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.item.ItemRegistry;
+import net.silvertide.homebound.registry.ItemRegistry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;

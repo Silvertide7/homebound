@@ -16,7 +16,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.capabilities.CapabilityRegistry;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +29,7 @@ public final class HomeboundUtil {
 
     @Nullable
     public static IWarpCap getWarpCap(Player player) {
-        return CapabilityRegistry.getHome(player).orElse(null);
+        return CapabilityUtil.getHome(player).orElse(null);
     }
 
     public static WarpPos buildWarpPos(Player player, Level level) {

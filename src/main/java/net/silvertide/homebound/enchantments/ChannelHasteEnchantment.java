@@ -5,8 +5,8 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.silvertide.homebound.item.HomeWarpItem;
 
-public class QuickCastEnchantment extends Enchantment {
-    protected QuickCastEnchantment() {
+public class ChannelHasteEnchantment extends Enchantment {
+    public ChannelHasteEnchantment() {
         super(Enchantment.Rarity.UNCOMMON, EnchantmentCategory.create("homebound_item", item -> item instanceof HomeWarpItem), new EquipmentSlot[]{EquipmentSlot.MAINHAND});
     }
 

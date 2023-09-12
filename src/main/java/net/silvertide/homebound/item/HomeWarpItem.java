@@ -11,10 +11,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.silvertide.homebound.capabilities.CapabilityRegistry;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
-import net.silvertide.homebound.enchantments.EnchantmentRegistry;
+import net.silvertide.homebound.registry.EnchantmentRegistry;
+import net.silvertide.homebound.util.CapabilityUtil;
 import net.silvertide.homebound.util.HomeboundUtil;
 import net.silvertide.homebound.util.ParticleUtil;
 
@@ -51,7 +51,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
             // If not crouching then attempt to start warping.
             else {
                 AtomicBoolean canWarp = new AtomicBoolean(false);
-                CapabilityRegistry.getHome(player).ifPresent(playerWarpCap -> {
+                CapabilityUtil.getHome(player).ifPresent(playerWarpCap -> {
                     canWarp.set(isHomeSet(player, playerWarpCap) &&
                             (player.getAbilities().instabuild ||
                                     (hasNoCooldown(player, playerWarpCap)
@@ -129,7 +129,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
     private void setHome(Player player, ServerLevel serverLevel){
         player.sendSystemMessage(Component.literal("§aHome set.§r"));
-        CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
+        CapabilityUtil.getHome(player).ifPresent(warpCap -> {
             warpCap.setWarpPos(player, serverLevel);
             ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.CRIT, 20);
             HomeboundUtil.playSound(serverLevel, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE);
@@ -137,7 +137,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     }
 
     protected void warpHome(Player player, ServerLevel serverLevel, ItemStack pStack) {
-        CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
+        CapabilityUtil.getHome(player).ifPresent(warpCap -> {
             HomeboundUtil.warp(player, warpCap.getWarpPos());
             if (!player.getAbilities().instabuild) {
                 warpCap.setCooldown(player.level().getGameTime(), getCooldown(player, serverLevel));
@@ -161,10 +161,10 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     }
     @Override
     public int getUseDuration(ItemStack pStack) {
-        int quickCastLevel = pStack.getEnchantmentLevel(EnchantmentRegistry.QUICK_CAST.get());
+        int quickCastLevel = pStack.getEnchantmentLevel(EnchantmentRegistry.CHANNEL_HASTE.get());
         int duration = this.useDuration;
         if (quickCastLevel > 0) {
-            double quickCastDuration = (1.0 - pStack.getEnchantmentLevel(EnchantmentRegistry.QUICK_CAST.get()) / 10.0) * this.useDuration;
+            double quickCastDuration = (1.0 - pStack.getEnchantmentLevel(EnchantmentRegistry.CHANNEL_HASTE.get()) / 10.0) * this.useDuration;
             duration = (int) quickCastDuration;
         }
         return duration;
@@ -177,6 +177,12 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     public boolean isEnchantable(ItemStack pStack) {
         return true;
     }
+
+    @Override
+    public int getEnchantmentValue(ItemStack stack) {
+        return 1;
+    }
+
     @Override
     public boolean isRepairable(ItemStack stack) {
         return false;
@@ -243,9 +249,9 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 }
 
 /*
-player.stopUsingItem();
+                player.stopUsingItem();
                 player.sendSystemMessage(Component.literal("§cWarp cancelled.§r"));
-                CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
+                CapabilityUtil.getHome(player).ifPresent(warpCap -> {
                     long gameTime = player.level().getGameTime();
                     if (!warpCap.hasCooldown(gameTime)) {
                         warpCap.setCooldown(gameTime, DAMAGE_COOLDOWN);

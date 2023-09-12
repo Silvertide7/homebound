@@ -1,7 +1,7 @@
 package net.silvertide.homebound.datagen;
 
 import net.minecraft.tags.ItemTags;
-import net.silvertide.homebound.item.ItemRegistry;
+import net.silvertide.homebound.registry.ItemRegistry;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;

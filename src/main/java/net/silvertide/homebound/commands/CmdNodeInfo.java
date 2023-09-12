@@ -7,12 +7,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.capabilities.CapabilityRegistry;
+import net.silvertide.homebound.util.CapabilityUtil;
 import net.silvertide.homebound.util.HomeboundUtil;
 
 public class CmdNodeInfo {
@@ -25,7 +22,7 @@ public class CmdNodeInfo {
     public static int getPlayerInfo(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         long gameTime = ctx.getSource().getLevel().getGameTime();
         ServerPlayer player = ctx.getSource().getPlayer();
-        CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
+        CapabilityUtil.getHome(player).ifPresent(warpCap -> {
             String warpPosString = "Home: §cNot set§r.";
             if(warpCap.getWarpPos() != null) {
                 warpPosString = "Home: " + warpCap.getWarpPos().toString();

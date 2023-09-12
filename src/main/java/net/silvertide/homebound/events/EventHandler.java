@@ -13,10 +13,10 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.capabilities.CapabilityRegistry;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpCapAttacher;
 import net.silvertide.homebound.item.ISoulboundItem;
+import net.silvertide.homebound.util.CapabilityUtil;
 
 import java.util.Iterator;
 
@@ -66,7 +66,7 @@ public class EventHandler {
             }
         });
 
-        CapabilityRegistry.getHome(oldPlayer).ifPresent(oldHome -> CapabilityRegistry.getHome(event.getEntity()).ifPresent(newHome -> {
+        CapabilityUtil.getHome(oldPlayer).ifPresent(oldHome -> CapabilityUtil.getHome(event.getEntity()).ifPresent(newHome -> {
             newHome.setWarpPos(oldHome.getWarpPos());
             newHome.setCooldown(oldHome.getLastWarpTimestamp(), oldHome.getCooldown());
         }));
