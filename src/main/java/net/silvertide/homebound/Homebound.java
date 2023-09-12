@@ -20,14 +20,15 @@ import org.slf4j.Logger;
 
 /*
 TODO:
+- Add damage event check to disable using item if player is hurt
+- enchantments for cooldown reduction and use time
+- configs
 - tweak particles and sounds again
 - add JEI compat
-- configs
 --- initial release ---
 - curios integration
 - keybind to use item
 - add player attributes for cooldown reduction, use time
-- enchantments for cooldown reduction and use time
 - Create a gem with a 24 hour cooldown that resurrects the player at their home when dying. 30 levels to recharge it.
 - Create a gem that leaves a portal for other players to go through with you
  */
