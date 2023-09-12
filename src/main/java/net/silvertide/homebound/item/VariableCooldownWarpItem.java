@@ -6,7 +6,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
-import net.silvertide.homebound.registry.EnchantmentRegistry;
 import net.silvertide.homebound.util.HomeboundUtil;
 
 import java.util.List;
