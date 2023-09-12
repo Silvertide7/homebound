@@ -16,14 +16,12 @@ import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.CapabilityRegistry;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpCapAttacher;
-import net.silvertide.homebound.item.HomeWarpItem;
 import net.silvertide.homebound.item.ISoulboundItem;
-import net.silvertide.homebound.item.ItemRegistry;
 
 import java.util.Iterator;
 
-@Mod.EventBusSubscriber(modid= Homebound.MOD_ID)
-public class HomeboundEventHandler {
+@Mod.EventBusSubscriber(modid=Homebound.MOD_ID)
+public class EventHandler {
 
     @SubscribeEvent
     public static void attachCapabilities(final AttachCapabilitiesEvent<Entity> event) {

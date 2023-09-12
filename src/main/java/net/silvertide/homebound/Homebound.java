@@ -3,6 +3,7 @@ package net.silvertide.homebound;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.silvertide.homebound.commands.CmdRoot;
+import net.silvertide.homebound.enchantments.EnchantmentRegistry;
 import net.silvertide.homebound.tabs.TabRegistry;
 import net.silvertide.homebound.item.ItemRegistry;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,8 +20,8 @@ import org.slf4j.Logger;
 
 /*
 TODO:
-- stop the item from automatically using itself over and over
 - tweak particles and sounds again
+- add JEI compat
 - configs
 --- initial release ---
 - curios integration
@@ -46,6 +47,7 @@ public class Homebound
 
         ItemRegistry.register(modEventBus);
 
+        EnchantmentRegistry.register(modEventBus);
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 

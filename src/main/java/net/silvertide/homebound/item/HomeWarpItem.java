@@ -1,6 +1,5 @@
 package net.silvertide.homebound.item;
 
-import com.sun.jna.platform.win32.COM.IDispatch;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -15,23 +14,21 @@ import net.minecraft.world.level.Level;
 import net.silvertide.homebound.capabilities.CapabilityRegistry;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
-import net.silvertide.homebound.util.HomeWarpItemMode;
+import net.silvertide.homebound.enchantments.EnchantmentRegistry;
 import net.silvertide.homebound.util.HomeboundUtil;
 import net.silvertide.homebound.util.ParticleUtil;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HomeWarpItem extends Item implements ISoulboundItem {
-    private final int DAMAGE_COOLDOWN = 5;
     protected final int SET_HOME_DURATION = 40;
-    private HomeWarpItemMode itemMode;
     protected int useDuration;
     private int cooldown;
     private int maxDistance;
     protected boolean canDimTravel;
-    private float playerHealth;
-    private boolean isConsumed;
     private boolean soulbound;
+
 
     public HomeWarpItem(Properties properties) {
         super(new Item.Properties().stacksTo(1).rarity(properties.rarity));
@@ -39,36 +36,32 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         this.maxDistance = properties.maxDistance;
         this.canDimTravel = properties.canDimTravel;
         this.cooldown = properties.cooldown;
-        this.isConsumed = properties.isConsumed;
         this.soulbound = properties.soulbound;
-        this.itemMode = HomeWarpItemMode.SET_HOME;
     }
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand pUsedHand) {
         ItemStack itemstack = player.getItemInHand(pUsedHand);
         if (!level.isClientSide()) {
-            this.playerHealth = player.getHealth();
-
             // If crouching then set home
             if (player.isCrouching()) {
-                this.itemMode = HomeWarpItemMode.SET_HOME;
-                player.startUsingItem(pUsedHand);
+                ServerLevel serverLevel = (ServerLevel) level;
+                setHome(player, serverLevel);
                 return InteractionResultHolder.success(itemstack);
             }
             // If not crouching then attempt to start warping.
             else {
+                AtomicBoolean canWarp = new AtomicBoolean(false);
                 CapabilityRegistry.getHome(player).ifPresent(playerWarpCap -> {
-                    boolean canWarp = isHomeSet(player, playerWarpCap) &&
+                    canWarp.set(isHomeSet(player, playerWarpCap) &&
                             (player.getAbilities().instabuild ||
-                        (hasNoCooldown(player, playerWarpCap)
-                        && checkDimensionalTravel(player, level, playerWarpCap)
-                        && withinMaxDistance(player, level, playerWarpCap)));
-
-                    if (canWarp) {
-                        this.itemMode = HomeWarpItemMode.WARP_HOME;
-                        player.startUsingItem(pUsedHand);
-                    }
+                                    (hasNoCooldown(player, playerWarpCap)
+                                            && checkDimensionalTravel(player, level, playerWarpCap)
+                                            && withinMaxDistance(player, level, playerWarpCap))));
                 });
+                if (canWarp.get()) {
+                    player.startUsingItem(pUsedHand);
+                    return InteractionResultHolder.success(itemstack);
+                }
             }
         }
         return InteractionResultHolder.fail(itemstack);
@@ -76,29 +69,12 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
     @Override
     public void onUseTick(Level pLevel, LivingEntity entity, ItemStack pStack, int pRemainingUseDuration) {
-        if(!entity.level().isClientSide) {
+        if(!entity.level().isClientSide && pRemainingUseDuration%5==0) {
             Player player = (Player) entity;
-            if(player.getHealth() > this.playerHealth) {
-                this.playerHealth = player.getHealth();
-            } else if(player.getHealth() < this.playerHealth) {
-                player.stopUsingItem();
-                player.sendSystemMessage(Component.literal("§cWarp cancelled.§r"));
-                CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
-                    long gameTime = player.level().getGameTime();
-                    if (!warpCap.hasCooldown(gameTime)) {
-                        warpCap.setCooldown(gameTime, DAMAGE_COOLDOWN);
-                    }
-                });
-            }
-
-            if(pRemainingUseDuration%5==0) {
-                ServerLevel serverLevel = (ServerLevel) pLevel;
-                int scalingParticles = (this.useDuration - pRemainingUseDuration)/10;
-                ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, scalingParticles);
-                if(this.itemMode == HomeWarpItemMode.WARP_HOME && entity.getRandom().nextInt()%4==0) {
-                    HomeboundUtil.playSound(serverLevel, player, SoundEvents.BLAZE_BURN);
-                }
-            }
+            ServerLevel serverLevel = (ServerLevel) pLevel;
+            int scalingParticles = (this.useDuration - pRemainingUseDuration)/10;
+            ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, scalingParticles);
+            HomeboundUtil.playSound(serverLevel, player, SoundEvents.BLAZE_BURN);
         }
     }
 
@@ -109,11 +85,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
         if (player != null && !clientSide) {
             ServerLevel serverLevel = (ServerLevel) pLevel;
-            if(this.itemMode == HomeWarpItemMode.SET_HOME) {
-                setHome(player, serverLevel);
-            } else {
-                warpHome(player, serverLevel, pStack);
-            }
+            warpHome(player, serverLevel, pStack);
         }
         return pStack;
     }
@@ -128,8 +100,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
     private boolean hasNoCooldown(Player player, IWarpCap playerWarpCap) {
         long gameTime = player.level().getGameTime();
-        boolean hasCooldown = playerWarpCap.hasCooldown(gameTime);
-        if (hasCooldown) {
+        if (playerWarpCap.hasCooldown(gameTime)) {
             int timeRemaining = playerWarpCap.getRemainingCooldown(gameTime);
             player.sendSystemMessage(Component.literal(getCooldownMessage(timeRemaining)));
             return false;
@@ -165,17 +136,14 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         });
     }
 
-    private void warpHome(Player player, ServerLevel serverLevel, ItemStack pStack) {
+    protected void warpHome(Player player, ServerLevel serverLevel, ItemStack pStack) {
         CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
             HomeboundUtil.warp(player, warpCap.getWarpPos());
-
             if (!player.getAbilities().instabuild) {
                 warpCap.setCooldown(player.level().getGameTime(), getCooldown(player, serverLevel));
-                if(this.isConsumed) pStack.shrink(1);
             }
             ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, 30);
         });
-
     }
 
     public int getCooldown(Player player, Level level) {
@@ -193,19 +161,29 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     }
     @Override
     public int getUseDuration(ItemStack pStack) {
-        return this.itemMode == HomeWarpItemMode.SET_HOME ? SET_HOME_DURATION : this.useDuration;
+        int quickCastLevel = pStack.getEnchantmentLevel(EnchantmentRegistry.QUICK_CAST.get());
+        int duration = this.useDuration;
+        if (quickCastLevel > 0) {
+            double quickCastDuration = (1.0 - pStack.getEnchantmentLevel(EnchantmentRegistry.QUICK_CAST.get()) / 10.0) * this.useDuration;
+            duration = (int) quickCastDuration;
+        }
+        return duration;
     }
     @Override
     public UseAnim getUseAnimation(ItemStack pStack) {
-        return this.itemMode == HomeWarpItemMode.SET_HOME ? UseAnim.BRUSH : UseAnim.BOW;
+        return UseAnim.BOW;
     }
     @Override
     public boolean isEnchantable(ItemStack pStack) {
-        return false;
+        return true;
     }
     @Override
     public boolean isRepairable(ItemStack stack) {
         return false;
+    }
+
+    protected void addCooldownHoverText(List<Component> pTooltipComponents) {
+        pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(this.cooldown) + "§r"));
     }
 
     @Override
@@ -213,10 +191,9 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         if(Screen.hasShiftDown()){
             pTooltipComponents.add(Component.literal("To set your home crouch and channel the item for §e" + this.SET_HOME_DURATION/20 + "§r seconds."));
             pTooltipComponents.add(Component.literal("§aCast Time: " + this.useDuration / 20 + " seconds.§r"));
-            pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(this.cooldown) + "§r"));
+            addCooldownHoverText(pTooltipComponents);
             if(this.maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax Warp Distance: " + this.maxDistance + " blocks§r"));
             pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (this.canDimTravel ? "Yes" : "No") + "§r"));
-            if(this.isConsumed) pTooltipComponents.add(Component.literal("§cThis item is consumed on use.§r"));
             if(this.isSoulbound()) pTooltipComponents.add(Component.literal("§5This item persists death.§r"));
         } else {
             pTooltipComponents.add(Component.literal("Find your way home."));
@@ -236,7 +213,6 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         int maxDistance = 0;
         boolean canDimTravel = false;
         Rarity rarity = Rarity.COMMON;
-        boolean isConsumed = false;
         boolean soulbound = false;
 
         public Properties cooldown(int cooldown) {
@@ -255,10 +231,6 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
             this.canDimTravel = canDimTravel;
             return this;
         }
-        public Properties isConsumed(boolean isConsumed) {
-            this.isConsumed = isConsumed;
-            return this;
-        }
         public Properties isSoulbound(boolean isSoulbound) {
             this.soulbound = isSoulbound;
             return this;
@@ -269,3 +241,14 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         }
     }
 }
+
+/*
+player.stopUsingItem();
+                player.sendSystemMessage(Component.literal("§cWarp cancelled.§r"));
+                CapabilityRegistry.getHome(player).ifPresent(warpCap -> {
+                    long gameTime = player.level().getGameTime();
+                    if (!warpCap.hasCooldown(gameTime)) {
+                        warpCap.setCooldown(gameTime, DAMAGE_COOLDOWN);
+                    }
+                });
+ */

@@ -1,10 +1,7 @@
 package net.silvertide.homebound.item;
 
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
@@ -37,17 +34,10 @@ public class VariableCooldownWarpItem extends HomeWarpItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-        if(Screen.hasShiftDown()){
-            pTooltipComponents.add(Component.literal("To set your home crouch and channel the item for §e" + this.SET_HOME_DURATION/20 + "§r seconds."));
-            pTooltipComponents.add(Component.literal("Every §a" + this.blocksPerOneMinute + "§r blocks from home adds 1 minute to minimum cooldown."));
-            pTooltipComponents.add(Component.literal("§aCast Time: " + this.useDuration / 20 + " seconds.§r"));
-            pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(this.minCooldown) + " to " + HomeboundUtil.formatTime(this.maxCooldown) + "§r"));
-            pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (this.canDimTravel ? "Yes" : "No") + "§r"));
-            if(this.isSoulbound()) pTooltipComponents.add(Component.literal("§5This item persists death.§r"));
-        } else {
-            pTooltipComponents.add(Component.literal("Find your way home."));
-            pTooltipComponents.add(Component.literal("Press §eSHIFT§r for more information"));
-        }
+    protected void addCooldownHoverText(List<Component> pTooltipComponents) {
+        pTooltipComponents.add(Component.literal("Every §a" + this.blocksPerOneMinute + "§r blocks from home adds 1 minute to minimum cooldown."));
+        pTooltipComponents.add(Component.literal("§aCast Time: " + this.useDuration / 20 + " seconds.§r"));
+        pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(this.minCooldown) + " to " + HomeboundUtil.formatTime(this.maxCooldown) + "§r"));
     }
+
 }
