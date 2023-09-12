@@ -20,10 +20,7 @@ import org.slf4j.Logger;
 
 /*
 TODO:
-- Add damage event check to disable using item if player is hurt
-- enchantments for cooldown reduction and use time
 - configs
-- tweak particles and sounds again
 - add JEI compat
 --- initial release ---
 - curios integration

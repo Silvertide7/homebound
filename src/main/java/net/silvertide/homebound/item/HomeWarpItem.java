@@ -70,10 +70,10 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
     @Override
     public void onUseTick(Level pLevel, LivingEntity entity, ItemStack pStack, int pRemainingUseDuration) {
-        if(!entity.level().isClientSide && pRemainingUseDuration%5==0) {
+        if(!entity.level().isClientSide && pRemainingUseDuration%6==0) {
             Player player = (Player) entity;
             ServerLevel serverLevel = (ServerLevel) pLevel;
-            int scalingParticles = (this.useDuration - pRemainingUseDuration)/10;
+            int scalingParticles = (this.useDuration - pRemainingUseDuration)/12;
             ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, scalingParticles);
             HomeboundUtil.playSound(serverLevel, player, SoundEvents.BLAZE_BURN);
         }

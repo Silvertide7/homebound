@@ -10,7 +10,7 @@ public class ParticleUtil {
     public static void spawnParticals(ServerLevel serverLevel, Player player, ParticleOptions particle, int numParticles){
         Level level = player.level();
         for(int i = 0; i < numParticles; i++){
-            serverLevel.sendParticles(particle, player.getX() + level.random.nextDouble(), (double)(player.getY() + 1), (double)player.getZ() + level.random.nextDouble(), 1, 0.0D, 0.0D, 0.0D, 1.0D);
+            serverLevel.sendParticles(particle, player.getX() + level.random.nextDouble() - 0.5, player.getY() + 1.0, player.getZ() + level.random.nextDouble() - 0.5, 1, 0.0D, 0.0D, 0.0D, 1.0D);
         }
     }
 }
