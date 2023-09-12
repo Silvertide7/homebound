@@ -7,11 +7,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.enchantments.ChannelHasteEnchantment;
+import net.silvertide.homebound.enchantments.CooldownReductionEnchantment;
 
 
 public class EnchantmentRegistry {
     public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, Homebound.MOD_ID);
     public static final RegistryObject<Enchantment> CHANNEL_HASTE = ENCHANTMENTS.register("channel_haste", ChannelHasteEnchantment::new);
+    public static final RegistryObject<Enchantment> COOLDOWN_REDUCTION = ENCHANTMENTS.register("cooldown_reduction", CooldownReductionEnchantment::new);
     public static void register(IEventBus eventBus) {
         ENCHANTMENTS.register(eventBus);
     }

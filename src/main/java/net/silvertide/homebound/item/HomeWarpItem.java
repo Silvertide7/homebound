@@ -22,9 +22,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HomeWarpItem extends Item implements ISoulboundItem {
-    protected final int SET_HOME_DURATION = 40;
     protected int useDuration;
-    private int cooldown;
+    protected int cooldown;
     private int maxDistance;
     protected boolean canDimTravel;
     private boolean soulbound;
@@ -140,14 +139,27 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         CapabilityUtil.getHome(player).ifPresent(warpCap -> {
             HomeboundUtil.warp(player, warpCap.getWarpPos());
             if (!player.getAbilities().instabuild) {
-                warpCap.setCooldown(player.level().getGameTime(), getCooldown(player, serverLevel));
+                warpCap.setCooldown(player.level().getGameTime(), getFinalCooldown(player, serverLevel, pStack));
             }
             ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, 30);
         });
     }
 
-    public int getCooldown(Player player, Level level) {
-        return this.cooldown;
+    protected int getFinalCooldown(Player player, ServerLevel level, ItemStack stack) {
+        return getBaseCooldown(stack);
+    }
+
+    protected int getBaseCooldown(ItemStack stack) {
+        return applyCooldownEnchant(this.cooldown, stack);
+    }
+
+    protected int applyCooldownEnchant(int cooldown, ItemStack stack){
+        int cooldownReductionLevel = stack.getEnchantmentLevel(EnchantmentRegistry.COOLDOWN_REDUCTION.get());
+        if (cooldownReductionLevel > 0) {
+            double reducedCooldown = cooldown - 0.05*cooldownReductionLevel*cooldown;
+            return (int) reducedCooldown;
+        }
+        return cooldown;
     }
 
     public String getCooldownMessage(int cooldownRemaining) {
@@ -161,13 +173,12 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     }
     @Override
     public int getUseDuration(ItemStack pStack) {
-        int quickCastLevel = pStack.getEnchantmentLevel(EnchantmentRegistry.CHANNEL_HASTE.get());
-        int duration = this.useDuration;
-        if (quickCastLevel > 0) {
-            double quickCastDuration = (1.0 - pStack.getEnchantmentLevel(EnchantmentRegistry.CHANNEL_HASTE.get()) / 10.0) * this.useDuration;
-            duration = (int) quickCastDuration;
+        int channelHasteLevel = pStack.getEnchantmentLevel(EnchantmentRegistry.CHANNEL_HASTE.get());
+        if (channelHasteLevel > 0) {
+            double quickCastDuration = this.useDuration - 0.1*channelHasteLevel*this.useDuration;
+            return (int) quickCastDuration;
         }
-        return duration;
+        return this.useDuration;
     }
     @Override
     public UseAnim getUseAnimation(ItemStack pStack) {
@@ -188,16 +199,16 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         return false;
     }
 
-    protected void addCooldownHoverText(List<Component> pTooltipComponents) {
-        pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(this.cooldown) + "§r"));
+    protected void addCooldownHoverText(List<Component> pTooltipComponents, ItemStack stack) {
+        pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(this.getBaseCooldown(stack)) + "§r"));
     }
 
     @Override
     public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         if(Screen.hasShiftDown()){
-            pTooltipComponents.add(Component.literal("To set your home crouch and channel the item for §e" + this.SET_HOME_DURATION/20 + "§r seconds."));
-            pTooltipComponents.add(Component.literal("§aCast Time: " + this.useDuration / 20 + " seconds.§r"));
-            addCooldownHoverText(pTooltipComponents);
+            pTooltipComponents.add(Component.literal("To set your home crouch and use the item."));
+            addCooldownHoverText(pTooltipComponents, pStack);
+            pTooltipComponents.add(Component.literal("§aCast Time: " + this.getUseDuration(pStack) / 20.0 + " seconds.§r"));
             if(this.maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax Warp Distance: " + this.maxDistance + " blocks§r"));
             pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (this.canDimTravel ? "Yes" : "No") + "§r"));
             if(this.isSoulbound()) pTooltipComponents.add(Component.literal("§5This item persists death.§r"));
