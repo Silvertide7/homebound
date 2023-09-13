@@ -22,7 +22,7 @@ public class ItemRegistry {
     public static final RegistryObject<Item> DAWN_STONE = ITEMS.register("dawn_stone", () -> new HomeWarpItem(new HomeWarpItem.Properties().cooldown(3000).useDuration(8).canDimTravel(true).enchantability(30).rarity(Rarity.RARE)));
     public static final RegistryObject<Item> SUN_STONE = ITEMS.register("sun_stone", () -> new HomeWarpItem(new HomeWarpItem.Properties().cooldown(2700).useDuration(7).canDimTravel(true).enchantability(35).rarity(Rarity.EPIC).isSoulbound(true)));
     public static final RegistryObject<Item> DUSK_STONE = ITEMS.register("dusk_stone", () -> new VariableCooldownWarpItem(new HomeWarpItem.Properties().useDuration(10).canDimTravel(true).enchantability(30).rarity(Rarity.RARE), 3600, 900,50));
-    public static final RegistryObject<Item> TWILIGHT_STONE = ITEMS.register("twilight_stone", () -> new VariableCooldownWarpItem(new HomeWarpItem.Properties().useDuration(10).canDimTravel(true).enchantability(35).rarity(Rarity.EPIC).isSoulbound(true), 3600, 900,50));
+    public static final RegistryObject<Item> TWILIGHT_STONE = ITEMS.register("twilight_stone", () -> new VariableCooldownWarpItem(new HomeWarpItem.Properties().useDuration(10).canDimTravel(true).enchantability(35).rarity(Rarity.EPIC).isSoulbound(true), 3600, 810,60));
 
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);
