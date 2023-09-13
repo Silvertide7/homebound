@@ -18,17 +18,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
-/*
-TODO:
-- configs
-- add JEI compat
---- initial release ---
-- curios integration
-- keybind to use item
-- add player attributes for cooldown reduction, use time
-- Create a gem with a 24 hour cooldown that resurrects the player at their home when dying. 30 levels to recharge it.
-- Create a gem that leaves a portal for other players to go through with you
- */
 @Mod(Homebound.MOD_ID)
 public class Homebound
 {

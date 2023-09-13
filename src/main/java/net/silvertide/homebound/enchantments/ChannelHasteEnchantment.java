@@ -14,11 +14,11 @@ public class ChannelHasteEnchantment extends Enchantment {
      * Returns the minimal value of enchantability needed on the enchantment level passed.
      */
     public int getMinCost(int pEnchantmentLevel) {
-        return 15 + (pEnchantmentLevel - 1) * 9;
+        return 5 + (pEnchantmentLevel - 1) * 3;
     }
 
     public int getMaxCost(int pEnchantmentLevel) {
-        return super.getMinCost(pEnchantmentLevel) + 50;
+        return super.getMinCost(pEnchantmentLevel) + 30;
     }
 
     /**

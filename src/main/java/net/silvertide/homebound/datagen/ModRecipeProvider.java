@@ -83,7 +83,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_haven_stone", inventoryTrigger(ItemPredicate.Builder.item().of(ItemRegistry.HAVEN_STONE.get()).build()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ItemRegistry.SUN_STONE.get(), 9)
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ItemRegistry.SUN_STONE.get())
                 .requires(ItemRegistry.DAWN_STONE.get())
                 .requires(Ingredient.of(Items.NETHER_STAR))
                 .unlockedBy("has_dawn_stone", inventoryTrigger(ItemPredicate.Builder.item()
@@ -99,7 +99,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_haven_stone", inventoryTrigger(ItemPredicate.Builder.item().of(ItemRegistry.HAVEN_STONE.get()).build()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ItemRegistry.TWILIGHT_STONE.get(), 9)
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ItemRegistry.TWILIGHT_STONE.get())
                 .requires(ItemRegistry.DUSK_STONE.get())
                 .requires(Ingredient.of(Items.NETHER_STAR))
                 .unlockedBy("has_dusk_stone", inventoryTrigger(ItemPredicate.Builder.item()

@@ -28,6 +28,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     protected boolean canDimTravel;
     private boolean soulbound;
     private boolean isEnchantable;
+    private int enchantability;
 
 
     public HomeWarpItem(Properties properties) {
@@ -38,6 +39,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         this.cooldown = properties.cooldown;
         this.soulbound = properties.soulbound;
         this.isEnchantable = properties.isEnchantable;
+        this.enchantability = properties.enchantability;
     }
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand pUsedHand) {
@@ -193,7 +195,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
     @Override
     public int getEnchantmentValue(ItemStack stack) {
-        return this.isEnchantable? 1 : 0;
+        return this.isEnchantable ? this.enchantability : 0;
     }
 
     @Override
@@ -234,6 +236,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         Rarity rarity = Rarity.COMMON;
         boolean soulbound = false;
         boolean isEnchantable = true;
+        int enchantability = 15;
 
         public Properties cooldown(int cooldown) {
             this.cooldown = cooldown;
@@ -261,6 +264,11 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         }
         public Properties isEnchantable(boolean isEnchantable) {
             this.isEnchantable = isEnchantable;
+            return this;
+        }
+
+        public Properties enchantability(int enchantability) {
+            this.enchantability = enchantability;
             return this;
         }
     }
