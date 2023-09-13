@@ -13,7 +13,7 @@ public class TabRegistry {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Homebound.MOD_ID);
 
     public static final RegistryObject<CreativeModeTab> COURSE_TAB = CREATIVE_MODE_TABS.register("homebound_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ItemRegistry.HOMEWARD_SHARD.get()))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ItemRegistry.HAVEN_STONE.get()))
                     .title(Component.translatable("creativetab.homebound_tab"))
                     .displayItems((displayParameters, output) -> {
                         // Items
