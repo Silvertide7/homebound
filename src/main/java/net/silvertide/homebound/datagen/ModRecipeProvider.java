@@ -68,9 +68,9 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('H', ItemRegistry.HOMEWARD_STONE.get())
                 .define('B', Ingredient.of(Items.NETHER_BRICK))
                 .define('N', Ingredient.of(Items.NETHERITE_INGOT))
-                .pattern("BNB")
+                .pattern("BBB")
                 .pattern("NHN")
-                .pattern("BNB")
+                .pattern("BBB")
                 .unlockedBy("has_homeward_stone", inventoryTrigger(ItemPredicate.Builder.item().of(ItemRegistry.HOMEWARD_STONE.get()).build()))
                 .save(pWriter);
 

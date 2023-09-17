@@ -1,4 +1,4 @@
-// 1.20.1	2023-09-10T23:53:31.182765	Recipes
+// 1.20.1	2023-09-17T10:42:03.238469	Recipes
 a01a2bbbe3affe032df88e551c73e0347c3603a9 data/homebound/advancements/recipes/misc/dawn_stone.json
 feb1b4661b5851fea79cdfa67e61bab79e315d7a data/homebound/advancements/recipes/misc/dusk_stone.json
 ab4054297b44f25415d39ec8e81417096ace1af6 data/homebound/advancements/recipes/misc/haven_stone.json
@@ -11,11 +11,11 @@ c8818fa2912e84e4801a904b8104f6057905ed9f data/homebound/advancements/recipes/mis
 76da1794e404b63e6fac3ace281d2e75e3290035 data/homebound/advancements/recipes/misc/twilight_stone.json
 ce4452a80e6c718a94c7b2dbd3a77f923e2c1e11 data/homebound/recipes/dawn_stone.json
 9af3c714c88eb39126c6b0d502b5498e78448284 data/homebound/recipes/dusk_stone.json
-71530ccdd8c802fbd1084e24d18caf9bbb6e1c8f data/homebound/recipes/haven_stone.json
+9d45ed59707ef1390a788affcb6b39a3b07fb778 data/homebound/recipes/haven_stone.json
 8f7ed3629f442fa04c8a4fc983ecb715fe329307 data/homebound/recipes/hearthwood.json
 9dc87f22e6ac8b39701e23ef9cfbb5e98ad9e496 data/homebound/recipes/homeward_bone.json
 173eea8e764ff76a3906704f856a80d6eed63465 data/homebound/recipes/homeward_gem.json
 3e83a9ebc0794eeb5acdc32a8c9161ae55790126 data/homebound/recipes/homeward_shard.json
 474ba16be2d4d78916202f7745d07babafac4057 data/homebound/recipes/homeward_stone.json
-27b2daadd93550a7989c0a1b3569c346b7c90037 data/homebound/recipes/sun_stone.json
-18a4df9a1518c8b6043cdde06e519ff01ec6f840 data/homebound/recipes/twilight_stone.json
+82fd6d25ee054392f925cfd7de5cddcb90af5f98 data/homebound/recipes/sun_stone.json
+6f6ae530d09fbc7be397da5f943a9bb1f7c650ae data/homebound/recipes/twilight_stone.json

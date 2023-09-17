@@ -13,9 +13,9 @@
     }
   },
   "pattern": [
-    "BNB",
+    "BBB",
     "NHN",
-    "BNB"
+    "BBB"
   ],
   "result": {
     "item": "homebound:haven_stone"
