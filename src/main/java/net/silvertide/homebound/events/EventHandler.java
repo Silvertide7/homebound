@@ -6,6 +6,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -41,17 +43,17 @@ public class EventHandler {
     public static void onLivingDrops(LivingDropsEvent event) {
         if (event.isCanceled())
             return;
-        if (event.getEntity() instanceof Player player) {
+        if (event.getEntity() instanceof Player player
+                && !player.isAlive()
+                && !(player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) || player.isSpectator())) {
             Iterator<ItemEntity> iterator = event.getDrops().iterator();
             while (iterator.hasNext()) {
                 ItemEntity drop = iterator.next();
                 ItemStack stack = drop.getItem();
                 Item item = stack.getItem();
 
-                if(item instanceof ISoulboundItem soulboundItem){
-                    if(soulboundItem.isSoulbound()) {
-                        player.getInventory().placeItemBackInInventory(stack);
-                    }
+                if(item instanceof ISoulboundItem soulboundItem && soulboundItem.isSoulbound()){
+                    player.getInventory().placeItemBackInInventory(stack);
                 }
             }
         }
@@ -78,13 +80,18 @@ public class EventHandler {
         Player oldPlayer = event.getOriginal();
         oldPlayer.revive();
         Player newPlayer = event.getEntity();
+        boolean keepInventoryOn = newPlayer.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
 
-        oldPlayer.getInventory().items.forEach(stack -> {
-            if(!stack.isEmpty()) {
-                newPlayer.getInventory().add(stack);
+        if(!(keepInventoryOn || newPlayer.isSpectator())) {
+            for(int i = 0; i <=oldPlayer.getInventory().getContainerSize(); i++){
+                ItemStack stack = oldPlayer.getInventory().getItem(i);
+                if(!stack.isEmpty() && stack.getItem() instanceof ISoulboundItem soulboundItem && soulboundItem.isSoulbound()) {
+                    newPlayer.getInventory().add(i, stack);
+                }
             }
-        });
+        }
 
+        // Add Home Capability to new Player.
         CapabilityUtil.getHome(oldPlayer).ifPresent(oldHome -> CapabilityUtil.getHome(event.getEntity()).ifPresent(newHome -> {
             newHome.setWarpPos(oldHome.getWarpPos());
             newHome.setCooldown(oldHome.getLastWarpTimestamp(), oldHome.getCooldown());
