@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -21,6 +22,7 @@ import net.silvertide.homebound.capabilities.WarpPos;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Random;
 
 public final class HomeboundUtil {
@@ -85,17 +87,37 @@ public final class HomeboundUtil {
                 originalLevel instanceof ServerLevel s ? s : null :
                 ServerLifecycleHooks.getCurrentServer().getLevel(ResourceKey.create(Registries.DIMENSION, destinationDim));
         if(destLevel==null){
-            Homebound.LOGGER.error("World {} doesn't exists.", destinationDim);
+            Homebound.LOGGER.error("World {} doesn't exist.", destinationDim);
             return;
         }
 
-        if(entity instanceof ServerPlayer player){
+        if(entity instanceof ServerPlayer player) {
             destLevel.getChunkSource().addRegionTicket(TicketType.POST_TELEPORT, new ChunkPos(destinationPos), 1, entity.getId());
+
+            // Check if the player is riding a horse like (includes camels mules etc) that they own.
+            AbstractHorse riddenEntityToTeleport = null;
+            if(player.isPassenger()) {
+                Entity vehicle = player.getVehicle();
+                if(vehicle instanceof AbstractHorse horseLike) {
+                    boolean hasOwner = horseLike.getOwnerUUID() != null;
+                    boolean riddenByOwner = horseLike.getOwnerUUID().toString().equals(player.getUUID().toString());
+                    if(hasOwner && riddenByOwner){
+                        riddenEntityToTeleport = horseLike;
+                    }
+                }
+            }
             player.stopRiding();
+
             if(player.isSleeping()) player.stopSleeping();
-            if(inSameDimension) player.connection.teleport(destX, destY, destZ, player.getYRot(), player.getXRot(), Collections.emptySet());
-            else player.teleportTo(destLevel, destX, destY, destZ, player.getYRot(), player.getXRot());
-        }else{
+            if(inSameDimension){
+                player.connection.teleport(destX, destY, destZ, player.getYRot(), player.getXRot(), Collections.emptySet());
+                if(riddenEntityToTeleport != null) riddenEntityToTeleport.moveTo(destX, destY, destZ, riddenEntityToTeleport.getYRot(), riddenEntityToTeleport.getXRot());
+            }
+            else{
+                player.teleportTo(destLevel, destX, destY, destZ, player.getYRot(), player.getXRot());
+                if(riddenEntityToTeleport != null) riddenEntityToTeleport.teleportTo(destLevel, destX, destY, destZ, new HashSet<>(), riddenEntityToTeleport.getYRot(), riddenEntityToTeleport.getXRot());
+            }
+        } else{
             entity.unRide();
             if(inSameDimension) entity.moveTo(destX, destY, destZ, entity.getYRot(), entity.getXRot());
             else{
