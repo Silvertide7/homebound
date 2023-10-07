@@ -75,23 +75,21 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
     @Override
     public void onUseTick(Level pLevel, LivingEntity entity, ItemStack pStack, int pRemainingUseDuration) {
-        if(!entity.level().isClientSide && pRemainingUseDuration%6==0) {
+        int durationHeld = this.getUseDuration(pStack) - pRemainingUseDuration;
+        if(!pLevel.isClientSide()) {
             Player player = (Player) entity;
             ServerLevel serverLevel = (ServerLevel) pLevel;
-            int scalingParticles = (this.useDuration - pRemainingUseDuration)/12;
-            ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, scalingParticles);
-            HomeboundUtil.playSound(serverLevel, player, SoundEvents.BLAZE_BURN);
+            int activationDuration = this.getActivationDuration(pStack);
+            if (durationHeld < activationDuration) {
+                if(pRemainingUseDuration%6==0) {
+                    int scalingParticles = (durationHeld)/12;
+                    ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, scalingParticles);
+                    HomeboundUtil.playSound(serverLevel, player, SoundEvents.BLAZE_BURN);
+                }
+            } else if(durationHeld == activationDuration) {
+                warpHome(player, serverLevel, pStack);
+            }
         }
-    }
-    public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving) {
-        Player player = pEntityLiving instanceof Player ? (Player)pEntityLiving : null;
-        boolean clientSide = pLevel.isClientSide;
-
-        if (player != null && !clientSide) {
-            ServerLevel serverLevel = (ServerLevel) pLevel;
-            warpHome(player, serverLevel, pStack);
-        }
-        return pStack;
     }
 
     private boolean isHomeSet(Player player, IWarpCap playerWarpCap) {
@@ -176,14 +174,18 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     public String getDistanceMessage(int distance) {
         return "§cToo far from home. [" + distance + " / " + this.maxDistance + "]§r";
     }
-    @Override
-    public int getUseDuration(ItemStack pStack) {
-        int channelHasteLevel = pStack.getEnchantmentLevel(EnchantmentRegistry.CHANNEL_HASTE.get());
+
+    public int getActivationDuration(ItemStack stack) {
+        int channelHasteLevel = stack.getEnchantmentLevel(EnchantmentRegistry.CHANNEL_HASTE.get());
         if (channelHasteLevel > 0) {
             double quickCastDuration = this.useDuration - 0.1*channelHasteLevel*this.useDuration;
             return (int) quickCastDuration;
         }
         return this.useDuration;
+    }
+    @Override
+    public int getUseDuration(ItemStack pStack) {
+        return 72000;
     }
     @Override
     public UseAnim getUseAnimation(ItemStack pStack) {
@@ -211,15 +213,14 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     @Override
     public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         if(Screen.hasShiftDown()){
-            pTooltipComponents.add(Component.literal("To set your home crouch and use the item."));
+            pTooltipComponents.add(Component.literal("Crouch and use the item on a block to set your home."));
             addCooldownHoverText(pTooltipComponents, pStack);
-            pTooltipComponents.add(Component.literal("§aCast Time: " + this.getUseDuration(pStack) / 20.0 + " seconds.§r"));
+            pTooltipComponents.add(Component.literal("§aCast Time: " + this.getActivationDuration(pStack) / 20.0 + " seconds.§r"));
             if(this.maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax Warp Distance: " + this.maxDistance + " blocks§r"));
             pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (this.canDimTravel ? "Yes" : "No") + "§r"));
             if(this.isSoulbound()) pTooltipComponents.add(Component.literal("§5This item persists death.§r"));
         } else {
-            pTooltipComponents.add(Component.literal("Find your way home."));
-            pTooltipComponents.add(Component.literal("Press §eSHIFT§r for more information"));
+            pTooltipComponents.add(Component.literal("Find your way home. Press §eSHIFT§r for more info."));
         }
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
     }
