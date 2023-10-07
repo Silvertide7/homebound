@@ -1,22 +1,27 @@
 package net.silvertide.homebound.item;
 
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.registry.EnchantmentRegistry;
 import net.silvertide.homebound.util.CapabilityUtil;
 import net.silvertide.homebound.util.HomeboundUtil;
 import net.silvertide.homebound.util.ParticleUtil;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,29 +50,31 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand pUsedHand) {
         ItemStack itemstack = player.getItemInHand(pUsedHand);
         if (!level.isClientSide()) {
-            // If crouching then set home
-            if (player.isCrouching()) {
-                ServerLevel serverLevel = (ServerLevel) level;
-                setHome(player, serverLevel);
+            AtomicBoolean canWarp = new AtomicBoolean(false);
+            CapabilityUtil.getHome(player).ifPresent(playerWarpCap -> {
+                canWarp.set(isHomeSet(player, playerWarpCap) &&
+                        (player.getAbilities().instabuild ||
+                                (hasNoCooldown(player, playerWarpCap)
+                                        && checkDimensionalTravel(player, level, playerWarpCap)
+                                        && withinMaxDistance(player, level, playerWarpCap))));
+            });
+            if (canWarp.get()) {
+                player.startUsingItem(pUsedHand);
                 return InteractionResultHolder.success(itemstack);
-            }
-            // If not crouching then attempt to start warping.
-            else {
-                AtomicBoolean canWarp = new AtomicBoolean(false);
-                CapabilityUtil.getHome(player).ifPresent(playerWarpCap -> {
-                    canWarp.set(isHomeSet(player, playerWarpCap) &&
-                            (player.getAbilities().instabuild ||
-                                    (hasNoCooldown(player, playerWarpCap)
-                                            && checkDimensionalTravel(player, level, playerWarpCap)
-                                            && withinMaxDistance(player, level, playerWarpCap))));
-                });
-                if (canWarp.get()) {
-                    player.startUsingItem(pUsedHand);
-                    return InteractionResultHolder.success(itemstack);
-                }
             }
         }
         return InteractionResultHolder.fail(itemstack);
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext pContext) {
+        Level level = pContext.getLevel();
+        Player player = pContext.getPlayer();
+        if(player != null && !level.isClientSide() && player.isCrouching()){
+            setHome(player, (ServerLevel) level);
+            return InteractionResult.SUCCESS;
+        }
+        return InteractionResult.FAIL;
     }
 
     @Override
