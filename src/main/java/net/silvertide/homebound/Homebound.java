@@ -2,7 +2,10 @@ package net.silvertide.homebound;
 
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
 import net.silvertide.homebound.commands.CmdRoot;
+import net.silvertide.homebound.config.Config;
 import net.silvertide.homebound.registry.EnchantmentRegistry;
 import net.silvertide.homebound.registry.TabRegistry;
 import net.silvertide.homebound.registry.ItemRegistry;
@@ -22,9 +25,13 @@ public class Homebound
     public Homebound()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+//        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
+
         TabRegistry.register(modEventBus);
         ItemRegistry.register(modEventBus);
         EnchantmentRegistry.register(modEventBus);
+
         MinecraftForge.EVENT_BUS.register(this);
     }
 
