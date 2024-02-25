@@ -49,15 +49,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand pUsedHand) {
         ItemStack itemstack = player.getItemInHand(pUsedHand);
         if (!level.isClientSide()) {
-            AtomicBoolean canWarp = new AtomicBoolean(false);
-            CapabilityUtil.getHome(player).ifPresent(playerWarpCap -> {
-                canWarp.set(isHomeSet(player, playerWarpCap) &&
-                        (player.getAbilities().instabuild ||
-                                (hasNoCooldown(player, playerWarpCap)
-                                        && checkDimensionalTravel(player, level, playerWarpCap)
-                                        && withinMaxDistance(player, level, playerWarpCap))));
-            });
-            if (canWarp.get()) {
+            if (canPlayerWarp(player, level)) {
                 player.startUsingItem(pUsedHand);
                 return InteractionResultHolder.success(itemstack);
             }
@@ -69,13 +61,15 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     public InteractionResult useOn(UseOnContext pContext) {
         Level level = pContext.getLevel();
         Player player = pContext.getPlayer();
-        if(player != null && !level.isClientSide()){
+        if(player != null && !level.isClientSide()) {
             if(player.isCrouching()) {
                 setHome(player, (ServerLevel) level);
                 return InteractionResult.SUCCESS;
             } else {
-                player.startUsingItem(pContext.getHand());
-                return InteractionResult.SUCCESS;
+                if(canPlayerWarp(player, level)) {
+                    player.startUsingItem(pContext.getHand());
+                    return InteractionResult.SUCCESS;
+                }
             }
         }
         return InteractionResult.FAIL;
@@ -106,6 +100,18 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
             return false;
         }
         return true;
+    }
+
+    public boolean canPlayerWarp(Player player, Level level) {
+        AtomicBoolean canWarp = new AtomicBoolean(false);
+        CapabilityUtil.getHome(player).ifPresent(playerWarpCap -> {
+            canWarp.set(isHomeSet(player, playerWarpCap) &&
+                    (player.getAbilities().instabuild ||
+                            (hasNoCooldown(player, playerWarpCap)
+                                    && checkDimensionalTravel(player, level, playerWarpCap)
+                                    && withinMaxDistance(player, level, playerWarpCap))));
+        });
+        return canWarp.get();
     }
 
     private boolean hasNoCooldown(Player player, IWarpCap playerWarpCap) {
