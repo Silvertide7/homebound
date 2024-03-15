@@ -9,7 +9,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.silvertide.homebound.util.CapabilityUtil;
 import net.silvertide.homebound.util.HomeboundUtil;
 
 public class CmdNodeInfo {
@@ -22,7 +21,7 @@ public class CmdNodeInfo {
     public static int getPlayerInfo(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         long gameTime = ctx.getSource().getLevel().getGameTime();
         ServerPlayer player = ctx.getSource().getPlayer();
-        CapabilityUtil.getHome(player).ifPresent(warpCap -> {
+        HomeboundUtil.getHome(player).ifPresent(warpCap -> {
             String warpPosString = "Home: §cNot set§r.";
             if(warpCap.getWarpPos() != null) {
                 warpPosString = "Home: " + warpCap.getWarpPos().toString();

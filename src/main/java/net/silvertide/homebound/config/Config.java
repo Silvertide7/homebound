@@ -47,14 +47,14 @@ public class Config {
     public static final ForgeConfigSpec.ConfigValue<Integer> DUSK_STONE_USE_TIME;
     public static final ForgeConfigSpec.ConfigValue<Integer> DUSK_STONE_MAX_DISTANCE;
     public static final ForgeConfigSpec.ConfigValue<Boolean> DUSK_STONE_DIMENSIONAL_TRAVEL;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DUSK_STONE_BLOCKS_PER_PERCENT_ADDED;
+    public static final ForgeConfigSpec.ConfigValue<Integer> DUSK_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT;
     public static final ForgeConfigSpec.ConfigValue<Double> DUSK_STONE_MAX_DISTANCE_REDUCTION;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_COOLDOWN;
     public static final ForgeConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_USE_TIME;
     public static final ForgeConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_MAX_DISTANCE;
     public static final ForgeConfigSpec.ConfigValue<Boolean> TWILIGHT_STONE_DIMENSIONAL_TRAVEL;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_BLOCKS_PER_PERCENT_ADDED;
+    public static final ForgeConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT;
     public static final ForgeConfigSpec.ConfigValue<Double> TWILIGHT_STONE_MAX_DISTANCE_REDUCTION;
 
     static {
@@ -70,6 +70,9 @@ public class Config {
         BUILDER.comment("All use times are in seconds. This is the length of time it takes to activate the stone.");
         BUILDER.comment("All max distances are in blocks. 16 blocks per chunk, so 160 blocks is 10 chunks. Having a value of 0 means no max distance.");
         BUILDER.comment("Dimensional travel determines if the item can teleport you home from another dimension or not.");
+        BUILDER.comment("Blocks per bonus reduced means the number of blocks it takes to reduce the cooldown reduction effect by 1%. If this is set to 50 and the maximum distance reduction multiplier is 0.4 (or 40% cooldown reduction) and you are 51 blocks away from home, the cooldown reduction effect is now 0.39 (39%).");
+        BUILDER.comment("If this is set to 50 and the maximum distance reduction multiplier is 0.4 (or 40% cooldown reduction) and you are 51 blocks away from home, the cooldown reduction effect is now 0.39 (39%).");
+        BUILDER.comment("This will reduce by 1% for every 50 blocks away from home until the bonus is no longer applied at 0%. In the example above that would be 2000 blocks.");
 
         BUILDER.comment("--- Homeward Bone ---");
         HOMEWARD_BONE_COOLDOWN = BUILDER.define("Homeward Bone Cooldown", 120);
@@ -118,16 +121,16 @@ public class Config {
         DUSK_STONE_USE_TIME = BUILDER.define("Dusk Stone Use Time", 10);
         DUSK_STONE_MAX_DISTANCE = BUILDER.define("Dusk Stone Max Distance", 0);
         DUSK_STONE_DIMENSIONAL_TRAVEL = BUILDER.define("Dusk Stone Dimensional travel allowed", true);
-        DUSK_STONE_BLOCKS_PER_PERCENT_ADDED = BUILDER.define("Dusk Stone Blocks Per Percent Added", 50);
-        DUSK_STONE_MAX_DISTANCE_REDUCTION = BUILDER.define("Dusk Stone Maximum Distance Reduction Multiplier", 0.4);
+        DUSK_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT = BUILDER.define("Dusk Stone Blocks Per Percent Reduced", 40);
+        DUSK_STONE_MAX_DISTANCE_REDUCTION = BUILDER.define("Dusk Stone Maximum Distance Reduction Multiplier", 0.6);
 
         BUILDER.comment("--- Twilight Stone ---");
         TWILIGHT_STONE_COOLDOWN = BUILDER.define("Twilight Stone Cooldown", 60);
         TWILIGHT_STONE_USE_TIME = BUILDER.define("Twilight Stone Use Time", 10);
         TWILIGHT_STONE_MAX_DISTANCE = BUILDER.define("Twilight Stone Max Distance", 0);
         TWILIGHT_STONE_DIMENSIONAL_TRAVEL = BUILDER.define("Twilight Stone Dimensional travel allowed", true);
-        TWILIGHT_STONE_BLOCKS_PER_PERCENT_ADDED = BUILDER.define("Twilight Stone Blocks Per Percent Added", 50);
-        TWILIGHT_STONE_MAX_DISTANCE_REDUCTION = BUILDER.define("Twilight Stone Maximum Distance Reduction Multiplier", 0.6);
+        TWILIGHT_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT = BUILDER.define("Twilight Stone Blocks Per Percent Reduced", 40);
+        TWILIGHT_STONE_MAX_DISTANCE_REDUCTION = BUILDER.define("Twilight Stone Maximum Distance Reduction Multiplier", 0.7);
 
         BUILDER.pop();
 

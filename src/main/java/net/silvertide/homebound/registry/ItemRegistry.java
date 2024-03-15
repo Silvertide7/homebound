@@ -10,7 +10,6 @@ import net.minecraftforge.registries.RegistryObject;
 import net.silvertide.homebound.item.ConsumedWarpItem;
 import net.silvertide.homebound.item.HomeWarpItem;
 import net.silvertide.homebound.item.HomewardItemId;
-import net.silvertide.homebound.item.VariableCooldownWarpItem;
 
 public class ItemRegistry {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Homebound.MOD_ID);
@@ -22,8 +21,8 @@ public class ItemRegistry {
     public static final RegistryObject<Item> HAVEN_STONE = ITEMS.register("haven_stone", () -> new HomeWarpItem(HomewardItemId.HAVEN_STONE, new HomeWarpItem.Properties().enchantability(25).rarity(Rarity.RARE)));
     public static final RegistryObject<Item> DAWN_STONE = ITEMS.register("dawn_stone", () -> new HomeWarpItem(HomewardItemId.DAWN_STONE, new HomeWarpItem.Properties().enchantability(30).rarity(Rarity.RARE)));
     public static final RegistryObject<Item> SUN_STONE = ITEMS.register("sun_stone", () -> new HomeWarpItem(HomewardItemId.SUN_STONE, new HomeWarpItem.Properties().enchantability(35).rarity(Rarity.EPIC).isSoulbound(true)));
-    public static final RegistryObject<Item> DUSK_STONE = ITEMS.register("dusk_stone", () -> new VariableCooldownWarpItem(HomewardItemId.DUSK_STONE, new HomeWarpItem.Properties().enchantability(30).rarity(Rarity.RARE), 3600, 900,50));
-    public static final RegistryObject<Item> TWILIGHT_STONE = ITEMS.register("twilight_stone", () -> new VariableCooldownWarpItem(HomewardItemId.TWILIGHT_STONE, new HomeWarpItem.Properties().enchantability(35).rarity(Rarity.EPIC).isSoulbound(true), 3600, 810,60));
+    public static final RegistryObject<Item> DUSK_STONE = ITEMS.register("dusk_stone", () -> new HomeWarpItem(HomewardItemId.DUSK_STONE, new HomeWarpItem.Properties().enchantability(30).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> TWILIGHT_STONE = ITEMS.register("twilight_stone", () -> new HomeWarpItem(HomewardItemId.TWILIGHT_STONE, new HomeWarpItem.Properties().enchantability(35).rarity(Rarity.EPIC).isSoulbound(true)));
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);
     }

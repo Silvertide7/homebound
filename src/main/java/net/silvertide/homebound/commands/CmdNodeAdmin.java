@@ -9,7 +9,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import net.silvertide.homebound.util.CapabilityUtil;
+import net.silvertide.homebound.util.HomeboundUtil;
 
 public class CmdNodeAdmin {
     private static final String TARGET_ARG = "Target";
@@ -27,7 +27,7 @@ public class CmdNodeAdmin {
     }
     public static int adminClearCooldown(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         for (ServerPlayer player : EntityArgument.getPlayers(ctx, TARGET_ARG)) {
-            CapabilityUtil.getHome(player).ifPresent(warpCap -> {
+            HomeboundUtil.getHome(player).ifPresent(warpCap -> {
                 warpCap.setCooldown(0,0);
             });
         }
@@ -36,7 +36,7 @@ public class CmdNodeAdmin {
 
     public static int adminClearHome(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         for (ServerPlayer player : EntityArgument.getPlayers(ctx, TARGET_ARG)) {
-            CapabilityUtil.getHome(player).ifPresent(warpCap -> {
+            HomeboundUtil.getHome(player).ifPresent(warpCap -> {
                 if(warpCap.getWarpPos() != null) warpCap.clearHome();
             });
         }
