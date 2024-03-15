@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ConsumedWarpItem extends HomeWarpItem{
-    public ConsumedWarpItem(Properties properties) {
-        super(properties);
+    public ConsumedWarpItem(HomewardItemId id, Properties properties) {
+        super(id, properties);
     }
     @Override
     protected void warpHome(Player player, ServerLevel serverLevel, ItemStack pStack) {

@@ -1,7 +1,6 @@
 package net.silvertide.homebound.item;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -14,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.config.Config;
@@ -26,20 +24,14 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HomeWarpItem extends Item implements ISoulboundItem {
-    protected int useDuration;
-    protected int cooldown;
-    private int maxDistance;
-    protected boolean canDimTravel;
+    protected HomewardItemId id;
     private boolean soulbound;
     private boolean isEnchantable;
     private int enchantability;
 
-    public HomeWarpItem(Properties properties) {
+    public HomeWarpItem(HomewardItemId id, Properties properties) {
         super(new Item.Properties().stacksTo(1).rarity(properties.rarity));
-        this.useDuration = properties.useDuration;
-        this.maxDistance = properties.maxDistance;
-        this.canDimTravel = properties.canDimTravel;
-        this.cooldown = properties.cooldown;
+        this.id = id;
         this.soulbound = properties.soulbound;
         this.isEnchantable = properties.isEnchantable;
         this.enchantability = properties.enchantability;
@@ -77,11 +69,12 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
     @Override
     public void onUseTick(Level pLevel, LivingEntity entity, ItemStack pStack, int pRemainingUseDuration) {
-        int durationHeld = this.getUseDuration(pStack) - pRemainingUseDuration;
         if(!pLevel.isClientSide()) {
             Player player = (Player) entity;
             ServerLevel serverLevel = (ServerLevel) pLevel;
+            
             int activationDuration = this.getActivationDuration(pStack);
+            int durationHeld = this.getUseDuration(pStack) - pRemainingUseDuration;
             if (durationHeld < activationDuration) {
                 if(pRemainingUseDuration%6==0) {
                     int scalingParticles = (durationHeld)/12;
@@ -108,7 +101,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
             canWarp.set(isHomeSet(player, playerWarpCap) &&
                     (player.getAbilities().instabuild ||
                             (hasNoCooldown(player, playerWarpCap)
-                                    && checkDimensionalTravel(player, level, playerWarpCap)
+                                    && inValidDimension(player, level, playerWarpCap)
                                     && withinMaxDistance(player, level, playerWarpCap))));
         });
         return canWarp.get();
@@ -124,8 +117,8 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         return true;
     }
 
-    private boolean checkDimensionalTravel(Player player, Level level, IWarpCap playerWarpCap) {
-        if (!this.canDimTravel && !playerWarpCap.getWarpPos().isSameDimension(level.dimension().location())) {
+    private boolean inValidDimension(Player player, Level level, IWarpCap playerWarpCap) {
+        if (!canDimTravel() && !playerWarpCap.getWarpPos().isSameDimension(level.dimension().location())) {
             player.sendSystemMessage(Component.literal(getDimensionMessage()));
             return false;
         }
@@ -133,10 +126,11 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     }
 
     private boolean withinMaxDistance(Player player, Level level, IWarpCap playerWarpCap) {
+        int maxDistance = getMaxDistance();
         if (maxDistance > 0) {
             int distanceFromWarp = playerWarpCap.getWarpPos().calculateDistance(new WarpPos(player.getOnPos(), level.dimension().location()));
             if (distanceFromWarp > maxDistance) {
-                player.sendSystemMessage(Component.literal(getDistanceMessage(distanceFromWarp)));
+                player.sendSystemMessage(Component.literal(getDistanceMessage(maxDistance, distanceFromWarp)));
                 return false;
             }
         }
@@ -156,26 +150,44 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         CapabilityUtil.getHome(player).ifPresent(warpCap -> {
             HomeboundUtil.warp(player, warpCap.getWarpPos());
             if (!player.getAbilities().instabuild) {
-                warpCap.setCooldown(player.level().getGameTime(), getFinalCooldown(player, serverLevel, pStack));
+                warpCap.setCooldown(player.level().getGameTime(), getCooldown(pStack, player, serverLevel));
             }
             ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, 30);
         });
     }
 
-    protected int getFinalCooldown(Player player, ServerLevel level, ItemStack stack) {
-        return getBaseCooldown(stack);
+    public int getCooldown(ItemStack stack, Player player, ServerLevel level) {
+        int baseCooldown = getBaseCooldown();
+        return applyDistanceCooldownModifier(player, level, applyEnchantCooldownModifier(baseCooldown, stack));
     }
 
-    protected int getBaseCooldown(ItemStack stack) {
-        return applyCooldownEnchant(this.cooldown, stack);
+    protected int getBaseCooldown() {
+        int cooldown = switch(this.id) {
+            case HOMEWARD_BONE -> Config.HOMEWARD_BONE_COOLDOWN.get();
+            case HEARTHWOOD -> Config.HEARTHWOOD_COOLDOWN.get();
+            case HOMEWARD_GEM -> Config.HOMEWARD_GEM_COOLDOWN.get();
+            case HOMEWARD_STONE -> Config.HOMEWARD_STONE_COOLDOWN.get();
+            case HAVEN_STONE -> Config.HAVEN_STONE_COOLDOWN.get();
+            case DAWN_STONE -> Config.DAWN_STONE_COOLDOWN.get();
+            case SUN_STONE -> Config.SUN_STONE_COOLDOWN.get();
+            case DUSK_STONE -> Config.DUSK_STONE_COOLDOWN.get();
+            case TWILIGHT_STONE -> Config.TWILIGHT_STONE_COOLDOWN.get();
+            default -> 60;
+        };
+
+        return cooldown*60;
     }
 
-    protected int applyCooldownEnchant(int cooldown, ItemStack stack){
+    protected int applyEnchantCooldownModifier(int cooldown, ItemStack stack){
         int cooldownReductionLevel = stack.getEnchantmentLevel(EnchantmentRegistry.COOLDOWN_REDUCTION.get());
         if (cooldownReductionLevel > 0) {
-            double reducedCooldown = cooldown - 0.05*cooldownReductionLevel*cooldown;
+            double reducedCooldown = (1 - 0.05*cooldownReductionLevel)*cooldown;
             return (int) reducedCooldown;
         }
+        return cooldown;
+    }
+
+    protected int applyDistanceCooldownModifier(Player player, ServerLevel level, int cooldown){
         return cooldown;
     }
 
@@ -185,17 +197,39 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     private String getDimensionMessage() {
         return "§cCan't warp between dimensions.§r";
     }
-    public String getDistanceMessage(int distance) {
-        return "§cToo far from home. [" + distance + " / " + this.maxDistance + "]§r";
+    public String getDistanceMessage(int maxDistance, int distance) {
+        return "§cToo far from home. [" + distance + " / " + maxDistance + "]§r";
     }
 
-    public int getActivationDuration(ItemStack stack) {
+    protected int getActivationDuration(ItemStack stack) {
+        int useDuration = getBaseUseDuration();
+        return applyEnchantHasteModifier(useDuration, stack);
+    }
+
+    protected int getBaseUseDuration() {
+        int useDuration = switch(this.id) {
+            case HOMEWARD_BONE -> Config.HOMEWARD_BONE_USE_TIME.get();
+            case HEARTHWOOD -> Config.HEARTHWOOD_USE_TIME.get();
+            case HOMEWARD_GEM -> Config.HOMEWARD_GEM_USE_TIME.get();
+            case HOMEWARD_STONE -> Config.HOMEWARD_STONE_USE_TIME.get();
+            case HAVEN_STONE -> Config.HAVEN_STONE_USE_TIME.get();
+            case DAWN_STONE -> Config.DAWN_STONE_USE_TIME.get();
+            case SUN_STONE -> Config.SUN_STONE_USE_TIME.get();
+            case DUSK_STONE -> Config.DUSK_STONE_USE_TIME.get();
+            case TWILIGHT_STONE -> Config.TWILIGHT_STONE_USE_TIME.get();
+            default -> 10;
+        };
+
+        // Multiply by 20 because 20 ticks per second
+        return useDuration*20;
+    }
+    protected int applyEnchantHasteModifier(int useDuration, ItemStack stack) {
         int channelHasteLevel = stack.getEnchantmentLevel(EnchantmentRegistry.CHANNEL_HASTE.get());
         if (channelHasteLevel > 0) {
-            double quickCastDuration = this.useDuration - 0.1*channelHasteLevel*this.useDuration;
+            double quickCastDuration = useDuration - 0.1*channelHasteLevel*useDuration;
             return (int) quickCastDuration;
         }
-        return this.useDuration;
+        return useDuration;
     }
     @Override
     public int getUseDuration(ItemStack pStack) {
@@ -205,6 +239,37 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     public UseAnim getUseAnimation(ItemStack pStack) {
         return UseAnim.BOW;
     }
+
+    protected boolean canDimTravel() {
+        return switch (this.id) {
+            case HOMEWARD_BONE -> Config.HOMEWARD_BONE_DIMENSIONAL_TRAVEL.get();
+            case HEARTHWOOD -> Config.HEARTHWOOD_DIMENSIONAL_TRAVEL.get();
+            case HOMEWARD_GEM -> Config.HOMEWARD_GEM_DIMENSIONAL_TRAVEL.get();
+            case HOMEWARD_STONE -> Config.HOMEWARD_STONE_DIMENSIONAL_TRAVEL.get();
+            case HAVEN_STONE -> Config.HAVEN_STONE_DIMENSIONAL_TRAVEL.get();
+            case DAWN_STONE -> Config.DAWN_STONE_DIMENSIONAL_TRAVEL.get();
+            case SUN_STONE -> Config.SUN_STONE_DIMENSIONAL_TRAVEL.get();
+            case DUSK_STONE -> Config.DUSK_STONE_DIMENSIONAL_TRAVEL.get();
+            case TWILIGHT_STONE -> Config.TWILIGHT_STONE_DIMENSIONAL_TRAVEL.get();
+            default -> false;
+        };
+    }
+
+    protected int getMaxDistance() {
+        return switch (this.id) {
+            case HOMEWARD_BONE -> Config.HOMEWARD_BONE_MAX_DISTANCE.get();
+            case HEARTHWOOD -> Config.HEARTHWOOD_MAX_DISTANCE.get();
+            case HOMEWARD_GEM -> Config.HOMEWARD_GEM_MAX_DISTANCE.get();
+            case HOMEWARD_STONE -> Config.HOMEWARD_STONE_MAX_DISTANCE.get();
+            case HAVEN_STONE -> Config.HAVEN_STONE_MAX_DISTANCE.get();
+            case DAWN_STONE -> Config.DAWN_STONE_MAX_DISTANCE.get();
+            case SUN_STONE -> Config.SUN_STONE_MAX_DISTANCE.get();
+            case DUSK_STONE -> Config.DUSK_STONE_MAX_DISTANCE.get();
+            case TWILIGHT_STONE -> Config.TWILIGHT_STONE_MAX_DISTANCE.get();
+            default -> 0;
+        };
+    }
+
     @Override
     public boolean isEnchantable(ItemStack pStack) {
         return this.isEnchantable;
@@ -221,7 +286,8 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     }
 
     protected void addCooldownHoverText(List<Component> pTooltipComponents, ItemStack stack) {
-        pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(this.getBaseCooldown(stack)) + "§r"));
+        int cooldown = applyEnchantCooldownModifier(this.getBaseCooldown(), stack);
+        pTooltipComponents.add(Component.literal("§aCooldown: " + HomeboundUtil.formatTime(cooldown) + "§r"));
     }
 
     @Override
@@ -230,8 +296,12 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
             pTooltipComponents.add(Component.literal("Crouch and use the item on a block to set your home."));
             addCooldownHoverText(pTooltipComponents, pStack);
             pTooltipComponents.add(Component.literal("§aCast Time: " + this.getActivationDuration(pStack) / 20.0 + " seconds.§r"));
-            if(this.maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax Warp Distance: " + this.maxDistance + " blocks§r"));
-            pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (this.canDimTravel ? "Yes" : "No") + "§r"));
+
+            int maxDistance = getMaxDistance();
+            if(maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax Warp Distance: " + maxDistance + " blocks§r"));
+
+            boolean canDimTravel = canDimTravel();
+            pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (canDimTravel ? "Yes" : "No") + "§r"));
             if(this.isSoulbound()) pTooltipComponents.add(Component.literal("§5This item persists death.§r"));
         } else {
             pTooltipComponents.add(Component.literal("Find your way home. Press §eSHIFT§r for more info."));
@@ -245,31 +315,10 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     }
 
     public static class Properties {
-        int cooldown = 1800;
-        int useDuration = 240;
-        int maxDistance = 0;
-        boolean canDimTravel = false;
         Rarity rarity = Rarity.COMMON;
         boolean soulbound = false;
         boolean isEnchantable = true;
         int enchantability = 15;
-
-        public Properties cooldown(int cooldown) {
-            this.cooldown = cooldown;
-            return this;
-        }
-        public Properties useDuration(int useDuration) {
-            this.useDuration = useDuration*20;
-            return this;
-        }
-        public Properties maxDistance(int maxDistance) {
-            this.maxDistance = maxDistance;
-            return this;
-        }
-        public Properties canDimTravel(boolean canDimTravel) {
-            this.canDimTravel = canDimTravel;
-            return this;
-        }
         public Properties isSoulbound(boolean isSoulbound) {
             this.soulbound = isSoulbound;
             return this;
@@ -282,21 +331,9 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
             this.isEnchantable = isEnchantable;
             return this;
         }
-
         public Properties enchantability(int enchantability) {
             this.enchantability = enchantability;
             return this;
         }
     }
 }
-
-/*
-                player.stopUsingItem();
-                player.sendSystemMessage(Component.literal("§cWarp cancelled.§r"));
-                CapabilityUtil.getHome(player).ifPresent(warpCap -> {
-                    long gameTime = player.level().getGameTime();
-                    if (!warpCap.hasCooldown(gameTime)) {
-                        warpCap.setCooldown(gameTime, DAMAGE_COOLDOWN);
-                    }
-                });
- */

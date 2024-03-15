@@ -26,7 +26,7 @@ public class Homebound
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-//        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
 
         TabRegistry.register(modEventBus);
         ItemRegistry.register(modEventBus);

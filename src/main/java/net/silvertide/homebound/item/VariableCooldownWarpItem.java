@@ -15,30 +15,30 @@ public class VariableCooldownWarpItem extends HomeWarpItem {
     private int maxCooldown;
     private int minCooldown;
     private int blocksPerOneMinute;
-    public VariableCooldownWarpItem(Properties properties, int maxCooldown, int minCooldown, int blocksPerOneMinute) {
-        super(properties);
+    public VariableCooldownWarpItem(HomewardItemId id, Properties properties, int maxCooldown, int minCooldown, int blocksPerOneMinute) {
+        super(id, properties);
         this.maxCooldown = maxCooldown;
         this.minCooldown = minCooldown;
         this.blocksPerOneMinute = blocksPerOneMinute;
     }
 
     @Override
-    public int getFinalCooldown(Player player, ServerLevel level, ItemStack stack) {
+    public int applyDistanceCooldownModifier(Player player, ServerLevel level, int cooldown){
         IWarpCap playerWarpCap = HomeboundUtil.getWarpCap(player);
         WarpPos homePos = HomeboundUtil.buildWarpPos(player, level);
         int dimensionMultiplier = playerWarpCap.getWarpPos().isSameDimension(homePos) ? 1 : 2;
 
         int distanceToHome = playerWarpCap.getWarpPos().calculateDistance(homePos);
         int variableCooldown = distanceToHome/blocksPerOneMinute*60*dimensionMultiplier;
-        return Math.min(this.getBaseMaxCooldown(stack), this.getBaseMinCooldown(stack) + variableCooldown);
+        return cooldown*variableCooldown;
     }
 
     public int getBaseMinCooldown(ItemStack stack) {
-        return applyCooldownEnchant(this.minCooldown, stack);
+        return applyEnchantCooldownModifier(this.minCooldown, stack);
     }
 
     public int getBaseMaxCooldown(ItemStack stack) {
-        return applyCooldownEnchant(this.maxCooldown, stack);
+        return applyEnchantCooldownModifier(this.maxCooldown, stack);
     }
 
     @Override
