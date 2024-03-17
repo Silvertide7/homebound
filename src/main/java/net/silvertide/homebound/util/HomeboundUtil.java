@@ -11,10 +11,12 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.IWarpCap;
@@ -25,13 +27,21 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 
+import static net.silvertide.homebound.registry.CapabilityRegistry.HOME_CAPABILITY;
+
 public final class HomeboundUtil {
     private static final Random SOUND_RNG = new Random();
     private HomeboundUtil(){}
 
     @Nullable
     public static IWarpCap getWarpCap(Player player) {
-        return CapabilityUtil.getHome(player).orElse(null);
+        return getHome(player).orElse(null);
+    }
+
+    public static LazyOptional<IWarpCap> getHome(final LivingEntity entity) {
+        if (entity == null)
+            return LazyOptional.empty();
+        return entity.getCapability(HOME_CAPABILITY);
     }
 
     public static WarpPos buildWarpPos(Player player, Level level) {

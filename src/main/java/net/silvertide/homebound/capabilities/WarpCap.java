@@ -15,6 +15,8 @@ public class WarpCap implements IWarpCap {
     private int cooldown;
     private long lastWarpTimestamp;
 
+    private boolean isChanneling;
+
     @Override
     public WarpPos getWarpPos() {
         return this.warpPos == null ? null : this.warpPos;
@@ -44,6 +46,16 @@ public class WarpCap implements IWarpCap {
     public void setCooldown(long timestamp, int cooldown) {
         this.lastWarpTimestamp = timestamp;
         this.cooldown = Math.max(cooldown, 0);
+    }
+
+    @Override
+    public void setIsChanneling(boolean isChanneling) {
+        this.isChanneling = isChanneling;
+    }
+
+    @Override
+    public boolean getIsChanneling() {
+        return this.isChanneling;
     }
 
     @Override

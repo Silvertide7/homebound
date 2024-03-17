@@ -88,7 +88,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
     private boolean isHomeSet(Player player, IWarpCap playerWarpCap) {
         if (playerWarpCap.getWarpPos() == null) {
-            player.sendSystemMessage(Component.literal("No home set"));
+            player.displayClientMessage(Component.literal("No home set"), true);
             return false;
         }
         return true;
@@ -110,7 +110,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         long gameTime = player.level().getGameTime();
         if (playerWarpCap.hasCooldown(gameTime)) {
             int timeRemaining = playerWarpCap.getRemainingCooldown(gameTime);
-            player.sendSystemMessage(Component.literal(getCooldownMessage(timeRemaining)));
+            player.displayClientMessage(Component.literal(getCooldownMessage(timeRemaining)), true);
             return false;
         }
         return true;
@@ -118,7 +118,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
     private boolean inValidDimension(Player player, Level level, IWarpCap playerWarpCap) {
         if (!canDimTravel() && !playerWarpCap.getWarpPos().isSameDimension(level.dimension().location())) {
-            player.sendSystemMessage(Component.literal(getDimensionMessage()));
+            player.displayClientMessage(Component.literal(getDimensionMessage()), true);
             return false;
         }
         return true;
@@ -129,7 +129,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         if (maxDistance > 0) {
             int distanceFromWarp = playerWarpCap.getWarpPos().calculateDistance(new WarpPos(player.getOnPos(), level.dimension().location()));
             if (distanceFromWarp > maxDistance) {
-                player.sendSystemMessage(Component.literal(getDistanceMessage(maxDistance, distanceFromWarp)));
+                player.displayClientMessage(Component.literal(getDistanceMessage(maxDistance, distanceFromWarp)), true);
                 return false;
             }
         }
@@ -137,11 +137,11 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     }
 
     private void setHome(Player player, ServerLevel serverLevel){
-        player.sendSystemMessage(Component.literal("§aHome set.§r"));
         HomeboundUtil.getHome(player).ifPresent(warpCap -> {
             warpCap.setWarpPos(player, serverLevel);
             ParticleUtil.spawnParticals(serverLevel, player, ParticleTypes.CRIT, 20);
             HomeboundUtil.playSound(serverLevel, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE);
+            player.displayClientMessage(Component.literal("§aHome set.§r"), true);
         });
     }
 
