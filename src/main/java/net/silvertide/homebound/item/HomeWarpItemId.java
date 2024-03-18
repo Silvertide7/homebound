@@ -1,6 +1,6 @@
 package net.silvertide.homebound.item;
 
-public enum HomewardItemId {
+public enum HomeWarpItemId {
     HOMEWARD_BONE,
     HEARTHWOOD,
     HOMEWARD_GEM,

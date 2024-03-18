@@ -8,6 +8,7 @@ public class Config {
 
 //    public static final ForgeConfigSpec.ConfigValue<Boolean> TELEPORT_TO_BED;
     public static final ForgeConfigSpec.ConfigValue<Integer> HURT_COOLDOWN_TIME;
+    public static final ForgeConfigSpec.ConfigValue<Integer> SET_HOME_TIME;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_COOLDOWN;
     public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_USE_TIME;
@@ -67,6 +68,8 @@ public class Config {
 //        TELEPORT_TO_BED = BUILDER.define("Teleport to Bed", false);
 //        BUILDER.comment("");
         BUILDER.comment("General");
+        BUILDER.comment("The amount of time in seconds it takes to set your home when crouching and looking at a block.");
+        SET_HOME_TIME = BUILDER.define("Set Home Time", 2);
         BUILDER.comment("When you take damage while using a homebound item to teleport home the teleport is canceled and a cooldown is added before you can use it again.");
         BUILDER.comment("This is to prevent players from easily teleporting out of a dangerous situation.");
         BUILDER.comment("This value is how long of a cooldown in seconds is added when damage is taken. Set to 0 to disable taking damage from canceling the teleport");

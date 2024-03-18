@@ -1,6 +1,7 @@
 package net.silvertide.homebound.client.handler;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,11 +18,12 @@ public class ClientForgeHandler {
     public static void clientTick(TickEvent.ClientTickEvent clientTickEvent) {
         Minecraft minecraft = Minecraft.getInstance();
 
-        if(!keyHeldDown && Keybindings.INSTANCE.useHomeboundStoneKey.consumeClick() && minecraft.player != null){
-            PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage());
+        if(!keyHeldDown && Keybindings.INSTANCE.useHomeboundStoneKey.isDown() && minecraft.player != null){
             keyHeldDown = true;
-        } else if(keyHeldDown && !Keybindings.INSTANCE.useHomeboundStoneKey.isDown()){
+            PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 1));
+        } else if(keyHeldDown && !Keybindings.INSTANCE.useHomeboundStoneKey.isDown() && minecraft.player != null) {
             keyHeldDown = false;
+            PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 0));
         }
     }
 }

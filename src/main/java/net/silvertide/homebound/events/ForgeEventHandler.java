@@ -22,9 +22,10 @@ import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpCapAttacher;
 import net.silvertide.homebound.config.Config;
+import net.silvertide.homebound.util.CapabilityUtil;
+import net.silvertide.homebound.util.WarpManager;
 import net.silvertide.homebound.item.HomeWarpItem;
 import net.silvertide.homebound.item.ISoulboundItem;
-import net.silvertide.homebound.util.HomeboundUtil;
 
 import java.util.Iterator;
 
@@ -67,8 +68,8 @@ public class ForgeEventHandler {
         if(event.getEntity() instanceof Player player) {
             if (Config.HURT_COOLDOWN_TIME.get() > 0 && player.isUsingItem() && player.getUseItem().getItem() instanceof HomeWarpItem){
                 player.stopUsingItem();
-                player.displayClientMessage(Component.literal("Warp cancelled."), true);
-                HomeboundUtil.getHome(player).ifPresent(warpCap -> {
+                player.displayClientMessage(Component.literal("WarpAttributes cancelled."), true);
+                CapabilityUtil.getHome(player).ifPresent(warpCap -> {
                     long gameTime = player.level().getGameTime();
                     if(!warpCap.hasCooldown(gameTime)){
                         warpCap.setCooldown(gameTime, Config.HURT_COOLDOWN_TIME.get());
@@ -83,10 +84,30 @@ public class ForgeEventHandler {
         if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END){
             ServerPlayer player = (ServerPlayer) event.player;
 
-            IWarpCap playerWarpCap = HomeboundUtil.getWarpCap(player);
-            if(playerWarpCap == null) return;
-            if(playerWarpCap.getIsChanneling()){
-                player.sendSystemMessage(Component.literal("You're doing it Petah!"));
+            if(WarpManager.getInstance().isWarping(player)) {
+                double percentComplete = WarpManager.getInstance().warpPercentComplete(player);
+                String messageToPlayer = "Progress: " + (int) percentComplete;
+                player.displayClientMessage(Component.literal(messageToPlayer), true);
+
+//                Player player = (Player) entity;
+//                ServerLevel serverLevel = (ServerLevel) pLevel;
+//
+//                int activationDuration = this.getActivationDuration(pStack);
+//                int durationHeld = this.getUseDuration(pStack) - pRemainingUseDuration;
+//                if (durationHeld < activationDuration) {
+//                    if(pRemainingUseDuration%6==0) {
+//                        int scalingParticles = (durationHeld)/12;
+//                        HomeboundUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, scalingParticles);
+//                        HomeboundUtil.playSound(serverLevel, player, SoundEvents.BLAZE_BURN);
+//                    }
+//                } else if(durationHeld == activationDuration) {
+//                    warpHome(player, serverLevel, pStack);
+//                }
+
+                if(percentComplete >= 100.0) {
+                    WarpManager.getInstance().cancelWarp(player);
+                    player.displayClientMessage(Component.literal("You just warped all over the place bro."), true);
+                }
             }
         }
     }
@@ -108,7 +129,7 @@ public class ForgeEventHandler {
         }
 
         // Add Home Capability to new Player.
-        HomeboundUtil.getHome(oldPlayer).ifPresent(oldHome -> HomeboundUtil.getHome(event.getEntity()).ifPresent(newHome -> {
+        CapabilityUtil.getHome(oldPlayer).ifPresent(oldHome -> CapabilityUtil.getHome(event.getEntity()).ifPresent(newHome -> {
             newHome.setWarpPos(oldHome.getWarpPos());
             newHome.setCooldown(oldHome.getLastWarpTimestamp(), oldHome.getCooldown());
         }));

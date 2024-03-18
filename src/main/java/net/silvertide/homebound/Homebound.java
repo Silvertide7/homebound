@@ -6,6 +6,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.silvertide.homebound.commands.CmdRoot;
 import net.silvertide.homebound.config.Config;
+import net.silvertide.homebound.util.WarpManager;
 import net.silvertide.homebound.registry.EnchantmentRegistry;
 import net.silvertide.homebound.registry.TabRegistry;
 import net.silvertide.homebound.registry.ItemRegistry;
@@ -33,6 +34,8 @@ public class Homebound
         EnchantmentRegistry.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
+
+        WarpManager.getInstance();
     }
 
     @Mod.EventBusSubscriber(modid=Homebound.MOD_ID, bus=Mod.EventBusSubscriber.Bus.FORGE)

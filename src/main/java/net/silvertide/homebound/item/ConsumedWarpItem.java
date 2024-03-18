@@ -11,13 +11,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ConsumedWarpItem extends HomeWarpItem{
-    public ConsumedWarpItem(HomewardItemId id, Properties properties) {
+    public ConsumedWarpItem(HomeWarpItemId id, Properties properties) {
         super(id, properties);
     }
     @Override
-    protected void warpHome(Player player, ServerLevel serverLevel, ItemStack pStack) {
-        super.warpHome(player, serverLevel, pStack);
-        if (!player.getAbilities().instabuild) pStack.shrink(1);
+    protected void afterUseCleanUp(Player player, ItemStack stack) {
+        super.afterUseCleanUp(player, stack);
+        if (!player.getAbilities().instabuild) stack.shrink(1);
     }
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {

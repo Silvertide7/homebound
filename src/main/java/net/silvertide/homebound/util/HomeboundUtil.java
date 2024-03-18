@@ -1,51 +1,74 @@
 package net.silvertide.homebound.util;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.server.ServerLifecycleHooks;
-import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
-import org.jetbrains.annotations.Nullable;
+import net.silvertide.homebound.item.HomeWarpItem;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Random;
 
-import static net.silvertide.homebound.registry.CapabilityRegistry.HOME_CAPABILITY;
 
 public final class HomeboundUtil {
     private static final Random SOUND_RNG = new Random();
-    private HomeboundUtil(){}
+    private HomeboundUtil() {}
 
-    @Nullable
-    public static IWarpCap getWarpCap(Player player) {
-        return getHome(player).orElse(null);
+    public static final int TICKS_PER_SECOND = 20;
+
+
+    public static int applyDistanceCooldownModifier(HomeWarpItem homeWarpItem, ServerPlayer player, int cooldown){
+        double maxCooldownReduction = HomeWarpItem.getDistanceBasedCooldownReduction(homeWarpItem.getId());
+
+        if(maxCooldownReduction > 0.0) {
+            int blocksPerPercentAdded = HomeWarpItem.getBlocksPerBonusReducedBy1Percent(homeWarpItem.getId());
+
+            IWarpCap playerWarpCap = CapabilityUtil.getWarpCap(player);
+            if(playerWarpCap == null) return cooldown;
+
+            WarpPos currentPos = CapabilityUtil.createWarpPosOnPlayer(player);
+
+            int dimensionMultiplier = playerWarpCap.getWarpPos().isSameDimension(currentPos) ? 1 : 2;
+            int distanceToHome = playerWarpCap.getWarpPos().calculateDistance(currentPos);
+            double distancePenalty = (distanceToHome/blocksPerPercentAdded/100.0)*dimensionMultiplier;
+
+            if(distancePenalty < maxCooldownReduction) {
+                double cooldownReductionBonus = (1.0-(maxCooldownReduction-distancePenalty));
+                double modifiedCooldown = ((double) cooldown)*cooldownReductionBonus;
+                return (int) modifiedCooldown;
+            }
+        }
+        return cooldown;
+    }
+    public static void spawnParticals(ServerLevel serverLevel, Player player, ParticleOptions particle, int numParticles){
+        Level level = player.level();
+        for(int i = 0; i < numParticles; i++){
+            serverLevel.sendParticles(particle, player.getX() + level.random.nextDouble() - 0.5, player.getY() + 1.0, player.getZ() + level.random.nextDouble() - 0.5, 1, 0.0D, 0.0D, 0.0D, 1.0D);
+        }
     }
 
-    public static LazyOptional<IWarpCap> getHome(final LivingEntity entity) {
-        if (entity == null)
-            return LazyOptional.empty();
-        return entity.getCapability(HOME_CAPABILITY);
+    public static void playSound(Level level, double x, double y, double z, SoundEvent soundEvent){
+        level.playSound(null, x, y, z, soundEvent, SoundSource.PLAYERS, 20, 0.95f+SOUND_RNG.nextFloat()*0.1f);
     }
 
-    public static WarpPos buildWarpPos(Player player, Level level) {
-        return new WarpPos(player.getOnPos(), level.dimension().location());
+    public static void playSound(Level level, Player player, SoundEvent soundEvent){
+        playSound(level, player.getX(), player.getY(), player.getZ(), soundEvent);
+    }
+
+    public static String getCooldownMessage(int cooldownRemaining) {
+        return "§cYou haven't recovered. [" + HomeboundUtil.formatTime(cooldownRemaining) + "]§r";
+    }
+    private static String getDimensionMessage() {
+        return "§cCan't warp between dimensions.§r";
+    }
+
+    public static String getDistanceMessage(int maxDistance, int distance) {
+        return "§cToo far from home. [" + distance + " / " + maxDistance + "]§r";
     }
 
     public static String formatDimension(String dimString) {
@@ -74,84 +97,6 @@ public final class HomeboundUtil {
         int remainingSecs = remainingSeconds % 60;
 
         return String.format("%02d:%02d:%02d", hours, minutes, remainingSecs);
-    }
-
-    /*
-        This function was largely copied from Tictim's Hearthstone mod, an objectively and subjectively
-        better mod.
-     */
-    public static void warp(Entity entity, WarpPos warpPos) {
-        entity.fallDistance = 0f;
-
-        BlockPos destinationPos = warpPos.blockPos();
-        ResourceLocation destinationDim = warpPos.dimension();
-        Level originalLevel = entity.level();
-        double currX = entity.getX();
-        double currY = entity.getY();
-        double currZ = entity.getZ();
-        double destX = destinationPos.getX()+0.5;
-        double destY = destinationPos.getY()+1.0;
-        double destZ = destinationPos.getZ()+0.5;
-        boolean inSameDimension = entity.level().dimension().location().equals(destinationDim);
-        ServerLevel destLevel = inSameDimension ?
-                originalLevel instanceof ServerLevel s ? s : null :
-                ServerLifecycleHooks.getCurrentServer().getLevel(ResourceKey.create(Registries.DIMENSION, destinationDim));
-        if(destLevel==null){
-            Homebound.LOGGER.error("World {} doesn't exist.", destinationDim);
-            return;
-        }
-
-        if(entity instanceof ServerPlayer player) {
-            destLevel.getChunkSource().addRegionTicket(TicketType.POST_TELEPORT, new ChunkPos(destinationPos), 1, entity.getId());
-
-            // Check if the player is riding a horse like (includes camels mules etc) that they own.
-            AbstractHorse riddenEntityToTeleport = null;
-            if(player.isPassenger()) {
-                Entity vehicle = player.getVehicle();
-                if(vehicle instanceof AbstractHorse horseLike) {
-                    boolean hasOwner = horseLike.getOwnerUUID() != null;
-                    boolean riddenByOwner = horseLike.getOwnerUUID().toString().equals(player.getUUID().toString());
-                    if(hasOwner && riddenByOwner){
-                        riddenEntityToTeleport = horseLike;
-                    }
-                }
-            }
-            player.stopRiding();
-
-            if(player.isSleeping()) player.stopSleeping();
-            if(inSameDimension){
-                player.connection.teleport(destX, destY, destZ, player.getYRot(), player.getXRot(), Collections.emptySet());
-                if(riddenEntityToTeleport != null) riddenEntityToTeleport.moveTo(destX, destY, destZ, riddenEntityToTeleport.getYRot(), riddenEntityToTeleport.getXRot());
-            }
-            else{
-                player.teleportTo(destLevel, destX, destY, destZ, player.getYRot(), player.getXRot());
-                if(riddenEntityToTeleport != null) riddenEntityToTeleport.teleportTo(destLevel, destX, destY, destZ, new HashSet<>(), riddenEntityToTeleport.getYRot(), riddenEntityToTeleport.getXRot());
-            }
-        } else{
-            entity.unRide();
-            if(inSameDimension) entity.moveTo(destX, destY, destZ, entity.getYRot(), entity.getXRot());
-            else{
-                Entity e2 = entity.getType().create(destLevel);
-                if(e2==null){
-                    Homebound.LOGGER.warn("Failed to move Entity {}", entity);
-                    return;
-                }
-                e2.restoreFrom(entity);
-                e2.moveTo(destX, destY, destZ, e2.getYRot(), e2.getXRot());
-                destLevel.addFreshEntity(e2);
-                entity.remove(Entity.RemovalReason.CHANGED_DIMENSION);
-            }
-        }
-        playSound(originalLevel, currX, currY, currZ, SoundEvents.BLAZE_SHOOT);
-        playSound(destLevel, destX, destY, destZ, SoundEvents.BLAZE_SHOOT);
-    }
-
-    public static void playSound(Level level, double x, double y, double z, SoundEvent soundEvent){
-        level.playSound(null, x, y, z, soundEvent, SoundSource.PLAYERS, 20, 0.95f+SOUND_RNG.nextFloat()*0.1f);
-    }
-
-    public static void playSound(Level level, Player player, SoundEvent soundEvent){
-        playSound(level, player.getX(), player.getY(), player.getZ(), soundEvent);
     }
 
 }
