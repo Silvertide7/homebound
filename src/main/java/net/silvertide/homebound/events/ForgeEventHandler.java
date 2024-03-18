@@ -23,11 +23,13 @@ import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpCapAttacher;
 import net.silvertide.homebound.config.Config;
 import net.silvertide.homebound.util.CapabilityUtil;
+import net.silvertide.homebound.util.WarpAttributes;
 import net.silvertide.homebound.util.WarpManager;
 import net.silvertide.homebound.item.HomeWarpItem;
 import net.silvertide.homebound.item.ISoulboundItem;
 
 import java.util.Iterator;
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid=Homebound.MOD_ID, bus= Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeEventHandler {
@@ -80,6 +82,21 @@ public class ForgeEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if(event.haveTime() && event.phase == TickEvent.Phase.END) {
+            if(WarpManager.getInstance().warpIsActive()) {
+                WarpManager warpManager = WarpManager.getInstance();
+                List<WarpAttributes> warpAttributes = warpManager.getWarpAttributeList();
+                warpAttributes.forEach(warp -> {
+                    if(warpManager.warpPercentComplete(warp.serverPlayer()) >= 100.0) {
+                        warpManager.warpPlayerHome(warp.serverPlayer());
+                    }
+                });
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END){
             ServerPlayer player = (ServerPlayer) event.player;
@@ -105,7 +122,6 @@ public class ForgeEventHandler {
 //                }
 
                 if(percentComplete >= 100.0) {
-                    WarpManager.getInstance().cancelWarp(player);
                     player.displayClientMessage(Component.literal("You just warped all over the place bro."), true);
                 }
             }

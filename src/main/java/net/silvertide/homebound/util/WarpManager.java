@@ -2,7 +2,6 @@ package net.silvertide.homebound.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -11,7 +10,6 @@ import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -36,7 +34,11 @@ public class WarpManager {
     }
 
     public void startWarping(ServerPlayer player, int cooldown, int useDuration) {
-        WarpAttributes warpAttributes = new WarpAttributes(cooldown, useDuration, player.level().getGameTime());
+
+        // Find a valid homestone in the inventory. If not then it fails with message
+        // Do checks here for if warping is allowed based on the item. If fails send message to player
+
+        WarpAttributes warpAttributes = new WarpAttributes(player, cooldown, useDuration, player.level().getGameTime());
         warpAttrMap.put(player.getUUID(), warpAttributes);
     }
     public void cancelWarp(ServerPlayer player) {
@@ -46,24 +48,32 @@ public class WarpManager {
         return this.warpAttrMap.containsKey(player.getUUID());
     }
 
-    public double warpPercentComplete(ServerPlayer player) {
-        if(isWarping(player)){
-            WarpAttributes warpAttributes = warpAttrMap.get(player.getUUID());
-            long timeElapsed = (player.level().getGameTime() - warpAttributes.startedWarpingGameTimeStamp());
-            return  (timeElapsed / (double) warpAttributes.useDuration())*100;
-        }
-        return 0.0;
+    public boolean warpIsActive() { return this.warpAttrMap.size() > 0; }
+
+    public List<WarpAttributes> getWarpAttributeList() {
+        return new ArrayList<>(warpAttrMap.values());
     }
 
+    public double warpPercentComplete(ServerPlayer player) {
+        WarpAttributes warpAttributes = warpAttrMap.get(player.getUUID());
+        if (warpAttributes == null) return 0.0;
 
-    public static void warpPlayerHome(ServerPlayer player) {
+        long timeElapsed = (player.level().getGameTime() - warpAttributes.startedWarpingGameTimeStamp());
+        return  (timeElapsed / (double) warpAttributes.useDuration())*100;
+    }
+
+    public void warpPlayerHome(ServerPlayer player) {
         IWarpCap playerWarpCapability = CapabilityUtil.getWarpCap(player);
         if(playerWarpCapability == null) return;
 
+        this.warp(player, playerWarpCapability.getWarpPos());
+
+        WarpAttributes warpAttributes = this.warpAttrMap.get(player.getUUID());
+        playerWarpCapability.setCooldown(player.level().getGameTime(), warpAttributes.cooldown());
+        this.warpAttrMap.remove(player.getUUID());
     }
 
-    // This function was largely copied from Tictim's Hearthstone mod, an objectively and subjectively
-    // better mod.
+    // This function was largely copied from Tictim's Hearthstone mod, an objectively and subjectively better mod.
     private void warp(Entity entity, WarpPos warpPos) {
         entity.fallDistance = 0f;
 
