@@ -2,30 +2,30 @@ package net.silvertide.homebound.events;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.silvertide.homebound.item.IWarpInitiator;
+import net.silvertide.homebound.item.IWarpItem;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.common.MinecraftForge;
 /**
- * WarpEvent is fired whenever a {@link Player} tries to warp.<br>
+ * StartWarpEvent is fired whenever a {@link Player} tries to warp.<br>
  * <br>
  * This event is {@link Cancelable}.<br>
- * If this event is canceled, the spell is not cast.<br>
+ * If this event is canceled, the warp does not start.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
  **/
-public class WarpEvent extends PlayerEvent {
-    private final IWarpInitiator warpInitiator;
-    public WarpEvent(Player player, IWarpInitiator warpInitiator) {
+public class StartWarpEvent extends PlayerEvent {
+    private final IWarpItem warpItem;
+    public StartWarpEvent(Player player, IWarpItem warpItem) {
         super(player);
-        this.warpInitiator = warpInitiator;
+        this.warpItem = warpItem;
     }
     @Override
     public boolean isCancelable() {
         return true;
     }
-    public IWarpInitiator getWarpInitiator() {
-        return this.warpInitiator;
+    public IWarpItem getWarpItem() {
+        return this.warpItem;
     }
 }

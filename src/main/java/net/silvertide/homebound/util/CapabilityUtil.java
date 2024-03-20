@@ -5,9 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
-import net.silvertide.homebound.item.HomeWarpItem;
-import net.silvertide.homebound.item.HomeWarpItemId;
-import net.silvertide.homebound.item.IWarpInitiator;
+import net.silvertide.homebound.item.IWarpItem;
 import org.jetbrains.annotations.Nullable;
 
 import static net.silvertide.homebound.registry.CapabilityRegistry.HOME_CAPABILITY;
@@ -42,13 +40,13 @@ public final class CapabilityUtil {
         }).orElse(true);
     }
 
-    private boolean inValidDimension(IWarpInitiator warpInitiator, Player player) {
+    private boolean inValidDimension(IWarpItem warpItem, Player player) {
         boolean isPlayerInWarpPosDimension = getWarpCap(player).map(warpCap -> warpCap.getWarpPos().isSameDimension(player.level().dimension().location())).orElse(false);
-        return warpInitiator.canDimTravel() || isPlayerInWarpPosDimension;
+        return warpItem.canDimTravel() || isPlayerInWarpPosDimension;
     }
 
-    private boolean withinMaxDistance( IWarpInitiator warpInitiator, Player player) {
-        int maxDistance = warpInitiator.getMaxDistance();
+    private boolean withinMaxDistance(IWarpItem warpItem, Player player) {
+        int maxDistance = warpItem.getMaxDistance();
         if (maxDistance == 0) return true;
 
         IWarpCap playerWarpCap = getWarpCapOrNull(player);

@@ -7,9 +7,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 import net.silvertide.homebound.compat.CuriosCompat;
-import net.silvertide.homebound.item.IWarpInitiator;
+import net.silvertide.homebound.item.IWarpItem;
 
-import java.util.Objects;
 import java.util.Optional;
 
 public final class InventoryUtil {
@@ -21,12 +20,12 @@ public final class InventoryUtil {
 
         // Check the currently selected item (if on the hotbar)
         int currentlySelectedSlotIndex = player.getInventory().selected;
-        if (Inventory.isHotbarSlot(currentlySelectedSlotIndex) && player.getInventory().items.get(currentlySelectedSlotIndex).getItem() instanceof IWarpInitiator) {
+        if (Inventory.isHotbarSlot(currentlySelectedSlotIndex) && player.getInventory().items.get(currentlySelectedSlotIndex).getItem() instanceof IWarpItem) {
             player.displayClientMessage(Component.literal("Initiating warp from main hand. " + player.getInventory().items.get(currentlySelectedSlotIndex)), true);
             return Optional.of(player.getInventory().items.get(currentlySelectedSlotIndex));
         }
 
-        if(playerInventory.offhand.get(0).getItem() instanceof IWarpInitiator) {
+        if(playerInventory.offhand.get(0).getItem() instanceof IWarpItem) {
             player.displayClientMessage(Component.literal("Initiating warp from off hand. "  + playerInventory.offhand.get(0).getDescriptionId()), true);
             return Optional.of(playerInventory.offhand.get(0));
         }
@@ -41,7 +40,7 @@ public final class InventoryUtil {
 
         for (int i = 0; i < playerInventory.items.size(); i++) {
             ItemStack stack = playerInventory.items.get(i);
-            if(stack.getItem() instanceof IWarpInitiator){
+            if(stack.getItem() instanceof IWarpItem){
                 player.displayClientMessage(Component.literal("Initiating warp from other inventory slot. " + stack.getDescriptionId()), true);
                 return Optional.of(stack);
             }
@@ -50,11 +49,11 @@ public final class InventoryUtil {
         return Optional.empty();
     }
 
-    public static Optional<IWarpInitiator> playerHasWarpInitiator(Player player) {
+    public static Optional<IWarpItem> playerHasWarpItem(Player player) {
         for(int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack currentStack = player.getInventory().getItem(i);
-            if (!currentStack.isEmpty() && currentStack.getItem() instanceof IWarpInitiator) {
-                return Optional.of((IWarpInitiator) currentStack.getItem());
+            if (!currentStack.isEmpty() && currentStack.getItem() instanceof IWarpItem) {
+                return Optional.of((IWarpItem) currentStack.getItem());
             }
         }
         return Optional.empty();

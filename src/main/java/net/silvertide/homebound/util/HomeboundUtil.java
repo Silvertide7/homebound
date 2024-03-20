@@ -9,8 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
-import net.silvertide.homebound.item.HomeWarpItem;
-import net.silvertide.homebound.item.IWarpInitiator;
+import net.silvertide.homebound.item.IWarpItem;
 
 import java.util.Random;
 
@@ -20,11 +19,11 @@ public final class HomeboundUtil {
     private HomeboundUtil() {}
     public static final int TICKS_PER_SECOND = 20;
 
-    public static int applyDistanceCooldownModifier(IWarpInitiator warpInitiator, ServerPlayer player, int cooldown){
-        double maxCooldownReduction = warpInitiator.getDistanceBasedCooldownReduction();
+    public static int applyDistanceCooldownModifier(IWarpItem warpItem, ServerPlayer player, int cooldown){
+        double maxCooldownReduction = warpItem.getDistanceBasedCooldownReduction();
 
         if(maxCooldownReduction > 0.0) {
-            int blocksPerPercentAdded = warpInitiator.getBlocksPerBonusReducedBy1Percent();
+            int blocksPerPercentAdded = warpItem.getBlocksPerBonusReducedBy1Percent();
 
             IWarpCap playerWarpCap = CapabilityUtil.getWarpCapOrNull(player);
             if(playerWarpCap == null) return cooldown;

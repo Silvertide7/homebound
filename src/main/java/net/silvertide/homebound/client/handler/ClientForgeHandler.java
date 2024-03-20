@@ -1,7 +1,6 @@
 package net.silvertide.homebound.client.handler;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -13,17 +12,21 @@ import net.silvertide.homebound.network.ServerboundUseHomeboundStoneMessage;
 
 @Mod.EventBusSubscriber(modid = Homebound.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientForgeHandler {
-    private static boolean keyHeldDown = false;
+    private static boolean keyWasHeldDownLastTick = false;
+    private static int age = 0;
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent clientTickEvent) {
         Minecraft minecraft = Minecraft.getInstance();
-
-        if(!keyHeldDown && Keybindings.INSTANCE.useHomeboundStoneKey.isDown() && minecraft.player != null){
-            keyHeldDown = true;
-            PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 1));
-        } else if(keyHeldDown && !Keybindings.INSTANCE.useHomeboundStoneKey.isDown() && minecraft.player != null) {
-            keyHeldDown = false;
-            PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 0));
+        if(age > 0) age--;
+        if(age == 0){
+            if(!keyWasHeldDownLastTick && Keybindings.INSTANCE.useHomeboundStoneKey.isDown() && minecraft.player != null) {
+                keyWasHeldDownLastTick = true;
+                PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 1));
+            } else if(keyWasHeldDownLastTick && !Keybindings.INSTANCE.useHomeboundStoneKey.isDown() && minecraft.player != null) {
+                keyWasHeldDownLastTick = false;
+                age = 10;
+                PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 0));
+            }
         }
     }
 }

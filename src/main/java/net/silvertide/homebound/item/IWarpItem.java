@@ -2,9 +2,8 @@ package net.silvertide.homebound.item;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 
-public interface IWarpInitiator {
+public interface IWarpItem {
     int getBaseCooldown();
     double getDistanceBasedCooldownReduction();
     int getBlocksPerBonusReducedBy1Percent();
