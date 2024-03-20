@@ -51,10 +51,14 @@ public class ServerboundUseHomeboundStoneMessage {
 
                 // check rest of inventory
                 // Post event to check if warping is allowed.
-//                MinecraftForge.EVENT_BUS.post(new WarpEvent(player));
+
                 // If it is then queue the warp
                 warpItemStack.ifPresentOrElse(stack -> {
                         IWarpInitiator warpInitiator = (IWarpInitiator) stack.getItem();
+                        if (MinecraftForge.EVENT_BUS.post(new WarpEvent(player, warpInitiator))) {
+                            player.sendSystemMessage(Component.literal("Event canceled the warp."));
+                            return;
+                        }
                         WarpManager.getInstance().startWarping(player, warpInitiator.getWarpCooldown(player, stack), warpInitiator.getWarpUseDuration(stack));
     //                  player.displayClientMessage(Component.literal("Initiating warp."), true);
                     },

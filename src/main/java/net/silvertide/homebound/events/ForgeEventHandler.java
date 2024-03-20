@@ -1,6 +1,9 @@
 package net.silvertide.homebound.events;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -29,6 +32,7 @@ import net.silvertide.homebound.item.ISoulboundItem;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid=Homebound.MOD_ID, bus= Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeEventHandler {
@@ -99,6 +103,14 @@ public class ForgeEventHandler {
                 });
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onWarp(WarpEvent warpEvent) {
+        if (warpEvent.isCanceled()) return;
+
+        Player player = warpEvent.getEntity();
+        warpEvent.setCanceled(true);
     }
 
 //    @SubscribeEvent(priority = EventPriority.LOWEST)

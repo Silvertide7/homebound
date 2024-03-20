@@ -18,7 +18,6 @@ import java.util.Random;
 public final class HomeboundUtil {
     private static final Random SOUND_RNG = new Random();
     private HomeboundUtil() {}
-
     public static final int TICKS_PER_SECOND = 20;
 
     public static int applyDistanceCooldownModifier(IWarpInitiator warpInitiator, ServerPlayer player, int cooldown){
