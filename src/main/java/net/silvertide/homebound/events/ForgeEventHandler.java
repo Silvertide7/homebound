@@ -16,7 +16,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.IWarpCap;
@@ -66,17 +65,23 @@ public class ForgeEventHandler {
     }
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPlayerHurt(LivingHurtEvent event) {
-        if(event.getEntity().level().isClientSide) return;
-        if(event.getEntity() instanceof Player player) {
-            if (Config.HURT_COOLDOWN_TIME.get() > 0 && player.isUsingItem() && player.getUseItem().getItem() instanceof HomeWarpItem){
-                player.stopUsingItem();
-                player.displayClientMessage(Component.literal("WarpAttributes cancelled."), true);
-                CapabilityUtil.getHome(player).ifPresent(warpCap -> {
+        if(!event.getEntity().level().isClientSide && event.getEntity() instanceof ServerPlayer player) {
+            if (Config.HURT_COOLDOWN_TIME.get() > 0 && WarpManager.getInstance().isPlayerWarping(player)) {
+                WarpManager.getInstance().cancelWarp(player);
+
+                if(player.isUsingItem() && player.getUseItem().getItem() instanceof HomeWarpItem){
+                    player.stopUsingItem();
+                }
+
+                // Add a penalty for taking damage while warping.
+                CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
                     long gameTime = player.level().getGameTime();
-                    if(!warpCap.hasCooldown(gameTime)){
+                    if(!warpCap.hasCooldown(gameTime)) {
                         warpCap.setCooldown(gameTime, Config.HURT_COOLDOWN_TIME.get());
                     }
                 });
+
+                player.displayClientMessage(Component.literal("Warp cancelled."), true);
             }
         }
     }
@@ -96,15 +101,15 @@ public class ForgeEventHandler {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END){
-            ServerPlayer player = (ServerPlayer) event.player;
-
-            if(WarpManager.getInstance().isWarping(player)) {
-                double percentComplete = WarpManager.getInstance().warpPercentComplete(player);
-                String messageToPlayer = "Progress: " + (int) percentComplete;
-                player.displayClientMessage(Component.literal(messageToPlayer), true);
+//    @SubscribeEvent(priority = EventPriority.LOWEST)
+//    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+//        if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END){
+//            ServerPlayer player = (ServerPlayer) event.player;
+//
+//            if(WarpManager.getInstance().isWarping(player)) {
+//                double percentComplete = WarpManager.getInstance().warpPercentComplete(player);
+//                String messageToPlayer = "Progress: " + (int) percentComplete;
+//                player.displayClientMessage(Component.literal(messageToPlayer), true);
 
 //                Player player = (Player) entity;
 //                ServerLevel serverLevel = (ServerLevel) pLevel;
@@ -120,32 +125,34 @@ public class ForgeEventHandler {
 //                } else if(durationHeld == activationDuration) {
 //                    warpHome(player, serverLevel, pStack);
 //                }
-
-                if(percentComplete >= 100.0) {
-                    player.displayClientMessage(Component.literal("You just warped all over the place bro."), true);
-                }
-            }
-        }
-    }
+//
+//                if(percentComplete >= 100.0) {
+//                    player.displayClientMessage(Component.literal("You just warped all over the place bro."), true);
+//                }
+//            }
+//        }
+//    }
 
     @SubscribeEvent(priority= EventPriority.LOWEST)
     public static void playerClone(PlayerEvent.Clone event) {
         Player oldPlayer = event.getOriginal();
         oldPlayer.revive();
         Player newPlayer = event.getEntity();
-        boolean keepInventoryOn = newPlayer.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
-
-        if(!(keepInventoryOn || newPlayer.isSpectator())) {
-            for(int i = 0; i <=oldPlayer.getInventory().getContainerSize(); i++){
-                ItemStack stack = oldPlayer.getInventory().getItem(i);
-                if(!stack.isEmpty() && stack.getItem() instanceof ISoulboundItem soulboundItem && soulboundItem.isSoulbound()) {
-                    newPlayer.getInventory().add(i, stack);
-                }
-            }
-        }
+//        boolean keepInventoryOn = newPlayer.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
+//
+//        Inventory keepInventory = new Inventory(null);
+//
+//        if(!(keepInventoryOn || newPlayer.isSpectator())) {
+//            for(int i = 0; i <=oldPlayer.getInventory().getContainerSize(); i++){
+//                ItemStack stack = oldPlayer.getInventory().getItem(i);
+//                if(!stack.isEmpty() && stack.getItem() instanceof ISoulboundItem soulboundItem && soulboundItem.isSoulbound()) {
+//                    newPlayer.getInventory().setItem(i, stack);
+//                }
+//            }
+//        }
 
         // Add Home Capability to new Player.
-        CapabilityUtil.getHome(oldPlayer).ifPresent(oldHome -> CapabilityUtil.getHome(event.getEntity()).ifPresent(newHome -> {
+        CapabilityUtil.getWarpCap(oldPlayer).ifPresent(oldHome -> CapabilityUtil.getWarpCap(newPlayer).ifPresent(newHome -> {
             newHome.setWarpPos(oldHome.getWarpPos());
             newHome.setCooldown(oldHome.getLastWarpTimestamp(), oldHome.getCooldown());
         }));

@@ -22,7 +22,7 @@ import net.silvertide.homebound.util.*;
 
 import java.util.List;
 
-public class HomeWarpItem extends Item implements ISoulboundItem {
+public class HomeWarpItem extends Item implements ISoulboundItem, IWarpInitiator {
     protected HomeWarpItemId id;
     private final boolean soulbound;
     private final boolean isEnchantable;
@@ -88,8 +88,6 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 //        }
     }
 
-    protected void afterUseCleanUp(Player player, ItemStack stack) {}
-
     public HomeWarpItemId getId() {
         return  this.id;
     }
@@ -98,13 +96,13 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
     }
 
-    public static int getUseDurationToWarp(ItemStack stack) {
-        int useDuration = HomeWarpItem.getBaseUseDurationInTicks(((HomeWarpItem) stack.getItem()).getId());
+    public int getWarpUseDuration(ItemStack stack) {
+        int useDuration = getBaseUseDurationInTicks();
         return EnchantmentUtil.applyEnchantHasteModifier(useDuration, EnchantmentUtil.getHasteEnchantLevel(stack));
     }
 
-    public int getCooldown(ItemStack stack, ServerPlayer player) {
-        int baseCooldown = getBaseCooldown(this.id);
+    public int getWarpCooldown(ServerPlayer player, ItemStack stack) {
+        int baseCooldown = getBaseCooldown();
         return EnchantmentUtil.applyEnchantCooldownModifier(HomeboundUtil.applyDistanceCooldownModifier(this, player, baseCooldown), EnchantmentUtil.getCooldownEnchantLevel(stack));
     }
 
@@ -133,10 +131,10 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     }
 
     protected void addCooldownHoverText(List<Component> pTooltipComponents, ItemStack stack) {
-        double distanceBasedCooldownReduction = getDistanceBasedCooldownReduction(this.id);
-        int cooldown = EnchantmentUtil.applyEnchantCooldownModifier(getBaseCooldown(this.id), EnchantmentUtil.getCooldownEnchantLevel(stack));
+        double distanceBasedCooldownReduction = getDistanceBasedCooldownReduction();
+        int cooldown = EnchantmentUtil.applyEnchantCooldownModifier(getBaseCooldown(), EnchantmentUtil.getCooldownEnchantLevel(stack));
         if(distanceBasedCooldownReduction > 0.0) {
-            int blocksPerPercentReduced = getBlocksPerBonusReducedBy1Percent(this.id);
+            int blocksPerPercentReduced = getBlocksPerBonusReducedBy1Percent();
             double lowestCooldownPossible = (double) cooldown*(1.0-distanceBasedCooldownReduction);
             pTooltipComponents.add(Component.literal("Cooldown is reduced by as much as §a" + distanceBasedCooldownReduction*100.0 + "%§r when close to home."));
             pTooltipComponents.add(Component.literal("This bonus is reduced by §a1%§r for every " + blocksPerPercentReduced + " blocks away from home."));
@@ -155,10 +153,10 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
 
             pTooltipComponents.add(Component.literal("§aCast Time: " + 12345 / 20.0 + " seconds.§r"));
 
-            int maxDistance = getMaxDistance(this.id);
+            int maxDistance = getMaxDistance();
             if(maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax WarpAttributes Distance: " + maxDistance + " blocks§r"));
 
-            boolean canDimTravel = canDimTravel(this.id);
+            boolean canDimTravel = canDimTravel();
             pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (canDimTravel ? "Yes" : "§cNo§r") + "§r"));
             if(this.isSoulbound()) pTooltipComponents.add(Component.literal("§5This item persists death.§r"));
         } else {
@@ -172,7 +170,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         return this.soulbound;
     }
 
-    public static int getBaseCooldown(HomeWarpItemId id) {
+    public int getBaseCooldown() {
         int cooldownInMinutes = switch(id) {
             case HOMEWARD_BONE -> Config.HOMEWARD_BONE_COOLDOWN.get();
             case HEARTHWOOD -> Config.HEARTHWOOD_COOLDOWN.get();
@@ -189,7 +187,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         return cooldownInMinutes*60;
     }
 
-    public static double getDistanceBasedCooldownReduction(HomeWarpItemId id){
+    public double getDistanceBasedCooldownReduction() {
         return switch(id) {
             case DUSK_STONE -> Config.DUSK_STONE_MAX_DISTANCE_REDUCTION.get();
             case TWILIGHT_STONE -> Config.TWILIGHT_STONE_MAX_DISTANCE_REDUCTION.get();
@@ -197,7 +195,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         };
     }
 
-    public static int getBlocksPerBonusReducedBy1Percent(HomeWarpItemId id){
+    public int getBlocksPerBonusReducedBy1Percent() {
         return switch(id) {
             case DUSK_STONE -> Config.DUSK_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT.get();
             case TWILIGHT_STONE -> Config.TWILIGHT_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT.get();
@@ -205,7 +203,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         };
     }
 
-    public static int getBaseUseDurationInTicks(HomeWarpItemId id) {
+    public int getBaseUseDurationInTicks() {
         int useDurationInSeconds = switch(id) {
             case HOMEWARD_BONE -> Config.HOMEWARD_BONE_USE_TIME.get();
             case HEARTHWOOD -> Config.HEARTHWOOD_USE_TIME.get();
@@ -222,7 +220,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
     }
 
 
-    public static boolean canDimTravel(HomeWarpItemId id) {
+    public boolean canDimTravel() {
         return switch (id) {
             case HOMEWARD_BONE -> Config.HOMEWARD_BONE_DIMENSIONAL_TRAVEL.get();
             case HEARTHWOOD -> Config.HEARTHWOOD_DIMENSIONAL_TRAVEL.get();
@@ -237,7 +235,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem {
         };
     }
 
-    public static int getMaxDistance(HomeWarpItemId id) {
+    public int getMaxDistance() {
         return switch (id) {
             case HOMEWARD_BONE -> Config.HOMEWARD_BONE_MAX_DISTANCE.get();
             case HEARTHWOOD -> Config.HEARTHWOOD_MAX_DISTANCE.get();

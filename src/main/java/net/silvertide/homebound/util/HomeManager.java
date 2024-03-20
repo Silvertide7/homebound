@@ -1,9 +1,6 @@
 package net.silvertide.homebound.util;
 
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.config.Config;
 
@@ -46,7 +43,7 @@ public class HomeManager {
     }
 
     public boolean setHome(ServerPlayer player) {
-        IWarpCap playerWarpCapability = CapabilityUtil.getWarpCap(player);
+        IWarpCap playerWarpCapability = CapabilityUtil.getWarpCapOrNull(player);
         if(playerWarpCapability == null) return false;
 
         playerWarpCapability.setWarpPos(player);

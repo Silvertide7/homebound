@@ -44,7 +44,8 @@ public class WarpManager {
     public void cancelWarp(ServerPlayer player) {
         warpAttrMap.remove(player.getUUID());
     }
-    public boolean isWarping(ServerPlayer player) {
+
+    public boolean isPlayerWarping(ServerPlayer player) {
         return this.warpAttrMap.containsKey(player.getUUID());
     }
 
@@ -63,7 +64,7 @@ public class WarpManager {
     }
 
     public void warpPlayerHome(ServerPlayer player) {
-        IWarpCap playerWarpCapability = CapabilityUtil.getWarpCap(player);
+        IWarpCap playerWarpCapability = CapabilityUtil.getWarpCapOrNull(player);
         if(playerWarpCapability == null) return;
 
         this.warp(player, playerWarpCapability.getWarpPos());

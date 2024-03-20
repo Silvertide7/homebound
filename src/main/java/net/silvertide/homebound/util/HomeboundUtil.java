@@ -6,11 +6,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.item.HomeWarpItem;
+import net.silvertide.homebound.item.IWarpInitiator;
 
 import java.util.Random;
 
@@ -21,14 +21,13 @@ public final class HomeboundUtil {
 
     public static final int TICKS_PER_SECOND = 20;
 
-
-    public static int applyDistanceCooldownModifier(HomeWarpItem homeWarpItem, ServerPlayer player, int cooldown){
-        double maxCooldownReduction = HomeWarpItem.getDistanceBasedCooldownReduction(homeWarpItem.getId());
+    public static int applyDistanceCooldownModifier(IWarpInitiator warpInitiator, ServerPlayer player, int cooldown){
+        double maxCooldownReduction = warpInitiator.getDistanceBasedCooldownReduction();
 
         if(maxCooldownReduction > 0.0) {
-            int blocksPerPercentAdded = HomeWarpItem.getBlocksPerBonusReducedBy1Percent(homeWarpItem.getId());
+            int blocksPerPercentAdded = warpInitiator.getBlocksPerBonusReducedBy1Percent();
 
-            IWarpCap playerWarpCap = CapabilityUtil.getWarpCap(player);
+            IWarpCap playerWarpCap = CapabilityUtil.getWarpCapOrNull(player);
             if(playerWarpCap == null) return cooldown;
 
             WarpPos currentPos = CapabilityUtil.createWarpPosOnPlayer(player);

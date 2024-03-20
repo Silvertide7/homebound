@@ -17,7 +17,6 @@ public final class EnchantmentUtil {
         return useDuration;
     }
 
-
     public static int getCooldownEnchantLevel(ItemStack stack) {
         return stack.getEnchantmentLevel(EnchantmentRegistry.COOLDOWN_REDUCTION.get());
     }
