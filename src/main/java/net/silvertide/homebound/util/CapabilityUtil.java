@@ -14,11 +14,6 @@ public final class CapabilityUtil {
 
     private CapabilityUtil() {}
 
-    public static LazyOptional<IWarpCap> getHome(final LivingEntity entity) {
-        if (entity == null)
-            return LazyOptional.empty();
-        return entity.getCapability(HOME_CAPABILITY);
-    }
     @Nullable
     public static IWarpCap getWarpCapOrNull(Player player) {
         return getWarpCap(player).orElse(null);

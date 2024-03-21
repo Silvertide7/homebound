@@ -19,5 +19,8 @@
   "curios.identifier.homebound_stone": "Homebound Stone",
 
   "key.homebound.useHomeboundStoneKey": "Use Homebound Stone",
-  "key.categories.homebound": "Homebound"
+  "key.categories.homebound": "Homebound",
+
+  "enchantment.homebound.cooldown_reduction.desc": "Reduce Homebound Stone cooldown.",
+  "enchantment.homebound.channel_haste.desc": "Reduce Homebound Stone use time."
 }

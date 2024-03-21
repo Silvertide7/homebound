@@ -7,14 +7,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
 import net.silvertide.homebound.config.Config;
+import net.silvertide.homebound.events.StartWarpEvent;
 import net.silvertide.homebound.util.*;
 
 import java.util.List;
@@ -37,66 +37,49 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand pUsedHand) {
         ItemStack itemstack = player.getItemInHand(pUsedHand);
         if (!level.isClientSide()) {
-//            Start warp manager
-//            if (canPlayerWarp(player, level)) {
-//                player.startUsingItem(pUsedHand);
-//                return InteractionResultHolder.success(itemstack);
-//            }
+            ServerPlayer serverPlayer = (ServerPlayer) player;
+            if(player.isCrouching()) {
+                HomeManager homeManager = HomeManager.getInstance();
+                if(!homeManager.isPlayerBindingHome(serverPlayer)) {
+                    homeManager.startBindingHome(serverPlayer);
+                    player.startUsingItem(pUsedHand);
+                    return InteractionResultHolder.success(itemstack);
+                }
+                return InteractionResultHolder.success(itemstack);
+            } else {
+                WarpManager warpManager = WarpManager.getInstance();
+                if(!warpManager.isPlayerWarping(serverPlayer) && !MinecraftForge.EVENT_BUS.post(new StartWarpEvent(player, this))) {
+                    int cooldown = getWarpCooldown(serverPlayer, itemstack);
+                    int warpUseDuration = getWarpUseDuration(itemstack);
+                    warpManager.startWarping(serverPlayer, cooldown, warpUseDuration);
+                    player.startUsingItem(pUsedHand);
+                    return InteractionResultHolder.success(itemstack);
+                }
+            }
         }
         return InteractionResultHolder.fail(itemstack);
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext pContext) {
-        Level level = pContext.getLevel();
-        Player player = pContext.getPlayer();
-        if(player != null && !level.isClientSide()) {
-            if(player.isCrouching()) {
-                setHome(player, (ServerLevel) level);
-                HomeboundUtil.displayClientMessage(player, "Set home.");
-                return InteractionResult.SUCCESS;
-            } else {
-                // Start warp manager
-//                if(canPlayerWarp(player)) {
-//                    player.startUsingItem(pContext.getHand());
-//                    return InteractionResult.SUCCESS;
-//                }
+    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
+        if(!level.isClientSide() && entity instanceof ServerPlayer serverPlayer) {
+            WarpManager warpManager = WarpManager.getInstance();
+            if(warpManager.isPlayerWarping(serverPlayer)) {
+                warpManager.cancelWarp(serverPlayer);
+            }
+            HomeManager homeManager = HomeManager.getInstance();
+            if(homeManager.isPlayerBindingHome(serverPlayer)) {
+                homeManager.cancelBindHome(serverPlayer);
             }
         }
-        return InteractionResult.FAIL;
-    }
-
-    @Override
-    public void onUseTick(Level pLevel, LivingEntity entity, ItemStack pStack, int pRemainingUseDuration) {
-//        if(!pLevel.isClientSide()) {
-//            Player player = (Player) entity;
-//            ServerLevel serverLevel = (ServerLevel) pLevel;
-//
-//            int activationDuration = getActivationDuration(pStack);
-//            int durationHeld = this.getUseDuration(pStack) - pRemainingUseDuration;
-//            if (durationHeld < activationDuration) {
-//                if(pRemainingUseDuration%6==0) {
-//                    int scalingParticles = (durationHeld)/12;
-//                    HomeboundUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, scalingParticles);
-//                    HomeboundUtil.playSound(serverLevel, player, SoundEvents.BLAZE_BURN);
-//                }
-//            } else if(durationHeld == activationDuration) {
-//                warpHome(player, serverLevel, pStack);
-//            }
-//        }
     }
 
     public HomeWarpItemId getId() {
         return  this.id;
     }
 
-    private void setHome(Player player, ServerLevel serverLevel){
-        player.sendSystemMessage(Component.literal("§aHome set.§r"));
-        CapabilityUtil.getHome(player).ifPresent(warpCap -> {
-            warpCap.setWarpPos(player);
-            HomeboundUtil.spawnParticals(serverLevel, player, ParticleTypes.CRIT, 20);
-            HomeboundUtil.playSound(serverLevel, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE);
-        });
+    private void setHome(Player player, ServerLevel serverLevel) {
+
     }
 
     public int getWarpUseDuration(ItemStack stack) {
@@ -110,16 +93,16 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack pStack) {
+    public int getUseDuration(ItemStack stack) {
         return 72000;
     }
     @Override
-    public UseAnim getUseAnimation(ItemStack pStack) {
+    public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.BOW;
     }
 
     @Override
-    public boolean isEnchantable(ItemStack pStack) {
+    public boolean isEnchantable(ItemStack stack) {
         return this.isEnchantable;
     }
 
@@ -149,15 +132,15 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         if(Screen.hasShiftDown()){
-            pTooltipComponents.add(Component.literal("Crouch and use the item on a block to set your home."));
-            addCooldownHoverText(pTooltipComponents, pStack);
+            pTooltipComponents.add(Component.literal("Crouch and use the item to set your home."));
+            addCooldownHoverText(pTooltipComponents, stack);
 
-            pTooltipComponents.add(Component.literal("§aCast Time: " + 12345 / 20.0 + " seconds.§r"));
+            pTooltipComponents.add(Component.literal("§aCast Time: " + getWarpUseDuration(stack) / 20.0 + " seconds.§r"));
 
             int maxDistance = getMaxDistance();
-            if(maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax WarpAttributes Distance: " + maxDistance + " blocks§r"));
+            if(maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax Distance: " + maxDistance + " blocks§r"));
 
             boolean canDimTravel = canDimTravel();
             pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (canDimTravel ? "Yes" : "§cNo§r") + "§r"));
@@ -165,7 +148,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
         } else {
             pTooltipComponents.add(Component.literal("Find your way home. Press §eSHIFT§r for more info."));
         }
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+        super.appendHoverText(stack, pLevel, pTooltipComponents, pIsAdvanced);
     }
 
     @Override

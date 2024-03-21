@@ -1,15 +1,19 @@
 package net.silvertide.homebound.util;
 
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.silvertide.homebound.config.Config;
 
 import java.util.*;
 
 public class HomeManager {
     private static HomeManager instance;
-    private final Map<UUID, Long> homeStartTimeMap;
+    private final Map<UUID, ScheduledBindHome> scheduledBindHomeMap;
     private HomeManager(){
-        this.homeStartTimeMap = new HashMap<>();
+        this.scheduledBindHomeMap = new HashMap<>();
     }
 
     public static HomeManager getInstance() {
@@ -19,35 +23,45 @@ public class HomeManager {
         return instance;
     }
 
-    public void startSettingHome(ServerPlayer player) {
-        homeStartTimeMap.put(player.getUUID(), player.level().getGameTime());
+    public void startBindingHome(ServerPlayer player) {
+        ScheduledBindHome scheduledBindHome = new ScheduledBindHome(player, Config.BIND_HOME_USE_DURATION.get()*20, player.level().getGameTime());
+        scheduledBindHomeMap.put(player.getUUID(), scheduledBindHome);
     }
-    public void cancelSettingHome(ServerPlayer player) {
-        homeStartTimeMap.remove(player.getUUID());
-    }
-
-    public int getSetHomeDurationInTicks() {
-        // This is multiplied by 20 because
-        return Config.SET_HOME_TIME.get()*HomeboundUtil.TICKS_PER_SECOND;
-    }
-    public boolean isSettingHome(ServerPlayer player) {
-        return this.homeStartTimeMap.containsKey(player.getUUID());
-    }
-    public double setHomePercentComplete(ServerPlayer player) {
-        if(isSettingHome(player)){
-            long timeElapsed = (player.level().getGameTime() - homeStartTimeMap.get(player.getUUID()));
-            return  (timeElapsed / (double) getSetHomeDurationInTicks())*100;
-        }
-        return 0.0;
+    public void cancelBindHome(ServerPlayer player) {
+        player.displayClientMessage(Component.literal("Bind home canceled."), true);
+        scheduledBindHomeMap.remove(player.getUUID());
     }
 
-//    public boolean setHome(ServerPlayer player) {
-//        IWarpCap playerWarpCapability = CapabilityUtil.getWarpCapOrNull(player);
-//        if(playerWarpCapability == null) return false;
-//
-//        playerWarpCapability.setWarpPos(player);
-//        return true;
-//        HomeboundUtil.spawnParticals((ServerLevel) player.level(), player, ParticleTypes.CRIT, 20);
-//        HomeboundUtil.playSound(player.level(), player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE);
-//    }
+    public boolean isPlayerBindingHome(ServerPlayer player) {
+        return this.scheduledBindHomeMap.containsKey(player.getUUID());
+    }
+
+    public boolean bindHomeIsActive() { return this.scheduledBindHomeMap.size() > 0; }
+
+    public List<ScheduledBindHome> getBindHomeSchedules() {
+        return new ArrayList<>(scheduledBindHomeMap.values());
+    }
+
+    public double bindHomePercentComplete(ServerPlayer player) {
+        ScheduledBindHome scheduledBindHome = scheduledBindHomeMap.get(player.getUUID());
+        if (scheduledBindHome == null) return 0.0;
+
+        long timeElapsed = (player.level().getGameTime() - scheduledBindHome.startedBindingHomeGameTimeStamp());
+        return  (timeElapsed / (double) scheduledBindHome.useDuration())*100;
+    }
+    public void setPlayerHome(ServerPlayer player) {
+        player.sendSystemMessage(Component.literal("§aHome set.§r"));
+        CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
+            warpCap.setWarpPos(player);
+
+        });
+        this.scheduledBindHomeMap.remove(player.getUUID());
+    }
+
+    public void triggerHomeBindEffects(ServerPlayer serverPlayer) {
+        ServerLevel serverLevel = serverPlayer.serverLevel();
+        HomeboundUtil.spawnParticals(serverLevel, serverPlayer, ParticleTypes.CRIT, 20);
+        HomeboundUtil.playSound(serverLevel, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), SoundEvents.BEACON_ACTIVATE);
+    }
+
 }

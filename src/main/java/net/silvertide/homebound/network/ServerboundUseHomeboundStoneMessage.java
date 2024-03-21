@@ -41,17 +41,9 @@ public class ServerboundUseHomeboundStoneMessage {
         if(msg.isKeybindDown == (byte) 1) {
             if(!WarpManager.getInstance().isPlayerWarping(player)) {
                 Optional<ItemStack> warpItemStack = HomeboundUtil.findWarpInitiatiorItemStack(player);
-
-                // check rest of inventory
-                // Post event to check if warping is allowed.
-
-                // If it is then queue the warp
                 warpItemStack.ifPresentOrElse(stack -> {
                         IWarpItem warpItem = (IWarpItem) stack.getItem();
-                        if (MinecraftForge.EVENT_BUS.post(new StartWarpEvent(player, warpItem))) {
-                            player.sendSystemMessage(Component.literal("Event canceled the warp."));
-                            return;
-                        }
+                        if (MinecraftForge.EVENT_BUS.post(new StartWarpEvent(player, warpItem))) return;
                         WarpManager.getInstance().startWarping(player, warpItem.getWarpCooldown(player, stack), warpItem.getWarpUseDuration(stack));
                     },
                     () ->  player.displayClientMessage(Component.literal("No Homebound stone found."), true)
@@ -59,7 +51,6 @@ public class ServerboundUseHomeboundStoneMessage {
             }
         } else {
             if(WarpManager.getInstance().isPlayerWarping(player)) {
-                player.displayClientMessage(Component.literal("Warp canceled."), true);
                 WarpManager.getInstance().cancelWarp(player);
             }
         }

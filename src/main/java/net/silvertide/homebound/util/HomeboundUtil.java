@@ -56,19 +56,16 @@ public final class HomeboundUtil {
         // Check the currently selected item (if on the hotbar)
         int currentlySelectedSlotIndex = player.getInventory().selected;
         if (Inventory.isHotbarSlot(currentlySelectedSlotIndex) && player.getInventory().items.get(currentlySelectedSlotIndex).getItem() instanceof IWarpItem) {
-            HomeboundUtil.sendSystemMessage(player, "Initiating warp from main hand. " + player.getInventory().items.get(currentlySelectedSlotIndex));
             return Optional.of(player.getInventory().items.get(currentlySelectedSlotIndex));
         }
 
         if(playerInventory.offhand.get(0).getItem() instanceof IWarpItem) {
-            HomeboundUtil.sendSystemMessage(player, "Initiating warp from off hand. "  + playerInventory.offhand.get(0).getDescriptionId());
             return Optional.of(playerInventory.offhand.get(0));
         }
 
         if (ModList.get().isLoaded("curios")) {
             Optional<ItemStack> curiosWarpItemStack = CuriosCompat.findCuriosWarpItemStack(player);
             if(curiosWarpItemStack.isPresent()) {
-                HomeboundUtil.sendSystemMessage(player, "Initiating warp from curios. " + curiosWarpItemStack.get().getDescriptionId());
                 return curiosWarpItemStack;
             }
         }
@@ -76,7 +73,6 @@ public final class HomeboundUtil {
         for (int i = 0; i < playerInventory.items.size(); i++) {
             ItemStack stack = playerInventory.items.get(i);
             if(stack.getItem() instanceof IWarpItem){
-                HomeboundUtil.sendSystemMessage(player, "Initiating warp from other inventory slot. " + stack.getDescriptionId());
                 return Optional.of(stack);
             }
         }

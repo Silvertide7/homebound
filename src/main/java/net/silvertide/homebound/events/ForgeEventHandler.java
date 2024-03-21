@@ -1,7 +1,10 @@
 package net.silvertide.homebound.events;
 
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +14,7 @@ import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -21,13 +25,9 @@ import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpCapAttacher;
 import net.silvertide.homebound.config.Config;
-import net.silvertide.homebound.item.IWarpItem;
-import net.silvertide.homebound.util.CapabilityUtil;
-import net.silvertide.homebound.util.WarpAttributes;
-import net.silvertide.homebound.util.WarpManager;
+import net.silvertide.homebound.util.*;
 import net.silvertide.homebound.item.HomeWarpItem;
 import net.silvertide.homebound.item.ISoulboundItem;
-import net.silvertide.homebound.util.WarpResult;
 
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +46,7 @@ public class ForgeEventHandler {
     public static void registerCapabilities(final RegisterCapabilitiesEvent event) {
         event.register(IWarpCap.class);
     }
+
     @SubscribeEvent(priority= EventPriority.LOWEST)
     public static void onLivingDrops(LivingDropsEvent event) {
         if (event.isCanceled())
@@ -83,7 +84,7 @@ public class ForgeEventHandler {
                     }
                 });
 
-                player.displayClientMessage(Component.literal("Warp cancelled."), true);
+                HomeboundUtil.displayClientMessage(player, "Warp cancelled from taking damage.");
             }
         }
     }
@@ -93,16 +94,31 @@ public class ForgeEventHandler {
         if(event.haveTime() && event.phase == TickEvent.Phase.END) {
             if(WarpManager.getInstance().warpIsActive()) {
                 WarpManager warpManager = WarpManager.getInstance();
-                List<WarpAttributes> warpAttributes = warpManager.getWarpAttributeList();
-                warpAttributes.forEach(warp -> {
+                List<ScheduledWarp> scheduledWarpAttributes = warpManager.getWarpAttributeList();
+                scheduledWarpAttributes.forEach(warp -> {
                     ServerPlayer serverPlayer = warp.serverPlayer();
                     if(warpManager.warpPercentComplete(serverPlayer) >= 100.0) {
                         warpManager.warpPlayerHome(serverPlayer);
+                    } else if (serverPlayer.level().getGameTime() % 10 == 0) {
+                        warpManager.playWarpEffects(serverPlayer);
+                    }
+                });
+            }
+
+            if(HomeManager.getInstance().bindHomeIsActive()) {
+                HomeManager homeManager = HomeManager.getInstance();
+                List<ScheduledBindHome> scheduledHomeBinds = homeManager.getBindHomeSchedules();
+                scheduledHomeBinds.forEach(homeBind -> {
+                    ServerPlayer serverPlayer = homeBind.serverPlayer();
+                    if(homeManager.bindHomePercentComplete(serverPlayer) >= 100.0) {
+                        homeManager.setPlayerHome(serverPlayer);
+                        homeManager.triggerHomeBindEffects(serverPlayer);
                     }
                 });
             }
         }
     }
+
 
     @SubscribeEvent
     public static void onStartWarp(StartWarpEvent warpEvent) {
@@ -173,5 +189,32 @@ public class ForgeEventHandler {
             newHome.setCooldown(oldHome.getLastWarpTimestamp(), oldHome.getCooldown());
         }));
         event.getOriginal().invalidateCaps();
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent loggedOutEvent) {
+        if(!loggedOutEvent.getEntity().level().isClientSide()) {
+            ServerPlayer serverPlayer = (ServerPlayer) loggedOutEvent.getEntity();
+            if(WarpManager.getInstance().isPlayerWarping(serverPlayer)){
+                WarpManager.getInstance().cancelWarp(serverPlayer);
+            }
+
+            if(HomeManager.getInstance().isPlayerBindingHome(serverPlayer)){
+                HomeManager.getInstance().cancelBindHome(serverPlayer);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerDeath(LivingDeathEvent livingDeathEvent) {
+        if(!livingDeathEvent.getEntity().level().isClientSide() && livingDeathEvent.getEntity() instanceof ServerPlayer serverPlayer) {
+            if(WarpManager.getInstance().isPlayerWarping(serverPlayer)){
+                WarpManager.getInstance().cancelWarp(serverPlayer);
+            }
+
+            if(HomeManager.getInstance().isPlayerBindingHome(serverPlayer)){
+                HomeManager.getInstance().cancelBindHome(serverPlayer);
+            }
+        }
     }
 }

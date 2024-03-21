@@ -1,7 +1,9 @@
 package net.silvertide.homebound.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -18,14 +20,15 @@ import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.item.IWarpItem;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class WarpManager {
     private static WarpManager instance;
-    private final Map<UUID, WarpAttributes> warpAttrMap;
+    private final Map<UUID, ScheduledWarp> scheduledWarpMap;
     private WarpManager(){
-        this.warpAttrMap = new HashMap<>();
+        this.scheduledWarpMap = new HashMap<>();
     }
 
     public static WarpManager getInstance() {
@@ -36,29 +39,30 @@ public class WarpManager {
     }
 
     public void startWarping(ServerPlayer player, int cooldown, int useDuration) {
-        WarpAttributes warpAttributes = new WarpAttributes(player, cooldown, useDuration, player.level().getGameTime());
-        warpAttrMap.put(player.getUUID(), warpAttributes);
+        ScheduledWarp scheduledWarp = new ScheduledWarp(player, cooldown, useDuration, player.level().getGameTime());
+        scheduledWarpMap.put(player.getUUID(), scheduledWarp);
     }
     public void cancelWarp(ServerPlayer player) {
-        warpAttrMap.remove(player.getUUID());
+        player.displayClientMessage(Component.literal("Warp canceled."), true);
+        scheduledWarpMap.remove(player.getUUID());
     }
 
     public boolean isPlayerWarping(ServerPlayer player) {
-        return this.warpAttrMap.containsKey(player.getUUID());
+        return this.scheduledWarpMap.containsKey(player.getUUID());
     }
 
-    public boolean warpIsActive() { return this.warpAttrMap.size() > 0; }
+    public boolean warpIsActive() { return this.scheduledWarpMap.size() > 0; }
 
-    public List<WarpAttributes> getWarpAttributeList() {
-        return new ArrayList<>(warpAttrMap.values());
+    public List<ScheduledWarp> getWarpAttributeList() {
+        return new ArrayList<>(scheduledWarpMap.values());
     }
 
     public double warpPercentComplete(ServerPlayer player) {
-        WarpAttributes warpAttributes = warpAttrMap.get(player.getUUID());
-        if (warpAttributes == null) return 0.0;
+        ScheduledWarp scheduledWarp = scheduledWarpMap.get(player.getUUID());
+        if (scheduledWarp == null) return 0.0;
 
-        long timeElapsed = (player.level().getGameTime() - warpAttributes.startedWarpingGameTimeStamp());
-        return  (timeElapsed / (double) warpAttributes.useDuration())*100;
+        long timeElapsed = (player.level().getGameTime() - scheduledWarp.startedWarpingGameTimeStamp());
+        return  (timeElapsed / (double) scheduledWarp.useDuration())*100;
     }
 
     public WarpResult canPlayerWarp(Player player, IWarpItem warpItem) {
@@ -95,14 +99,20 @@ public class WarpManager {
     }
 
     public void warpPlayerHome(ServerPlayer player) {
-        IWarpCap playerWarpCapability = CapabilityUtil.getWarpCapOrNull(player);
-        if(playerWarpCapability == null) return;
+        CapabilityUtil.getWarpCap(player).ifPresent(playerWarpCapability -> {
+            this.warp(player, playerWarpCapability.getWarpPos());
 
-        this.warp(player, playerWarpCapability.getWarpPos());
+            ScheduledWarp scheduledWarp = this.scheduledWarpMap.get(player.getUUID());
+            if(!player.getAbilities().instabuild) {
+                playerWarpCapability.setCooldown(player.level().getGameTime(), scheduledWarp.cooldown());
+            }
+        });
+        this.scheduledWarpMap.remove(player.getUUID());
+    }
 
-        WarpAttributes warpAttributes = this.warpAttrMap.get(player.getUUID());
-        playerWarpCapability.setCooldown(player.level().getGameTime(), warpAttributes.cooldown());
-        this.warpAttrMap.remove(player.getUUID());
+    public void playWarpEffects(ServerPlayer player) {
+        HomeboundUtil.spawnParticals(player.serverLevel(), player, ParticleTypes.PORTAL, 5);
+        HomeboundUtil.playSound(player.serverLevel(), player, SoundEvents.BLAZE_BURN);
     }
 
     // This function was largely copied from Tictim's Hearthstone mod, an objectively and subjectively better mod.
@@ -131,21 +141,12 @@ public class WarpManager {
             destLevel.getChunkSource().addRegionTicket(TicketType.POST_TELEPORT, new ChunkPos(destinationPos), 1, entity.getId());
 
             // Check if the player is riding a horse like (includes camels mules etc) that they own.
-            AbstractHorse riddenEntityToTeleport = null;
-            if(player.isPassenger()) {
-                Entity vehicle = player.getVehicle();
-                if(vehicle instanceof AbstractHorse horseLike) {
-                    boolean hasOwner = horseLike.getOwnerUUID() != null;
-                    boolean riddenByOwner = horseLike.getOwnerUUID().toString().equals(player.getUUID().toString());
-                    if(hasOwner && riddenByOwner){
-                        riddenEntityToTeleport = horseLike;
-                    }
-                }
-            }
-            player.stopRiding();
+            AbstractHorse riddenEntityToTeleport = getHorseIfRidingAndOwnedByPlayer(player);
 
+            if(player.isPassenger()) player.stopRiding();
             if(player.isSleeping()) player.stopSleeping();
-            if(inSameDimension){
+
+            if(inSameDimension) {
                 player.connection.teleport(destX, destY, destZ, player.getYRot(), player.getXRot(), Collections.emptySet());
                 if(riddenEntityToTeleport != null) riddenEntityToTeleport.moveTo(destX, destY, destZ, riddenEntityToTeleport.getYRot(), riddenEntityToTeleport.getXRot());
             }
@@ -168,8 +169,24 @@ public class WarpManager {
                 entity.remove(Entity.RemovalReason.CHANGED_DIMENSION);
             }
         }
+
         HomeboundUtil.playSound(originalLevel, currX, currY, currZ, SoundEvents.BLAZE_SHOOT);
         HomeboundUtil.playSound(destLevel, destX, destY, destZ, SoundEvents.BLAZE_SHOOT);
     }
 
+    @Nullable
+    private AbstractHorse getHorseIfRidingAndOwnedByPlayer(ServerPlayer player){
+        if(player.isPassenger()) {
+            Entity vehicle = player.getVehicle();
+            if(vehicle instanceof AbstractHorse horseLike) {
+                boolean hasOwner = horseLike.getOwnerUUID() != null;
+                boolean riddenByOwner = horseLike.getOwnerUUID().toString().equals(player.getUUID().toString());
+                if(hasOwner && riddenByOwner){
+                    return horseLike;
+                }
+            }
+        }
+
+        return null;
+    }
 }

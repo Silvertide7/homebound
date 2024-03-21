@@ -8,6 +8,7 @@ public class Config {
 
 //    public static final ForgeConfigSpec.ConfigValue<Boolean> TELEPORT_TO_BED;
     public static final ForgeConfigSpec.ConfigValue<Integer> HURT_COOLDOWN_TIME;
+    public static final ForgeConfigSpec.ConfigValue<Integer> BIND_HOME_USE_DURATION;
     public static final ForgeConfigSpec.ConfigValue<Integer> SET_HOME_TIME;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_COOLDOWN;
@@ -74,6 +75,8 @@ public class Config {
         BUILDER.comment("This is to prevent players from easily teleporting out of a dangerous situation.");
         BUILDER.comment("This value is how long of a cooldown in seconds is added when damage is taken. Set to 0 to disable taking damage from canceling the teleport");
         HURT_COOLDOWN_TIME = BUILDER.define("Hurt Cooldown Time", 5);
+        BUILDER.comment("How long it takes (in seconds) to bind your home to a location when you are crouching and using a homebound stone.");
+        BIND_HOME_USE_DURATION = BUILDER.define("Bind Home Use Duration", 3);
 
         BUILDER.comment("Homeward Item Cooldowns");
         BUILDER.comment("All cooldowns are in minutes. All enchantments or cooldown reducing effects will apply to this base cooldown.");
