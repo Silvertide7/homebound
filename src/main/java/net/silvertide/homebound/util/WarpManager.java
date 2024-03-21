@@ -10,12 +10,14 @@ import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
+import net.silvertide.homebound.item.IWarpItem;
 
 import java.util.*;
 
@@ -34,10 +36,6 @@ public class WarpManager {
     }
 
     public void startWarping(ServerPlayer player, int cooldown, int useDuration) {
-
-        // Find a valid homestone in the inventory. If not then it fails with message
-        // Do checks here for if warping is allowed based on the item. If fails send message to player
-
         WarpAttributes warpAttributes = new WarpAttributes(player, cooldown, useDuration, player.level().getGameTime());
         warpAttrMap.put(player.getUUID(), warpAttributes);
     }
@@ -61,6 +59,39 @@ public class WarpManager {
 
         long timeElapsed = (player.level().getGameTime() - warpAttributes.startedWarpingGameTimeStamp());
         return  (timeElapsed / (double) warpAttributes.useDuration())*100;
+    }
+
+    public WarpResult canPlayerWarp(Player player, IWarpItem warpItem) {
+
+        if(!CapabilityUtil.isHomeSet(player)){
+            return new WarpResult(false, "§cNo home set.§r");
+        }
+
+        int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
+        if(remainingCooldown > 0){
+            String message = "§cYou haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";
+            return new WarpResult(false, message);
+        }
+
+        if(!CapabilityUtil.inValidDimension(player, warpItem)) {
+            String message = "§cCan't warp between dimensions.§r";
+            return new WarpResult(false, message);
+        }
+
+        int maxDistance = warpItem.getMaxDistance();
+        if(maxDistance > 0) {
+
+            int distanceFromWarp = CapabilityUtil.getWarpCap(player).resolve()
+                .map(warpCap -> warpCap.getWarpPos().calculateDistance(new WarpPos(player.getOnPos(), player.level().dimension().location())))
+                .orElse(10000);
+
+            if(distanceFromWarp > maxDistance) {
+                String message = "§cToo far from home. [" + distanceFromWarp + " / " + maxDistance + "]§r";
+                return new WarpResult(false, message);
+            }
+        }
+
+        return new WarpResult(true, "");
     }
 
     public void warpPlayerHome(ServerPlayer player) {

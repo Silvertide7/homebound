@@ -1,16 +1,22 @@
 package net.silvertide.homebound.util;
 
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.fml.ModList;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
+import net.silvertide.homebound.compat.CuriosCompat;
 import net.silvertide.homebound.item.IWarpItem;
 
+import java.util.Optional;
 import java.util.Random;
 
 
@@ -42,11 +48,55 @@ public final class HomeboundUtil {
         }
         return cooldown;
     }
+
+    public static Optional<ItemStack> findWarpInitiatiorItemStack(Player player) {
+        Inventory playerInventory = player.getInventory();
+        // check main or offhand
+
+        // Check the currently selected item (if on the hotbar)
+        int currentlySelectedSlotIndex = player.getInventory().selected;
+        if (Inventory.isHotbarSlot(currentlySelectedSlotIndex) && player.getInventory().items.get(currentlySelectedSlotIndex).getItem() instanceof IWarpItem) {
+            HomeboundUtil.sendSystemMessage(player, "Initiating warp from main hand. " + player.getInventory().items.get(currentlySelectedSlotIndex));
+            return Optional.of(player.getInventory().items.get(currentlySelectedSlotIndex));
+        }
+
+        if(playerInventory.offhand.get(0).getItem() instanceof IWarpItem) {
+            HomeboundUtil.sendSystemMessage(player, "Initiating warp from off hand. "  + playerInventory.offhand.get(0).getDescriptionId());
+            return Optional.of(playerInventory.offhand.get(0));
+        }
+
+        if (ModList.get().isLoaded("curios")) {
+            Optional<ItemStack> curiosWarpItemStack = CuriosCompat.findCuriosWarpItemStack(player);
+            if(curiosWarpItemStack.isPresent()) {
+                HomeboundUtil.sendSystemMessage(player, "Initiating warp from curios. " + curiosWarpItemStack.get().getDescriptionId());
+                return curiosWarpItemStack;
+            }
+        }
+
+        for (int i = 0; i < playerInventory.items.size(); i++) {
+            ItemStack stack = playerInventory.items.get(i);
+            if(stack.getItem() instanceof IWarpItem){
+                HomeboundUtil.sendSystemMessage(player, "Initiating warp from other inventory slot. " + stack.getDescriptionId());
+                return Optional.of(stack);
+            }
+        }
+
+        return Optional.empty();
+    }
+
     public static void spawnParticals(ServerLevel serverLevel, Player player, ParticleOptions particle, int numParticles){
         Level level = player.level();
         for(int i = 0; i < numParticles; i++){
             serverLevel.sendParticles(particle, player.getX() + level.random.nextDouble() - 0.5, player.getY() + 1.0, player.getZ() + level.random.nextDouble() - 0.5, 1, 0.0D, 0.0D, 0.0D, 1.0D);
         }
+    }
+
+    public static void displayClientMessage(Player player, String message) {
+        player.displayClientMessage(Component.literal(message), true);
+    }
+
+    public static void sendSystemMessage(Player player, String message) {
+        player.sendSystemMessage(Component.literal(message));
     }
 
     public static void playSound(Level level, double x, double y, double z, SoundEvent soundEvent){

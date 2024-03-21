@@ -21,11 +21,13 @@ import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpCapAttacher;
 import net.silvertide.homebound.config.Config;
+import net.silvertide.homebound.item.IWarpItem;
 import net.silvertide.homebound.util.CapabilityUtil;
 import net.silvertide.homebound.util.WarpAttributes;
 import net.silvertide.homebound.util.WarpManager;
 import net.silvertide.homebound.item.HomeWarpItem;
 import net.silvertide.homebound.item.ISoulboundItem;
+import net.silvertide.homebound.util.WarpResult;
 
 import java.util.Iterator;
 import java.util.List;
@@ -93,8 +95,9 @@ public class ForgeEventHandler {
                 WarpManager warpManager = WarpManager.getInstance();
                 List<WarpAttributes> warpAttributes = warpManager.getWarpAttributeList();
                 warpAttributes.forEach(warp -> {
-                    if(warpManager.warpPercentComplete(warp.serverPlayer()) >= 100.0) {
-                        warpManager.warpPlayerHome(warp.serverPlayer());
+                    ServerPlayer serverPlayer = warp.serverPlayer();
+                    if(warpManager.warpPercentComplete(serverPlayer) >= 100.0) {
+                        warpManager.warpPlayerHome(serverPlayer);
                     }
                 });
             }
@@ -102,11 +105,16 @@ public class ForgeEventHandler {
     }
 
     @SubscribeEvent
-    public static void onWarp(StartWarpEvent warpEvent) {
+    public static void onStartWarp(StartWarpEvent warpEvent) {
         if (warpEvent.isCanceled()) return;
 
         Player player = warpEvent.getEntity();
-        warpEvent.setCanceled(true);
+        WarpResult warpResult = WarpManager.getInstance().canPlayerWarp(player, warpEvent.getWarpItem());
+
+        if(!warpResult.success()) {
+            warpEvent.setCanceled(true);
+            player.displayClientMessage(Component.literal(warpResult.message()), true);
+        }
     }
 
 //    @SubscribeEvent(priority = EventPriority.LOWEST)

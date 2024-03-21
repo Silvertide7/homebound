@@ -14,6 +14,11 @@ public final class CapabilityUtil {
 
     private CapabilityUtil() {}
 
+    public static LazyOptional<IWarpCap> getHome(final LivingEntity entity) {
+        if (entity == null)
+            return LazyOptional.empty();
+        return entity.getCapability(HOME_CAPABILITY);
+    }
     @Nullable
     public static IWarpCap getWarpCapOrNull(Player player) {
         return getWarpCap(player).orElse(null);
@@ -29,23 +34,30 @@ public final class CapabilityUtil {
         return new WarpPos(player.getOnPos(), player.level().dimension().location());
     }
 
-    private boolean isHomeSet(Player player) {
+    public static boolean isHomeSet(Player player) {
         return getWarpCap(player).map(warpCap -> warpCap.getWarpPos() != null).orElse(false);
     }
 
-    private boolean hasCooldown(Player player) {
+    public static boolean hasCooldown(Player player) {
         return getWarpCap(player).map(warpCap -> {
             long gameTime = player.level().getGameTime();
             return warpCap.hasCooldown(gameTime);
         }).orElse(true);
     }
 
-    private boolean inValidDimension(IWarpItem warpItem, Player player) {
+    public static int getRemainingCooldown(Player player) {
+        return getWarpCap(player).map(warpCap -> {
+            long currGameTime = player.level().getGameTime();
+            return warpCap.getRemainingCooldown(currGameTime);
+        }).orElse(9999);
+    }
+
+    public static boolean inValidDimension(Player player, IWarpItem warpItem) {
         boolean isPlayerInWarpPosDimension = getWarpCap(player).map(warpCap -> warpCap.getWarpPos().isSameDimension(player.level().dimension().location())).orElse(false);
         return warpItem.canDimTravel() || isPlayerInWarpPosDimension;
     }
 
-    private boolean withinMaxDistance(IWarpItem warpItem, Player player) {
+    public static boolean withinMaxDistance(Player player, IWarpItem warpItem) {
         int maxDistance = warpItem.getMaxDistance();
         if (maxDistance == 0) return true;
 

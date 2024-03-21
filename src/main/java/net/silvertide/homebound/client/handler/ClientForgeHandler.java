@@ -18,7 +18,7 @@ public class ClientForgeHandler {
     public static void clientTick(TickEvent.ClientTickEvent clientTickEvent) {
         Minecraft minecraft = Minecraft.getInstance();
         if(age > 0) age--;
-        if(age == 0){
+        if(age == 0) {
             if(!keyWasHeldDownLastTick && Keybindings.INSTANCE.useHomeboundStoneKey.isDown() && minecraft.player != null) {
                 keyWasHeldDownLastTick = true;
                 PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 1));

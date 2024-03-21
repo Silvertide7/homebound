@@ -8,7 +8,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
 import net.silvertide.homebound.events.StartWarpEvent;
 import net.silvertide.homebound.item.IWarpItem;
-import net.silvertide.homebound.util.InventoryUtil;
+import net.silvertide.homebound.util.HomeboundUtil;
 import net.silvertide.homebound.util.WarpManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +40,7 @@ public class ServerboundUseHomeboundStoneMessage {
 
         if(msg.isKeybindDown == (byte) 1) {
             if(!WarpManager.getInstance().isPlayerWarping(player)) {
-                Optional<ItemStack> warpItemStack = InventoryUtil.findWarpInitiatiorItemStack(player);
+                Optional<ItemStack> warpItemStack = HomeboundUtil.findWarpInitiatiorItemStack(player);
 
                 // check rest of inventory
                 // Post event to check if warping is allowed.
@@ -54,7 +54,7 @@ public class ServerboundUseHomeboundStoneMessage {
                         }
                         WarpManager.getInstance().startWarping(player, warpItem.getWarpCooldown(player, stack), warpItem.getWarpUseDuration(stack));
                     },
-                    () ->  player.displayClientMessage(Component.literal("No stone found."), true)
+                    () ->  player.displayClientMessage(Component.literal("No Homebound stone found."), true)
                 );
             }
         } else {

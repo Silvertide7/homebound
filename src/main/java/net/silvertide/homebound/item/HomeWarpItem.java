@@ -1,9 +1,11 @@
 package net.silvertide.homebound.item;
 
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -51,6 +53,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
         if(player != null && !level.isClientSide()) {
             if(player.isCrouching()) {
                 setHome(player, (ServerLevel) level);
+                HomeboundUtil.displayClientMessage(player, "Set home.");
                 return InteractionResult.SUCCESS;
             } else {
                 // Start warp manager
@@ -88,7 +91,12 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
     }
 
     private void setHome(Player player, ServerLevel serverLevel){
-
+        player.sendSystemMessage(Component.literal("§aHome set.§r"));
+        CapabilityUtil.getHome(player).ifPresent(warpCap -> {
+            warpCap.setWarpPos(player);
+            HomeboundUtil.spawnParticals(serverLevel, player, ParticleTypes.CRIT, 20);
+            HomeboundUtil.playSound(serverLevel, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE);
+        });
     }
 
     public int getWarpUseDuration(ItemStack stack) {
