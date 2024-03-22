@@ -1,6 +1,5 @@
 package net.silvertide.homebound.events;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
@@ -12,6 +11,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.config.Config;
+import net.silvertide.homebound.events.custom.StartWarpEvent;
 import net.silvertide.homebound.util.*;
 import net.silvertide.homebound.item.HomeWarpItem;
 
@@ -23,8 +23,8 @@ public class WarpEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPlayerHurt(LivingHurtEvent event) {
         if(!event.getEntity().level().isClientSide && event.getEntity() instanceof ServerPlayer player) {
-            if (Config.HURT_COOLDOWN_TIME.get() > 0 && WarpManager.getInstance().isPlayerWarping(player)) {
-                WarpManager.getInstance().cancelWarp(player);
+            if (Config.HURT_COOLDOWN_TIME.get() > 0 && WarpManager.get().isPlayerWarping(player)) {
+                WarpManager.get().cancelWarp(player);
 
                 if(player.isUsingItem() && player.getUseItem().getItem() instanceof HomeWarpItem){
                     player.stopUsingItem();
@@ -46,8 +46,8 @@ public class WarpEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if(event.haveTime() && event.phase == TickEvent.Phase.END) {
-            if(WarpManager.getInstance().warpIsActive()) {
-                WarpManager warpManager = WarpManager.getInstance();
+            if(WarpManager.get().warpIsActive()) {
+                WarpManager warpManager = WarpManager.get();
                 List<ScheduledWarp> scheduledWarpAttributes = warpManager.getWarpAttributeList();
                 scheduledWarpAttributes.forEach(warp -> {
                     ServerPlayer serverPlayer = warp.serverPlayer();
@@ -59,8 +59,8 @@ public class WarpEvents {
                 });
             }
 
-            if(HomeManager.getInstance().bindHomeIsActive()) {
-                HomeManager homeManager = HomeManager.getInstance();
+            if(HomeManager.get().bindHomeIsActive()) {
+                HomeManager homeManager = HomeManager.get();
                 List<ScheduledBindHome> scheduledHomeBinds = homeManager.getBindHomeSchedules();
                 scheduledHomeBinds.forEach(homeBind -> {
                     ServerPlayer serverPlayer = homeBind.serverPlayer();
@@ -78,7 +78,7 @@ public class WarpEvents {
         if (warpEvent.isCanceled()) return;
 
         Player player = warpEvent.getEntity();
-        WarpResult warpResult = WarpManager.getInstance().canPlayerWarp(player, warpEvent.getWarpItem());
+        WarpResult warpResult = WarpManager.get().canPlayerWarp(player, warpEvent.getWarpItem());
 
         if(!warpResult.success()) {
             warpEvent.setCanceled(true);
@@ -90,12 +90,12 @@ public class WarpEvents {
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent loggedOutEvent) {
         if(!loggedOutEvent.getEntity().level().isClientSide()) {
             ServerPlayer serverPlayer = (ServerPlayer) loggedOutEvent.getEntity();
-            if(WarpManager.getInstance().isPlayerWarping(serverPlayer)){
-                WarpManager.getInstance().cancelWarp(serverPlayer);
+            if(WarpManager.get().isPlayerWarping(serverPlayer)){
+                WarpManager.get().cancelWarp(serverPlayer);
             }
 
-            if(HomeManager.getInstance().isPlayerBindingHome(serverPlayer)){
-                HomeManager.getInstance().cancelBindHome(serverPlayer);
+            if(HomeManager.get().isPlayerBindingHome(serverPlayer)){
+                HomeManager.get().cancelBindHome(serverPlayer);
             }
         }
     }
@@ -103,12 +103,12 @@ public class WarpEvents {
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent livingDeathEvent) {
         if (!livingDeathEvent.getEntity().level().isClientSide() && livingDeathEvent.getEntity() instanceof ServerPlayer serverPlayer) {
-            if (WarpManager.getInstance().isPlayerWarping(serverPlayer)) {
-                WarpManager.getInstance().cancelWarp(serverPlayer);
+            if (WarpManager.get().isPlayerWarping(serverPlayer)) {
+                WarpManager.get().cancelWarp(serverPlayer);
             }
 
-            if (HomeManager.getInstance().isPlayerBindingHome(serverPlayer)) {
-                HomeManager.getInstance().cancelBindHome(serverPlayer);
+            if (HomeManager.get().isPlayerBindingHome(serverPlayer)) {
+                HomeManager.get().cancelBindHome(serverPlayer);
             }
         }
     }

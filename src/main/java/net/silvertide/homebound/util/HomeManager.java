@@ -1,7 +1,6 @@
 package net.silvertide.homebound.util;
 
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -10,16 +9,13 @@ import net.silvertide.homebound.config.Config;
 import java.util.*;
 
 public class HomeManager {
-    private static HomeManager instance;
+    private static final HomeManager instance = new HomeManager();
     private final Map<UUID, ScheduledBindHome> scheduledBindHomeMap;
     private HomeManager(){
         this.scheduledBindHomeMap = new HashMap<>();
     }
 
-    public static HomeManager getInstance() {
-        if(instance == null){
-            instance = new HomeManager();
-        }
+    public static HomeManager get() {
         return instance;
     }
 

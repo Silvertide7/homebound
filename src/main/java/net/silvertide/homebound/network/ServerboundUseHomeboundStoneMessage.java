@@ -1,12 +1,11 @@
 package net.silvertide.homebound.network;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
-import net.silvertide.homebound.events.StartWarpEvent;
+import net.silvertide.homebound.events.custom.StartWarpEvent;
 import net.silvertide.homebound.item.IWarpItem;
 import net.silvertide.homebound.util.HomeboundUtil;
 import net.silvertide.homebound.util.WarpManager;
@@ -39,19 +38,19 @@ public class ServerboundUseHomeboundStoneMessage {
         if (player == null) return;
 
         if(msg.isKeybindDown == (byte) 1) {
-            if(!WarpManager.getInstance().isPlayerWarping(player)) {
+            if(!WarpManager.get().isPlayerWarping(player)) {
                 Optional<ItemStack> warpItemStack = HomeboundUtil.findWarpInitiatiorItemStack(player);
                 warpItemStack.ifPresentOrElse(stack -> {
                         IWarpItem warpItem = (IWarpItem) stack.getItem();
                         if (MinecraftForge.EVENT_BUS.post(new StartWarpEvent(player, warpItem))) return;
-                        WarpManager.getInstance().startWarping(player, stack);
+                        WarpManager.get().startWarping(player, stack);
                     },
                     () ->  HomeboundUtil.displayClientMessage(player,"No Homebound stone found.")
                 );
             }
         } else {
-            if(WarpManager.getInstance().isPlayerWarping(player)) {
-                WarpManager.getInstance().cancelWarp(player);
+            if(WarpManager.get().isPlayerWarping(player)) {
+                WarpManager.get().cancelWarp(player);
             }
         }
     }

@@ -11,7 +11,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.silvertide.homebound.config.Config;
-import net.silvertide.homebound.events.StartWarpEvent;
+import net.silvertide.homebound.events.custom.StartWarpEvent;
 import net.silvertide.homebound.util.*;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
         if (!level.isClientSide()) {
             ServerPlayer serverPlayer = (ServerPlayer) player;
             if(player.isCrouching()) {
-                HomeManager homeManager = HomeManager.getInstance();
+                HomeManager homeManager = HomeManager.get();
                 if(!homeManager.isPlayerBindingHome(serverPlayer)) {
                     homeManager.startBindingHome(serverPlayer);
                     player.startUsingItem(pUsedHand);
@@ -44,7 +44,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
                 }
                 return InteractionResultHolder.success(stack);
             } else {
-                WarpManager warpManager = WarpManager.getInstance();
+                WarpManager warpManager = WarpManager.get();
                 if(!warpManager.isPlayerWarping(serverPlayer) && !MinecraftForge.EVENT_BUS.post(new StartWarpEvent(player, this))) {
                     warpManager.startWarping(serverPlayer, stack);
                     player.startUsingItem(pUsedHand);
@@ -58,11 +58,11 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
         if(!level.isClientSide() && entity instanceof ServerPlayer serverPlayer) {
-            WarpManager warpManager = WarpManager.getInstance();
+            WarpManager warpManager = WarpManager.get();
             if(warpManager.isPlayerWarping(serverPlayer)) {
                 warpManager.cancelWarp(serverPlayer);
             }
-            HomeManager homeManager = HomeManager.getInstance();
+            HomeManager homeManager = HomeManager.get();
             if(homeManager.isPlayerBindingHome(serverPlayer)) {
                 homeManager.cancelBindHome(serverPlayer);
             }

@@ -1,4 +1,4 @@
-package net.silvertide.homebound.events;
+package net.silvertide.homebound.events.custom;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;

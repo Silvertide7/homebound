@@ -3,7 +3,6 @@ package net.silvertide.homebound.util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -25,16 +24,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class WarpManager {
-    private static WarpManager instance;
+    private static final WarpManager instance = new WarpManager();
     private final Map<UUID, ScheduledWarp> scheduledWarpMap;
     private WarpManager(){
         this.scheduledWarpMap = new HashMap<>();
     }
 
-    public static WarpManager getInstance() {
-        if(instance == null){
-            instance = new WarpManager();
-        }
+    public static WarpManager get() {
         return instance;
     }
 

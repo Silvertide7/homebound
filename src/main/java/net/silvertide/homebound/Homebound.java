@@ -41,7 +41,7 @@ public class Homebound
             MinecraftForge.EVENT_BUS.addListener(CuriosCompat::keepCurios);
         }
 
-        WarpManager.getInstance();
+        WarpManager.get();
     }
 
     @Mod.EventBusSubscriber(modid=Homebound.MOD_ID, bus=Mod.EventBusSubscriber.Bus.FORGE)
