@@ -33,13 +33,6 @@ public final class CapabilityUtil {
         return getWarpCap(player).map(warpCap -> warpCap.getWarpPos() != null).orElse(false);
     }
 
-    public static boolean hasCooldown(Player player) {
-        return getWarpCap(player).map(warpCap -> {
-            long gameTime = player.level().getGameTime();
-            return warpCap.hasCooldown(gameTime);
-        }).orElse(true);
-    }
-
     public static int getRemainingCooldown(Player player) {
         return getWarpCap(player).map(warpCap -> {
             long currGameTime = player.level().getGameTime();

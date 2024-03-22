@@ -18,6 +18,10 @@ public class ConsumedWarpItem extends HomeWarpItem{
         pTooltipComponents.add(Component.literal("§cThis item is consumed on use.§r"));
     }
     @Override
+    public boolean isConsumedOnUse() {
+        return true;
+    }
+    @Override
     public boolean isEnchantable(ItemStack pStack) {
         return false;
     }

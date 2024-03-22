@@ -99,6 +99,7 @@ public class ForgeEventHandler {
                     ServerPlayer serverPlayer = warp.serverPlayer();
                     if(warpManager.warpPercentComplete(serverPlayer) >= 100.0) {
                         warpManager.warpPlayerHome(serverPlayer);
+//                        if(warp.)
                     } else if (serverPlayer.level().getGameTime() % 10 == 0) {
                         warpManager.playWarpEffects(serverPlayer);
                     }
@@ -132,38 +133,6 @@ public class ForgeEventHandler {
             player.displayClientMessage(Component.literal(warpResult.message()), true);
         }
     }
-
-//    @SubscribeEvent(priority = EventPriority.LOWEST)
-//    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-//        if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END){
-//            ServerPlayer player = (ServerPlayer) event.player;
-//
-//            if(WarpManager.getInstance().isWarping(player)) {
-//                double percentComplete = WarpManager.getInstance().warpPercentComplete(player);
-//                String messageToPlayer = "Progress: " + (int) percentComplete;
-//                player.displayClientMessage(Component.literal(messageToPlayer), true);
-
-//                Player player = (Player) entity;
-//                ServerLevel serverLevel = (ServerLevel) pLevel;
-//
-//                int activationDuration = this.getActivationDuration(pStack);
-//                int durationHeld = this.getUseDuration(pStack) - pRemainingUseDuration;
-//                if (durationHeld < activationDuration) {
-//                    if(pRemainingUseDuration%6==0) {
-//                        int scalingParticles = (durationHeld)/12;
-//                        HomeboundUtil.spawnParticals(serverLevel, player, ParticleTypes.PORTAL, scalingParticles);
-//                        HomeboundUtil.playSound(serverLevel, player, SoundEvents.BLAZE_BURN);
-//                    }
-//                } else if(durationHeld == activationDuration) {
-//                    warpHome(player, serverLevel, pStack);
-//                }
-//
-//                if(percentComplete >= 100.0) {
-//                    player.displayClientMessage(Component.literal("You just warped all over the place bro."), true);
-//                }
-//            }
-//        }
-//    }
 
     @SubscribeEvent(priority= EventPriority.LOWEST)
     public static void playerClone(PlayerEvent.Clone event) {

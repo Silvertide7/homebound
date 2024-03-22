@@ -44,7 +44,7 @@ public class ServerboundUseHomeboundStoneMessage {
                 warpItemStack.ifPresentOrElse(stack -> {
                         IWarpItem warpItem = (IWarpItem) stack.getItem();
                         if (MinecraftForge.EVENT_BUS.post(new StartWarpEvent(player, warpItem))) return;
-                        WarpManager.getInstance().startWarping(player, warpItem.getWarpCooldown(player, stack), warpItem.getWarpUseDuration(stack));
+                        WarpManager.getInstance().startWarping(player, stack);
                     },
                     () ->  player.displayClientMessage(Component.literal("No Homebound stone found."), true)
                 );

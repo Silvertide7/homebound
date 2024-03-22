@@ -12,4 +12,5 @@ public interface IWarpItem {
     int getMaxDistance();
     int getWarpUseDuration(ItemStack stack);
     int getWarpCooldown(ServerPlayer player, ItemStack stack);
+    boolean isConsumedOnUse();
 }

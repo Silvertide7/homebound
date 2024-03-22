@@ -13,11 +13,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.item.IWarpItem;
 import org.jetbrains.annotations.Nullable;
@@ -38,8 +38,9 @@ public class WarpManager {
         return instance;
     }
 
-    public void startWarping(ServerPlayer player, int cooldown, int useDuration) {
-        ScheduledWarp scheduledWarp = new ScheduledWarp(player, cooldown, useDuration, player.level().getGameTime());
+    public void startWarping(ServerPlayer player, ItemStack warpItemStack) {
+        IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
+        ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(warpItemStack), player.level().getGameTime());
         scheduledWarpMap.put(player.getUUID(), scheduledWarp);
     }
     public void cancelWarp(ServerPlayer player) {
@@ -103,15 +104,24 @@ public class WarpManager {
             this.warp(player, playerWarpCapability.getWarpPos());
 
             ScheduledWarp scheduledWarp = this.scheduledWarpMap.get(player.getUUID());
+            ItemStack warpItemStack = scheduledWarp.warpItemStack();
+            IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
+
             if(!player.getAbilities().instabuild) {
-                playerWarpCapability.setCooldown(player.level().getGameTime(), scheduledWarp.cooldown());
+                int cooldown = warpItem.getWarpCooldown(player, warpItemStack);
+                playerWarpCapability.setCooldown(player.level().getGameTime(), cooldown);
+
+                if(warpItem.isConsumedOnUse()){
+                    warpItemStack.shrink(1);
+                }
             }
         });
+
         this.scheduledWarpMap.remove(player.getUUID());
     }
 
     public void playWarpEffects(ServerPlayer player) {
-        HomeboundUtil.spawnParticals(player.serverLevel(), player, ParticleTypes.PORTAL, 5);
+        HomeboundUtil.spawnParticals(player.serverLevel(), player, ParticleTypes.PORTAL, 8);
         HomeboundUtil.playSound(player.serverLevel(), player, SoundEvents.BLAZE_BURN);
     }
 
@@ -170,8 +180,8 @@ public class WarpManager {
             }
         }
 
-        HomeboundUtil.playSound(originalLevel, currX, currY, currZ, SoundEvents.BLAZE_SHOOT);
-        HomeboundUtil.playSound(destLevel, destX, destY, destZ, SoundEvents.BLAZE_SHOOT);
+        HomeboundUtil.playSound(originalLevel, currX, currY, currZ, SoundEvents.ENDERMAN_TELEPORT);
+        HomeboundUtil.playSound(destLevel, destX, destY, destZ, SoundEvents.ENDERMAN_TELEPORT);
     }
 
     @Nullable

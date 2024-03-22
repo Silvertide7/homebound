@@ -1,11 +1,8 @@
 package net.silvertide.homebound.item;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,7 +32,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand pUsedHand) {
-        ItemStack itemstack = player.getItemInHand(pUsedHand);
+        ItemStack stack = player.getItemInHand(pUsedHand);
         if (!level.isClientSide()) {
             ServerPlayer serverPlayer = (ServerPlayer) player;
             if(player.isCrouching()) {
@@ -43,21 +40,19 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
                 if(!homeManager.isPlayerBindingHome(serverPlayer)) {
                     homeManager.startBindingHome(serverPlayer);
                     player.startUsingItem(pUsedHand);
-                    return InteractionResultHolder.success(itemstack);
+                    return InteractionResultHolder.success(stack);
                 }
-                return InteractionResultHolder.success(itemstack);
+                return InteractionResultHolder.success(stack);
             } else {
                 WarpManager warpManager = WarpManager.getInstance();
                 if(!warpManager.isPlayerWarping(serverPlayer) && !MinecraftForge.EVENT_BUS.post(new StartWarpEvent(player, this))) {
-                    int cooldown = getWarpCooldown(serverPlayer, itemstack);
-                    int warpUseDuration = getWarpUseDuration(itemstack);
-                    warpManager.startWarping(serverPlayer, cooldown, warpUseDuration);
+                    warpManager.startWarping(serverPlayer, stack);
                     player.startUsingItem(pUsedHand);
-                    return InteractionResultHolder.success(itemstack);
+                    return InteractionResultHolder.success(stack);
                 }
             }
         }
-        return InteractionResultHolder.fail(itemstack);
+        return InteractionResultHolder.fail(stack);
     }
 
     @Override
@@ -74,14 +69,6 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
         }
     }
 
-    public HomeWarpItemId getId() {
-        return  this.id;
-    }
-
-    private void setHome(Player player, ServerLevel serverLevel) {
-
-    }
-
     public int getWarpUseDuration(ItemStack stack) {
         int useDuration = getBaseUseDurationInTicks();
         return EnchantmentUtil.applyEnchantHasteModifier(useDuration, EnchantmentUtil.getHasteEnchantLevel(stack));
@@ -90,6 +77,10 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
     public int getWarpCooldown(ServerPlayer player, ItemStack stack) {
         int baseCooldown = getBaseCooldown();
         return EnchantmentUtil.applyEnchantCooldownModifier(HomeboundUtil.applyDistanceCooldownModifier(this, player, baseCooldown), EnchantmentUtil.getCooldownEnchantLevel(stack));
+    }
+
+    public boolean isConsumedOnUse() {
+        return false;
     }
 
     @Override
