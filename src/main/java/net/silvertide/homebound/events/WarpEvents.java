@@ -82,7 +82,7 @@ public class WarpEvents {
 
         if(!warpResult.success()) {
             warpEvent.setCanceled(true);
-            player.displayClientMessage(Component.literal(warpResult.message()), true);
+            HomeboundUtil.displayClientMessage(player, warpResult.message());
         }
     }
 

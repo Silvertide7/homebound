@@ -44,7 +44,6 @@ public class WarpManager {
         scheduledWarpMap.put(player.getUUID(), scheduledWarp);
     }
     public void cancelWarp(ServerPlayer player) {
-        player.displayClientMessage(Component.literal("Warp canceled."), true);
         scheduledWarpMap.remove(player.getUUID());
     }
 

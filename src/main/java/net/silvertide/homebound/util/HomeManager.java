@@ -28,7 +28,6 @@ public class HomeManager {
         scheduledBindHomeMap.put(player.getUUID(), scheduledBindHome);
     }
     public void cancelBindHome(ServerPlayer player) {
-        player.displayClientMessage(Component.literal("Bind home canceled."), true);
         scheduledBindHomeMap.remove(player.getUUID());
     }
 
@@ -50,10 +49,9 @@ public class HomeManager {
         return  (timeElapsed / (double) scheduledBindHome.useDuration())*100;
     }
     public void setPlayerHome(ServerPlayer player) {
-        player.sendSystemMessage(Component.literal("§aHome set.§r"));
         CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
             warpCap.setWarpPos(player);
-
+            HomeboundUtil.displayClientMessage(player, "§aHome set.§r");
         });
         this.scheduledBindHomeMap.remove(player.getUUID());
     }
