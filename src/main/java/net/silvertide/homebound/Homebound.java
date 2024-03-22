@@ -2,9 +2,11 @@ package net.silvertide.homebound;
 
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.silvertide.homebound.commands.CmdRoot;
+import net.silvertide.homebound.compat.CuriosCompat;
 import net.silvertide.homebound.config.Config;
 import net.silvertide.homebound.util.WarpManager;
 import net.silvertide.homebound.registry.EnchantmentRegistry;
@@ -34,6 +36,10 @@ public class Homebound
         EnchantmentRegistry.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
+
+        if (ModList.get().isLoaded("curios")) {
+            MinecraftForge.EVENT_BUS.addListener(CuriosCompat::keepCurios);
+        }
 
         WarpManager.getInstance();
     }

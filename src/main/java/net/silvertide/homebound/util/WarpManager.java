@@ -73,7 +73,7 @@ public class WarpManager {
         }
 
         int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
-        if(remainingCooldown > 0){
+        if(remainingCooldown > 0) {
             String message = "§cYou haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";
             return new WarpResult(false, message);
         }
@@ -111,7 +111,7 @@ public class WarpManager {
                 int cooldown = warpItem.getWarpCooldown(player, warpItemStack);
                 playerWarpCapability.setCooldown(player.level().getGameTime(), cooldown);
 
-                if(warpItem.isConsumedOnUse()){
+                if(warpItem.isConsumedOnUse()) {
                     warpItemStack.shrink(1);
                 }
             }
@@ -196,7 +196,6 @@ public class WarpManager {
                 }
             }
         }
-
         return null;
     }
 }
