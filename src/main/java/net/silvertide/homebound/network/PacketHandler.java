@@ -30,13 +30,19 @@ public class PacketHandler {
                 .encoder(ServerboundUseHomeboundStoneMessage::encode)
                 .consumerMainThread(ServerboundUseHomeboundStoneMessage::handle)
                 .add();
+
+        net.messageBuilder(ClientboundSyncWarpSchedule.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ClientboundSyncWarpSchedule::new)
+                .encoder(ClientboundSyncWarpSchedule::encode)
+                .consumerMainThread(ClientboundSyncWarpSchedule::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {
         INSTANCE.sendToServer(message);
     }
 
-    public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
+    public static <MSG> void sendToPlayer(ServerPlayer player, MSG message) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 

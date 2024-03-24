@@ -19,6 +19,8 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.item.IWarpItem;
+import net.silvertide.homebound.network.ClientboundSyncWarpSchedule;
+import net.silvertide.homebound.network.PacketHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -37,10 +39,14 @@ public class WarpManager {
     public void startWarping(ServerPlayer player, ItemStack warpItemStack) {
         IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
         ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(warpItemStack), player.level().getGameTime());
+        PacketHandler.sendToPlayer(player, new ClientboundSyncWarpSchedule(scheduledWarp.scheduledGameTimeTickToWarp()));
         scheduledWarpMap.put(player.getUUID(), scheduledWarp);
     }
     public void cancelWarp(ServerPlayer player) {
-        scheduledWarpMap.remove(player.getUUID());
+        if(isPlayerWarping(player)){
+            scheduledWarpMap.remove(player.getUUID());
+            PacketHandler.sendToPlayer(player, new ClientboundSyncWarpSchedule(-1));
+        }
     }
 
     public boolean isPlayerWarping(ServerPlayer player) {
