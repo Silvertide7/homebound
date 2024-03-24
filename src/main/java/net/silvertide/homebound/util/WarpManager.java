@@ -19,7 +19,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.item.IWarpItem;
-import net.silvertide.homebound.network.ClientboundSyncWarpSchedule;
+import net.silvertide.homebound.network.ClientboundSyncWarpScheduleMessage;
 import net.silvertide.homebound.network.PacketHandler;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,13 +39,13 @@ public class WarpManager {
     public void startWarping(ServerPlayer player, ItemStack warpItemStack) {
         IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
         ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(warpItemStack), player.level().getGameTime());
-        PacketHandler.sendToPlayer(player, new ClientboundSyncWarpSchedule(scheduledWarp.scheduledGameTimeTickToWarp()));
+        PacketHandler.sendToPlayer(player, new ClientboundSyncWarpScheduleMessage(scheduledWarp.startedWarpingGameTimeStamp(), scheduledWarp.scheduledGameTimeTickToWarp()));
         scheduledWarpMap.put(player.getUUID(), scheduledWarp);
     }
     public void cancelWarp(ServerPlayer player) {
         if(isPlayerWarping(player)){
             scheduledWarpMap.remove(player.getUUID());
-            PacketHandler.sendToPlayer(player, new ClientboundSyncWarpSchedule(-1));
+            PacketHandler.sendToPlayer(player, new ClientboundSyncWarpScheduleMessage(0L, 0L));
         }
     }
 
@@ -117,8 +117,7 @@ public class WarpManager {
                 }
             }
         });
-
-        this.scheduledWarpMap.remove(player.getUUID());
+        cancelWarp(player);
     }
 
     public void playWarpEffects(ServerPlayer player) {

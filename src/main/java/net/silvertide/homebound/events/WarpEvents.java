@@ -26,7 +26,7 @@ public class WarpEvents {
             if (Config.HURT_COOLDOWN_TIME.get() > 0 && WarpManager.get().isPlayerWarping(player)) {
                 WarpManager.get().cancelWarp(player);
 
-                if(player.isUsingItem() && player.getUseItem().getItem() instanceof HomeWarpItem){
+                if(player.isUsingItem() && player.getUseItem().getItem() instanceof HomeWarpItem) {
                     player.stopUsingItem();
                 }
 

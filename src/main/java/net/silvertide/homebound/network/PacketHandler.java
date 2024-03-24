@@ -31,10 +31,10 @@ public class PacketHandler {
                 .consumerMainThread(ServerboundUseHomeboundStoneMessage::handle)
                 .add();
 
-        net.messageBuilder(ClientboundSyncWarpSchedule.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(ClientboundSyncWarpSchedule::new)
-                .encoder(ClientboundSyncWarpSchedule::encode)
-                .consumerMainThread(ClientboundSyncWarpSchedule::handle)
+        net.messageBuilder(ClientboundSyncWarpScheduleMessage.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ClientboundSyncWarpScheduleMessage::new)
+                .encoder(ClientboundSyncWarpScheduleMessage::encode)
+                .consumerMainThread(ClientboundSyncWarpScheduleMessage::handle)
                 .add();
     }
 

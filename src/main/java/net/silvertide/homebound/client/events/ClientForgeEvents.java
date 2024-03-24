@@ -1,4 +1,4 @@
-package net.silvertide.homebound.client.handler;
+package net.silvertide.homebound.client.events;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
@@ -6,12 +6,12 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.client.Keybindings;
+import net.silvertide.homebound.client.keybindings.Keybindings;
 import net.silvertide.homebound.network.PacketHandler;
 import net.silvertide.homebound.network.ServerboundUseHomeboundStoneMessage;
 
 @Mod.EventBusSubscriber(modid = Homebound.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-public class ClientForgeHandler {
+public class ClientForgeEvents {
     private static boolean keyWasHeldDownLastTick = false;
     private static int age = 0;
     @SubscribeEvent
@@ -29,4 +29,5 @@ public class ClientForgeHandler {
             }
         }
     }
+
 }
