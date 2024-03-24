@@ -36,8 +36,14 @@ public class WarpBarOverlay implements IGuiOverlay {
 
         String remainingTimeString = HomeboundUtil.timeFromTicks((1 - warpCompletionPercent) * totalWarpDurationInTicks, 1);
         var font = gui.getFont();
-        int textX = barX + (IMAGE_WIDTH - font.width(remainingTimeString)) / 2;
-        int textY = barY + IMAGE_HEIGHT / 2 - font.lineHeight / 2 + 1;
-        guiHelper.drawString(font, remainingTimeString, textX, textY, 0xFFFFFF);
+        int countdownTextX = barX + (IMAGE_WIDTH - font.width(remainingTimeString)) / 2;
+        int countdownTextY = barY + IMAGE_HEIGHT / 2 - font.lineHeight / 2 + 1;
+        guiHelper.drawString(font, remainingTimeString, countdownTextX, countdownTextY, 0xFFFFFF);
+
+        String warpHomeText = "Returning Home";
+        int warpHomeTextX = barX + (IMAGE_WIDTH - font.width(warpHomeText)) / 2;
+        int warpHomeTextY = barY + IMAGE_HEIGHT / 2 - font.lineHeight / 2 + 1;
+        guiHelper.drawString(font, warpHomeText, warpHomeTextX, warpHomeTextY - font.lineHeight - 2, 0xFFFFFF);
+
     }
 }
