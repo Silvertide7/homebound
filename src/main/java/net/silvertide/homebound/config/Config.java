@@ -8,7 +8,8 @@ public class Config {
 
     public static final ForgeConfigSpec.ConfigValue<Integer> HURT_COOLDOWN_TIME;
     public static final ForgeConfigSpec.ConfigValue<Integer> BIND_HOME_USE_DURATION;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SET_HOME_TIME;
+    public static final ForgeConfigSpec.ConfigValue<Double> CHANNEL_SLOW_PERCENTAGE;
+
 
     public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_COOLDOWN;
     public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_USE_TIME;
@@ -65,14 +66,15 @@ public class Config {
         BUILDER.push("Homebound Configs");
 
         BUILDER.comment("General");
-        BUILDER.comment("The amount of time in seconds it takes to set your home when crouching and looking at a block.");
-        SET_HOME_TIME = BUILDER.define("Set Home Time", 2);
         BUILDER.comment("When you take damage while using a homebound item to teleport home the teleport is canceled and a cooldown is added before you can use it again.");
         BUILDER.comment("This is to prevent players from easily teleporting out of a dangerous situation.");
         BUILDER.comment("This value is how long of a cooldown in seconds is added when damage is taken. Set to 0 to disable taking damage from canceling the teleport");
-        HURT_COOLDOWN_TIME = BUILDER.define("Hurt Cooldown Time", 5);
+        HURT_COOLDOWN_TIME = BUILDER.defineInRange("Hurt Cooldown Time", 5, 0, 2147483647);
         BUILDER.comment("How long it takes (in seconds) to bind your home to a location when you are crouching and using a homebound stone.");
-        BIND_HOME_USE_DURATION = BUILDER.define("Bind Home Use Duration", 3);
+        BIND_HOME_USE_DURATION = BUILDER.defineInRange("Bind Home Use Duration", 3, 0, 2147483647);
+        BUILDER.comment("Slows the player by this amount when using a homebound stone. 1.0 means completely stopped, 0.0 means no slow applied.");
+        CHANNEL_SLOW_PERCENTAGE = BUILDER.defineInRange("Channel Slow Percentage", 1.0, 0.0, 0.7);
+
 
         BUILDER.comment("Homeward Item Cooldowns");
         BUILDER.comment("All cooldowns are in minutes. All enchantments or cooldown reducing effects will apply to this base cooldown.");
@@ -84,62 +86,62 @@ public class Config {
         BUILDER.comment("This will reduce by 1% for every 50 blocks away from home until the bonus is no longer applied at 0%. In the example above that would be 2000 blocks.");
 
         BUILDER.comment("--- Homeward Bone ---");
-        HOMEWARD_BONE_COOLDOWN = BUILDER.define("Homeward Bone Cooldown", 120);
-        HOMEWARD_BONE_USE_TIME = BUILDER.define("Homeward Bone Use Time", 15);
-        HOMEWARD_BONE_MAX_DISTANCE = BUILDER.define("Homeward Bone Max Distance", 0);
+        HOMEWARD_BONE_COOLDOWN = BUILDER.defineInRange("Homeward Bone Cooldown", 120, 0, 2147483647);
+        HOMEWARD_BONE_USE_TIME = BUILDER.defineInRange("Homeward Bone Use Time", 15, 0, 2147483647);
+        HOMEWARD_BONE_MAX_DISTANCE = BUILDER.defineInRange("Homeward Bone Max Distance", 0, 0, 2147483647);
         HOMEWARD_BONE_DIMENSIONAL_TRAVEL = BUILDER.define("Homeward Bone Dimensional travel allowed", true);
 
         BUILDER.comment("--- Hearthwood ---");
-        HEARTHWOOD_COOLDOWN = BUILDER.define("Hearthwood Cooldown", 10);
-        HEARTHWOOD_USE_TIME = BUILDER.define("Hearthwood Use Time", 3);
-        HEARTHWOOD_MAX_DISTANCE = BUILDER.define("Hearthwood Max Distance", 160);
+        HEARTHWOOD_COOLDOWN = BUILDER.defineInRange("Hearthwood Cooldown", 10, 0, 2147483647);
+        HEARTHWOOD_USE_TIME = BUILDER.defineInRange("Hearthwood Use Time", 3, 0, 2147483647);
+        HEARTHWOOD_MAX_DISTANCE = BUILDER.defineInRange("Hearthwood Max Distance", 160, 0, 2147483647);
         HEARTHWOOD_DIMENSIONAL_TRAVEL = BUILDER.define("Hearthwood Dimensional travel allowed", false);
 
         BUILDER.comment("--- Homeward Gem ---");
-        HOMEWARD_GEM_COOLDOWN = BUILDER.define("Homeward Gem Cooldown", 60);
-        HOMEWARD_GEM_USE_TIME = BUILDER.define("Homeward Gem Use Time", 12);
-        HOMEWARD_GEM_MAX_DISTANCE = BUILDER.define("Homeward Gem Max Distance", 600);
+        HOMEWARD_GEM_COOLDOWN = BUILDER.defineInRange("Homeward Gem Cooldown", 60, 0, 2147483647);
+        HOMEWARD_GEM_USE_TIME = BUILDER.defineInRange("Homeward Gem Use Time", 12, 0, 2147483647);
+        HOMEWARD_GEM_MAX_DISTANCE = BUILDER.defineInRange("Homeward Gem Max Distance", 600, 0, 2147483647);
         HOMEWARD_GEM_DIMENSIONAL_TRAVEL = BUILDER.define("Homeward Gem Dimensional travel allowed", false);
 
         BUILDER.comment("--- Homeward Stone ---");
-        HOMEWARD_STONE_COOLDOWN = BUILDER.define("Homeward Stone Cooldown", 60);
-        HOMEWARD_STONE_USE_TIME = BUILDER.define("Homeward Stone Use Time", 10);
-        HOMEWARD_STONE_MAX_DISTANCE = BUILDER.define("Homeward Stone Max Distance", 0);
+        HOMEWARD_STONE_COOLDOWN = BUILDER.defineInRange("Homeward Stone Cooldown", 60, 0, 2147483647);
+        HOMEWARD_STONE_USE_TIME = BUILDER.defineInRange("Homeward Stone Use Time", 10, 0, 2147483647);
+        HOMEWARD_STONE_MAX_DISTANCE = BUILDER.defineInRange("Homeward Stone Max Distance", 0, 0, 2147483647);
         HOMEWARD_STONE_DIMENSIONAL_TRAVEL = BUILDER.define("Homeward Stone Dimensional travel allowed", false);
 
         BUILDER.comment("--- Haven Stone ---");
-        HAVEN_STONE_COOLDOWN = BUILDER.define("Haven Stone Cooldown", 60);
-        HAVEN_STONE_USE_TIME = BUILDER.define("Haven Stone Use Time", 10);
-        HAVEN_STONE_MAX_DISTANCE = BUILDER.define("Haven Stone Max Distance", 0);
+        HAVEN_STONE_COOLDOWN = BUILDER.defineInRange("Haven Stone Cooldown", 60, 0, 2147483647);
+        HAVEN_STONE_USE_TIME = BUILDER.defineInRange("Haven Stone Use Time", 10, 0, 2147483647);
+        HAVEN_STONE_MAX_DISTANCE = BUILDER.defineInRange("Haven Stone Max Distance", 0, 0, 2147483647);
         HAVEN_STONE_DIMENSIONAL_TRAVEL = BUILDER.define("Haven Stone Dimensional travel allowed", true);
 
         BUILDER.comment("--- Dawn Stone ---");
-        DAWN_STONE_COOLDOWN = BUILDER.define("Dawn Stone Cooldown", 50);
-        DAWN_STONE_USE_TIME = BUILDER.define("Dawn Stone Use Time", 9);
-        DAWN_STONE_MAX_DISTANCE = BUILDER.define("Dawn Stone Max Distance", 0);
+        DAWN_STONE_COOLDOWN = BUILDER.defineInRange("Dawn Stone Cooldown", 50, 0, 2147483647);
+        DAWN_STONE_USE_TIME = BUILDER.defineInRange("Dawn Stone Use Time", 9, 0, 2147483647);
+        DAWN_STONE_MAX_DISTANCE = BUILDER.defineInRange("Dawn Stone Max Distance", 0, 0, 2147483647);
         DAWN_STONE_DIMENSIONAL_TRAVEL = BUILDER.define("Dawn Stone Dimensional travel allowed", true);
 
         BUILDER.comment("--- Sun Stone ---");
-        SUN_STONE_COOLDOWN = BUILDER.define("Sun Stone Cooldown", 45);
-        SUN_STONE_USE_TIME = BUILDER.define("Sun Stone Use Time", 8);
-        SUN_STONE_MAX_DISTANCE = BUILDER.define("Sun Stone Max Distance", 0);
+        SUN_STONE_COOLDOWN = BUILDER.defineInRange("Sun Stone Cooldown", 45, 0, 2147483647);
+        SUN_STONE_USE_TIME = BUILDER.defineInRange("Sun Stone Use Time", 8, 0, 2147483647);
+        SUN_STONE_MAX_DISTANCE = BUILDER.defineInRange("Sun Stone Max Distance", 0, 0, 2147483647);
         SUN_STONE_DIMENSIONAL_TRAVEL = BUILDER.define("Sun Stone Dimensional travel allowed", true);
 
         BUILDER.comment("--- Dusk Stone ---");
-        DUSK_STONE_COOLDOWN = BUILDER.define("Dusk Stone Cooldown", 60);
-        DUSK_STONE_USE_TIME = BUILDER.define("Dusk Stone Use Time", 10);
-        DUSK_STONE_MAX_DISTANCE = BUILDER.define("Dusk Stone Max Distance", 0);
+        DUSK_STONE_COOLDOWN = BUILDER.defineInRange("Dusk Stone Cooldown", 60, 0, 2147483647);
+        DUSK_STONE_USE_TIME = BUILDER.defineInRange("Dusk Stone Use Time", 10, 0, 2147483647);
+        DUSK_STONE_MAX_DISTANCE = BUILDER.defineInRange("Dusk Stone Max Distance", 0, 0, 2147483647);
         DUSK_STONE_DIMENSIONAL_TRAVEL = BUILDER.define("Dusk Stone Dimensional travel allowed", true);
-        DUSK_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT = BUILDER.define("Dusk Stone Blocks Per Percent Reduced", 40);
-        DUSK_STONE_MAX_DISTANCE_REDUCTION = BUILDER.define("Dusk Stone Maximum Distance Reduction Multiplier", 0.6);
+        DUSK_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT = BUILDER.defineInRange("Dusk Stone Blocks Per Percent Reduced", 40, 0, 2147483647);
+        DUSK_STONE_MAX_DISTANCE_REDUCTION = BUILDER.defineInRange("Dusk Stone Maximum Distance Reduction Multiplier", 0.6, 0.0, 1.0);
 
         BUILDER.comment("--- Twilight Stone ---");
-        TWILIGHT_STONE_COOLDOWN = BUILDER.define("Twilight Stone Cooldown", 60);
-        TWILIGHT_STONE_USE_TIME = BUILDER.define("Twilight Stone Use Time", 10);
-        TWILIGHT_STONE_MAX_DISTANCE = BUILDER.define("Twilight Stone Max Distance", 0);
+        TWILIGHT_STONE_COOLDOWN = BUILDER.defineInRange("Twilight Stone Cooldown", 60, 0 ,2147483647);
+        TWILIGHT_STONE_USE_TIME = BUILDER.defineInRange("Twilight Stone Use Time", 10, 0, 2147483647);
+        TWILIGHT_STONE_MAX_DISTANCE = BUILDER.defineInRange("Twilight Stone Max Distance", 0, 0, 2147483647);
         TWILIGHT_STONE_DIMENSIONAL_TRAVEL = BUILDER.define("Twilight Stone Dimensional travel allowed", true);
-        TWILIGHT_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT = BUILDER.define("Twilight Stone Blocks Per Percent Reduced", 40);
-        TWILIGHT_STONE_MAX_DISTANCE_REDUCTION = BUILDER.define("Twilight Stone Maximum Distance Reduction Multiplier", 0.7);
+        TWILIGHT_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT = BUILDER.defineInRange("Twilight Stone Blocks Per Percent Reduced", 40, 0, 2147483647);
+        TWILIGHT_STONE_MAX_DISTANCE_REDUCTION = BUILDER.defineInRange("Twilight Stone Maximum Distance Reduction Multiplier", 0.7, 0.0, 1.0);
 
         BUILDER.pop();
 

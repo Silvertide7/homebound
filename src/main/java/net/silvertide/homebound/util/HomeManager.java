@@ -26,10 +26,12 @@ public class HomeManager {
         long currentGameTime = player.level().getGameTime();
         long finishGameTime = currentGameTime + Config.BIND_HOME_USE_DURATION.get()*HomeboundUtil.TICKS_PER_SECOND;
         PacketHandler.sendToPlayer(player, new ClientboundSyncHomeScheduleMessage(currentGameTime, finishGameTime));
+        AttributeUtil.tryAddChannelSlow(player, Config.CHANNEL_SLOW_PERCENTAGE.get());
         scheduledBindHomeMap.put(player.getUUID(), scheduledBindHome);
     }
     public void cancelBindHome(ServerPlayer player) {
         PacketHandler.sendToPlayer(player, new ClientboundSyncHomeScheduleMessage(0L, 0L));
+        AttributeUtil.removeChannelSlow(player);
         scheduledBindHomeMap.remove(player.getUUID());
     }
 

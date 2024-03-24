@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.WarpPos;
+import net.silvertide.homebound.config.Config;
 import net.silvertide.homebound.item.IWarpItem;
 import net.silvertide.homebound.network.ClientboundSyncWarpScheduleMessage;
 import net.silvertide.homebound.network.PacketHandler;
@@ -40,12 +41,14 @@ public class WarpManager {
         IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
         ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(warpItemStack), player.level().getGameTime());
         PacketHandler.sendToPlayer(player, new ClientboundSyncWarpScheduleMessage(scheduledWarp.startedWarpingGameTimeStamp(), scheduledWarp.scheduledGameTimeTickToWarp()));
+        AttributeUtil.tryAddChannelSlow(player, Config.CHANNEL_SLOW_PERCENTAGE.get());
         scheduledWarpMap.put(player.getUUID(), scheduledWarp);
     }
     public void cancelWarp(ServerPlayer player) {
         if(isPlayerWarping(player)){
-            scheduledWarpMap.remove(player.getUUID());
             PacketHandler.sendToPlayer(player, new ClientboundSyncWarpScheduleMessage(0L, 0L));
+            AttributeUtil.removeChannelSlow(player);
+            scheduledWarpMap.remove(player.getUUID());
         }
     }
 
