@@ -1,7 +1,5 @@
 package net.silvertide.homebound.client.gui;
 
-
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;

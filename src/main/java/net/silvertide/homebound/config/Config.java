@@ -6,7 +6,6 @@ public class Config {
     private static final ForgeConfigSpec.Builder BUILDER;
     public static final ForgeConfigSpec COMMON_CONFIG;
 
-//    public static final ForgeConfigSpec.ConfigValue<Boolean> TELEPORT_TO_BED;
     public static final ForgeConfigSpec.ConfigValue<Integer> HURT_COOLDOWN_TIME;
     public static final ForgeConfigSpec.ConfigValue<Integer> BIND_HOME_USE_DURATION;
     public static final ForgeConfigSpec.ConfigValue<Integer> SET_HOME_TIME;
@@ -65,9 +64,6 @@ public class Config {
 
         BUILDER.push("Homebound Configs");
 
-//        BUILDER.comment("If this is set to true then you cannot set a position, it will always teleport you to your bed.");
-//        TELEPORT_TO_BED = BUILDER.define("Teleport to Bed", false);
-//        BUILDER.comment("");
         BUILDER.comment("General");
         BUILDER.comment("The amount of time in seconds it takes to set your home when crouching and looking at a block.");
         SET_HOME_TIME = BUILDER.define("Set Home Time", 2);

@@ -1,13 +1,9 @@
 package net.silvertide.homebound.compat;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.events.SoulboundEvents;
-import net.silvertide.homebound.events.WarpEvents;
 import net.silvertide.homebound.item.ISoulboundItem;
 import net.silvertide.homebound.item.IWarpItem;
 import top.theillusivec4.curios.api.CuriosApi;
