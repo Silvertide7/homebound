@@ -19,9 +19,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
-// TODO: Make player not be able to jump while using stone
-// TODO: Test riding horse
-// TODO: Make sure when configs are set to 0 to skip certain code blocks.
 
 @Mod(Homebound.MOD_ID)
 public class Homebound

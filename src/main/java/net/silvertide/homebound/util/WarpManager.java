@@ -40,12 +40,17 @@ public class WarpManager {
     public void startWarping(ServerPlayer player, ItemStack warpItemStack) {
         IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
         ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(warpItemStack), player.level().getGameTime());
-        PacketHandler.sendToPlayer(player, new ClientboundSyncWarpScheduleMessage(scheduledWarp.startedWarpingGameTimeStamp(), scheduledWarp.scheduledGameTimeTickToWarp()));
-        AttributeUtil.tryAddChannelSlow(player, Config.CHANNEL_SLOW_PERCENTAGE.get());
         scheduledWarpMap.put(player.getUUID(), scheduledWarp);
+        if(warpItem.getWarpUseDuration(warpItemStack) > 0) {
+            PacketHandler.sendToPlayer(player, new ClientboundSyncWarpScheduleMessage(scheduledWarp.startedWarpingGameTimeStamp(), scheduledWarp.scheduledGameTimeTickToWarp()));
+            AttributeUtil.tryAddChannelSlow(player, Config.CHANNEL_SLOW_PERCENTAGE.get());
+        } else {
+            warpPlayerHome(player);
+        }
+
     }
     public void cancelWarp(ServerPlayer player) {
-        if(isPlayerWarping(player)){
+        if(isPlayerWarping(player)) {
             PacketHandler.sendToPlayer(player, new ClientboundSyncWarpScheduleMessage(0L, 0L));
             AttributeUtil.removeChannelSlow(player);
             scheduledWarpMap.remove(player.getUUID());
@@ -113,7 +118,9 @@ public class WarpManager {
 
             if(!player.getAbilities().instabuild) {
                 int cooldown = warpItem.getWarpCooldown(player, warpItemStack);
-                playerWarpCapability.setCooldown(player.level().getGameTime(), cooldown);
+                if(cooldown > 0) {
+                    playerWarpCapability.setCooldown(player.level().getGameTime(), cooldown);
+                }
 
                 if(warpItem.isConsumedOnUse()) {
                     warpItemStack.shrink(1);
