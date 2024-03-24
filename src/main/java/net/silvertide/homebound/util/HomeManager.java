@@ -5,6 +5,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.silvertide.homebound.config.Config;
+import net.silvertide.homebound.network.ClientboundSyncHomeScheduleMessage;
+import net.silvertide.homebound.network.PacketHandler;
 
 import java.util.*;
 
@@ -21,9 +23,13 @@ public class HomeManager {
 
     public void startBindingHome(ServerPlayer player) {
         ScheduledBindHome scheduledBindHome = new ScheduledBindHome(player, Config.BIND_HOME_USE_DURATION.get()*20, player.level().getGameTime());
+        long currentGameTime = player.level().getGameTime();
+        long finishGameTime = currentGameTime + Config.BIND_HOME_USE_DURATION.get()*HomeboundUtil.TICKS_PER_SECOND;
+        PacketHandler.sendToPlayer(player, new ClientboundSyncHomeScheduleMessage(currentGameTime, finishGameTime));
         scheduledBindHomeMap.put(player.getUUID(), scheduledBindHome);
     }
     public void cancelBindHome(ServerPlayer player) {
+        PacketHandler.sendToPlayer(player, new ClientboundSyncHomeScheduleMessage(0L, 0L));
         scheduledBindHomeMap.remove(player.getUUID());
     }
 
@@ -49,7 +55,7 @@ public class HomeManager {
             warpCap.setWarpPos(player);
             HomeboundUtil.displayClientMessage(player, "§aHome set.§r");
         });
-        this.scheduledBindHomeMap.remove(player.getUUID());
+        cancelBindHome(player);
     }
 
     public void triggerHomeBindEffects(ServerPlayer serverPlayer) {

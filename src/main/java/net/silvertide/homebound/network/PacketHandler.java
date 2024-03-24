@@ -36,6 +36,12 @@ public class PacketHandler {
                 .encoder(ClientboundSyncWarpScheduleMessage::encode)
                 .consumerMainThread(ClientboundSyncWarpScheduleMessage::handle)
                 .add();
+
+        net.messageBuilder(ClientboundSyncHomeScheduleMessage.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ClientboundSyncHomeScheduleMessage::new)
+                .encoder(ClientboundSyncHomeScheduleMessage::encode)
+                .consumerMainThread(ClientboundSyncHomeScheduleMessage::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {
