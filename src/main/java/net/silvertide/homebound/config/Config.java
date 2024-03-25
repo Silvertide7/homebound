@@ -73,7 +73,7 @@ public class Config {
         BUILDER.comment("How long it takes (in seconds) to bind your home to a location when you are crouching and using a homebound stone.");
         BIND_HOME_USE_DURATION = BUILDER.defineInRange("Bind Home Use Duration", 3, 0, 2147483647);
         BUILDER.comment("Slows the player by this amount when using a homebound stone. 1.0 means completely stopped, 0.0 means no slow applied.");
-        CHANNEL_SLOW_PERCENTAGE = BUILDER.defineInRange("Channel Slow Percentage", 1.0, 0.0, 0.7);
+        CHANNEL_SLOW_PERCENTAGE = BUILDER.defineInRange("Channel Slow Percentage", 0.7, 0.0, 1.0);
 
 
         BUILDER.comment("Homeward Item Cooldowns");
