@@ -29,8 +29,8 @@ public class WarpBarOverlay implements IGuiOverlay {
         barX = screenWidth / 2 - IMAGE_WIDTH / 2;
         barY = screenHeight / 2 + screenHeight / 6;
 
-        guiHelper.blit(TEXTURE, barX, barY, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, 256, 256);
-        guiHelper.blit(TEXTURE, barX, barY, 0, IMAGE_HEIGHT*2, (int) (COMPLETION_BAR_WIDTH * warpCompletionPercent + (IMAGE_WIDTH - COMPLETION_BAR_WIDTH) / 2), IMAGE_HEIGHT);
+        renderBarBackground(guiHelper, barX, barY);
+        renderBarProgress(guiHelper, barX, barY, warpCompletionPercent);
 
         String remainingTimeString = HomeboundUtil.timeFromTicks((1 - warpCompletionPercent) * totalWarpDurationInTicks, 1);
         var font = gui.getFont();
@@ -42,6 +42,13 @@ public class WarpBarOverlay implements IGuiOverlay {
         int warpHomeTextX = barX + (IMAGE_WIDTH - font.width(warpHomeText)) / 2;
         int warpHomeTextY = barY + IMAGE_HEIGHT / 2 - font.lineHeight / 2 + 1;
         guiHelper.drawString(font, warpHomeText, warpHomeTextX, warpHomeTextY - font.lineHeight - 2, 0xFFFFFF);
+    }
 
+    private void renderBarBackground(GuiGraphics guiHelper, int x, int y) {
+        guiHelper.blit(TEXTURE, x, y, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, 256, 256);
+    }
+
+    private void renderBarProgress(GuiGraphics guiHelper, int x, int y, float warpCompletionPercent) {
+        guiHelper.blit(TEXTURE, x, y, 0, IMAGE_HEIGHT*2, (int) (COMPLETION_BAR_WIDTH * warpCompletionPercent + (IMAGE_WIDTH - COMPLETION_BAR_WIDTH) / 2), IMAGE_HEIGHT);
     }
 }

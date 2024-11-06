@@ -18,11 +18,14 @@ public class ClientForgeEvents {
     public static void clientTick(TickEvent.ClientTickEvent clientTickEvent) {
         Minecraft minecraft = Minecraft.getInstance();
         if(age > 0) age--;
+
+        if(minecraft.player == null) return;
+
         if(age == 0) {
-            if(!keyWasHeldDownLastTick && Keybindings.INSTANCE.useHomeboundStoneKey.isDown() && minecraft.player != null) {
+            if(!keyWasHeldDownLastTick && Keybindings.INSTANCE.useHomeboundStoneKey.isDown()) {
                 keyWasHeldDownLastTick = true;
                 PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 1));
-            } else if(keyWasHeldDownLastTick && !Keybindings.INSTANCE.useHomeboundStoneKey.isDown() && minecraft.player != null) {
+            } else if(keyWasHeldDownLastTick && !Keybindings.INSTANCE.useHomeboundStoneKey.isDown()) {
                 keyWasHeldDownLastTick = false;
                 age = 10;
                 PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 0));

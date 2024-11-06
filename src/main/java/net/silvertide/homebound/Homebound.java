@@ -42,6 +42,7 @@ public class Homebound
             MinecraftForge.EVENT_BUS.addListener(CuriosCompat::keepCurios);
         }
 
+        // Instantiate the WarpManager singleton
         WarpManager.get();
     }
 

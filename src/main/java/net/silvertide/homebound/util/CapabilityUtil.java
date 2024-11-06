@@ -37,7 +37,7 @@ public final class CapabilityUtil {
         return getWarpCap(player).map(warpCap -> {
             long currGameTime = player.level().getGameTime();
             return warpCap.getRemainingCooldown(currGameTime);
-        }).orElse(9999);
+        }).orElse(0);
     }
 
     public static boolean inValidDimension(Player player, IWarpItem warpItem) {

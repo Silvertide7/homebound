@@ -27,14 +27,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class WarpManager {
-    private static final WarpManager instance = new WarpManager();
+    private static final WarpManager INSTANCE = new WarpManager();
     private final Map<UUID, ScheduledWarp> scheduledWarpMap;
     private WarpManager(){
         this.scheduledWarpMap = new HashMap<>();
     }
 
     public static WarpManager get() {
-        return instance;
+        return INSTANCE;
     }
 
     public void startWarping(ServerPlayer player, ItemStack warpItemStack) {
