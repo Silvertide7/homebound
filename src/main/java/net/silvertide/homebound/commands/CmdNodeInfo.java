@@ -22,7 +22,9 @@ public class CmdNodeInfo {
     public static int getPlayerInfo(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         long gameTime = ctx.getSource().getLevel().getGameTime();
         ServerPlayer player = ctx.getSource().getPlayer();
-        CapabilityUtil.getHome(player).ifPresent(warpCap -> {
+        if(player == null) return 0;
+
+        CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
             String warpPosString = "Home: §cNot set§r.";
             if(warpCap.getWarpPos() != null) {
                 warpPosString = "Home: " + warpCap.getWarpPos().toString();
@@ -32,8 +34,8 @@ public class CmdNodeInfo {
             if(warpCap.hasCooldown(gameTime)) {
                 cooldownString = "Cooldown: §c" + HomeboundUtil.formatTime(warpCap.getRemainingCooldown(gameTime)) + "§r";
             }
-            player.sendSystemMessage(Component.literal("§3" + warpPosString + "§r"));
-            player.sendSystemMessage(Component.literal("§3" + cooldownString + "§r"));
+            HomeboundUtil.sendSystemMessage(player, "§3" + warpPosString + "§r");
+            HomeboundUtil.sendSystemMessage(player, "§3" + cooldownString + "§r");
         });
         return 0;
     }

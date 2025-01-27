@@ -6,7 +6,6 @@ import net.silvertide.homebound.util.HomeboundUtil;
 
 
 public record WarpPos(BlockPos blockPos, ResourceLocation dimension) {
-
     public int calculateDistance(WarpPos destination) {
         double xDelta = this.blockPos.getX() - destination.blockPos.getX();
         double yDelta = this.blockPos.getY() - destination.blockPos.getY();

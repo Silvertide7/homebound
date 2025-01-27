@@ -14,5 +14,13 @@
   "enchantment.homebound.channel_haste": "Haste",
   "enchantment.homebound.cooldown_reduction": "Cooldown",
 
-  "creativetab.homebound_tab": "Homebound"
+  "creativetab.homebound_tab": "Homebound",
+
+  "curios.identifier.homebound_stone": "Homebound Stone",
+
+  "key.homebound.useHomeboundStoneKey": "Use Homebound Stone",
+  "key.categories.homebound": "Homebound",
+
+  "enchantment.homebound.cooldown_reduction.desc": "Reduce Homebound Stone cooldown.",
+  "enchantment.homebound.channel_haste.desc": "Reduce Homebound Stone use time."
 }
