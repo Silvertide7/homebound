@@ -63,7 +63,7 @@ public final class HomeboundUtil {
             return Optional.of(playerInventory.offhand.get(0));
         }
 
-        if (ModList.get().isLoaded("curios")) {
+        if (CuriosCompat.isCuriosLoaded) {
             Optional<ItemStack> curiosWarpItemStack = CuriosCompat.findCuriosWarpItemStack(player);
             if(curiosWarpItemStack.isPresent()) {
                 return curiosWarpItemStack;
