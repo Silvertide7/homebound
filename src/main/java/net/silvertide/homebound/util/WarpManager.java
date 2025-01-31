@@ -28,15 +28,11 @@ import java.util.*;
 
 public class WarpManager {
     private static final WarpManager INSTANCE = new WarpManager();
-    private final Map<UUID, ScheduledWarp> scheduledWarpMap;
-    private WarpManager(){
-        this.scheduledWarpMap = new HashMap<>();
-    }
-
+    private final Map<UUID, ScheduledWarp> scheduledWarpMap = new HashMap<>();
+    private WarpManager() {}
     public static WarpManager get() {
         return INSTANCE;
     }
-
     public void startWarping(ServerPlayer player, ItemStack warpItemStack) {
         IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
         ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(warpItemStack), player.level().getGameTime());

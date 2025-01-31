@@ -8,7 +8,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.silvertide.homebound.commands.CmdRoot;
 import net.silvertide.homebound.compat.CuriosCompat;
 import net.silvertide.homebound.config.Config;
-import net.silvertide.homebound.util.WarpManager;
 import net.silvertide.homebound.registry.EnchantmentRegistry;
 import net.silvertide.homebound.registry.TabRegistry;
 import net.silvertide.homebound.registry.ItemRegistry;
@@ -29,9 +28,6 @@ public class Homebound
     public Homebound()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
-
         TabRegistry.register(modEventBus);
         ItemRegistry.register(modEventBus);
         EnchantmentRegistry.register(modEventBus);
@@ -41,9 +37,7 @@ public class Homebound
         if (ModList.get().isLoaded("curios")) {
             MinecraftForge.EVENT_BUS.addListener(CuriosCompat::keepCurios);
         }
-
-        // Instantiate the WarpManager singleton
-        WarpManager.get();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
     }
 
     @Mod.EventBusSubscriber(modid=Homebound.MOD_ID, bus=Mod.EventBusSubscriber.Bus.FORGE)
