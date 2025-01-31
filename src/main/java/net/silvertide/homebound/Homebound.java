@@ -9,7 +9,6 @@ import net.neoforged.fml.config.ModConfig;
 import net.silvertide.homebound.commands.CmdRoot;
 import net.silvertide.homebound.compat.CuriosCompat;
 import net.silvertide.homebound.config.Config;
-import net.silvertide.homebound.util.WarpManager;
 import net.silvertide.homebound.registry.EnchantmentRegistry;
 import net.silvertide.homebound.registry.TabRegistry;
 import net.silvertide.homebound.registry.ItemRegistry;
@@ -36,8 +35,6 @@ public class Homebound
 
         modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfigs.SPEC, String.format("%s-server.toml", MOD_ID));
 
-        // Instantiate the WarpManager singleton
-        WarpManager.get();
     }
 
     @Mod.EventBusSubscriber(modid=Homebound.MOD_ID, bus=Mod.EventBusSubscriber.Bus.FORGE)
