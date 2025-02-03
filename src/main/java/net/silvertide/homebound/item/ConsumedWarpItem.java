@@ -13,9 +13,9 @@ public class ConsumedWarpItem extends HomeWarpItem{
         super(id, properties);
     }
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        pTooltipComponents.add(Component.literal("§cThis item is consumed on use.§r"));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.literal("§cThis item is consumed on use.§r"));
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
     @Override
     public boolean isConsumedOnUse() {

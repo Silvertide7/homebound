@@ -10,7 +10,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.ModList;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.compat.CuriosCompat;
@@ -18,7 +17,6 @@ import net.silvertide.homebound.item.IWarpItem;
 
 import java.util.Optional;
 import java.util.Random;
-
 
 public final class HomeboundUtil {
     private static final Random SOUND_RNG = new Random();
@@ -38,7 +36,7 @@ public final class HomeboundUtil {
 
             int dimensionMultiplier = playerWarpCap.getWarpPos().isSameDimension(currentPos) ? 1 : 2;
             int distanceToHome = playerWarpCap.getWarpPos().calculateDistance(currentPos);
-            double distancePenalty = (distanceToHome/blocksPerPercentAdded/100.0)*dimensionMultiplier;
+            double distancePenalty = ((double) distanceToHome /blocksPerPercentAdded/100.0)*dimensionMultiplier;
 
             if(distancePenalty < maxCooldownReduction) {
                 double cooldownReductionBonus = (1.0-(maxCooldownReduction-distancePenalty));

@@ -1,4 +1,4 @@
-package net.silvertide.homebound.client.gui;
+package net.silvertide.homebound.client.data;
 
 public class ClientWarpData {
 

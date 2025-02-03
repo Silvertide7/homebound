@@ -4,9 +4,12 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.silvertide.homebound.attachments.WarpAttachment;
+import net.silvertide.homebound.attachments.WarpPos;
 import net.silvertide.homebound.config.Config;
-import net.silvertide.homebound.network.ClientboundSyncHomeScheduleMessage;
-import net.silvertide.homebound.network.PacketHandler;
+import net.silvertide.homebound.network.client.CB_SyncHomeScheduleMessage;
+import net.silvertide.homebound.records.ScheduledBindHome;
 
 import java.util.*;
 
@@ -24,7 +27,8 @@ public class HomeManager {
             ScheduledBindHome scheduledBindHome = new ScheduledBindHome(player, Config.BIND_HOME_USE_DURATION.get()*20, player.level().getGameTime());
             long currentGameTime = player.level().getGameTime();
             long finishGameTime = currentGameTime + Config.BIND_HOME_USE_DURATION.get()*HomeboundUtil.TICKS_PER_SECOND;
-            PacketHandler.sendToPlayer(player, new ClientboundSyncHomeScheduleMessage(currentGameTime, finishGameTime));
+
+            PacketDistributor.sendToPlayer(player, new CB_SyncHomeScheduleMessage(currentGameTime, finishGameTime));
             AttributeUtil.tryAddChannelSlow(player, Config.CHANNEL_SLOW_PERCENTAGE.get());
             scheduledBindHomeMap.put(player.getUUID(), scheduledBindHome);
         } else {
@@ -34,6 +38,7 @@ public class HomeManager {
 
     public boolean canPlayerSetHome(ServerPlayer player) {
         if(Config.CANT_BIND_HOME_ON_COOLDOWN.get()) {
+
             int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
             if(remainingCooldown > 0) {
                 String message = "§cCan't set home, you haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";
@@ -46,7 +51,7 @@ public class HomeManager {
 
     public void cancelBindHome(ServerPlayer player) {
         if(isPlayerBindingHome(player)){
-            PacketHandler.sendToPlayer(player, new ClientboundSyncHomeScheduleMessage(0L, 0L));
+            PacketDistributor.sendToPlayer(player, new CB_SyncHomeScheduleMessage(0L, 0L));
             AttributeUtil.removeChannelSlow(player);
             scheduledBindHomeMap.remove(player.getUUID());
         }
@@ -70,13 +75,16 @@ public class HomeManager {
         return  (timeElapsed / (double) scheduledBindHome.useDuration())*100;
     }
     public void setPlayerHome(ServerPlayer player) {
-        CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
-            warpCap.setWarpPos(player);
+
+        WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
+            WarpAttachment updatedWarpAttachment = warpAttachment.withWarpPos(new WarpPos(player.getOnPos(), player.level().dimension().location()));
             if(Config.BIND_HOME_COOLDOWN_DURATION.get() > 0) {
-                warpCap.addCooldown(player.level().getGameTime(), Config.BIND_HOME_COOLDOWN_DURATION.get());
+                updatedWarpAttachment = updatedWarpAttachment.withAddedCooldown(Config.BIND_HOME_COOLDOWN_DURATION.get(), player.level().getGameTime());
             }
+            WarpAttachmentUtil.setWarpAttachment(player, updatedWarpAttachment);
             HomeboundUtil.displayClientMessage(player, "§aHome set.§r");
         });
+
         cancelBindHome(player);
     }
 

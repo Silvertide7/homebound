@@ -1,68 +1,69 @@
 package net.silvertide.homebound.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class Config {
-    private static final ForgeConfigSpec.Builder BUILDER;
-    public static final ForgeConfigSpec SERVER_CONFIG;
+    private static final ModConfigSpec.Builder BUILDER;
+    public static final ModConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> HURT_COOLDOWN_TIME;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BIND_HOME_USE_DURATION;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BIND_HOME_COOLDOWN_DURATION;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CANT_BIND_HOME_ON_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Double> CHANNEL_SLOW_PERCENTAGE;
+    public static final ModConfigSpec.ConfigValue<Integer> HURT_COOLDOWN_TIME;
+    public static final ModConfigSpec.ConfigValue<Integer> BIND_HOME_USE_DURATION;
+    public static final ModConfigSpec.ConfigValue<Integer> BIND_HOME_COOLDOWN_DURATION;
+    public static final ModConfigSpec.ConfigValue<Boolean> CANT_BIND_HOME_ON_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Double> CHANNEL_SLOW_PERCENTAGE;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_USE_TIME;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_MAX_DISTANCE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HOMEWARD_BONE_DIMENSIONAL_TRAVEL;
+    public static final ModConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_USE_TIME;
+    public static final ModConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_MAX_DISTANCE;
+    public static final ModConfigSpec.ConfigValue<Boolean> HOMEWARD_BONE_DIMENSIONAL_TRAVEL;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> HEARTHWOOD_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HEARTHWOOD_USE_TIME;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HEARTHWOOD_MAX_DISTANCE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HEARTHWOOD_DIMENSIONAL_TRAVEL;
+    public static final ModConfigSpec.ConfigValue<Integer> HEARTHWOOD_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Integer> HEARTHWOOD_USE_TIME;
+    public static final ModConfigSpec.ConfigValue<Integer> HEARTHWOOD_MAX_DISTANCE;
+    public static final ModConfigSpec.ConfigValue<Boolean> HEARTHWOOD_DIMENSIONAL_TRAVEL;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_GEM_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_GEM_USE_TIME;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_GEM_MAX_DISTANCE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HOMEWARD_GEM_DIMENSIONAL_TRAVEL;
+    public static final ModConfigSpec.ConfigValue<Integer> HOMEWARD_GEM_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Integer> HOMEWARD_GEM_USE_TIME;
+    public static final ModConfigSpec.ConfigValue<Integer> HOMEWARD_GEM_MAX_DISTANCE;
+    public static final ModConfigSpec.ConfigValue<Boolean> HOMEWARD_GEM_DIMENSIONAL_TRAVEL;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_STONE_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_STONE_USE_TIME;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_STONE_MAX_DISTANCE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HOMEWARD_STONE_DIMENSIONAL_TRAVEL;
+    public static final ModConfigSpec.ConfigValue<Integer> HOMEWARD_STONE_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Integer> HOMEWARD_STONE_USE_TIME;
+    public static final ModConfigSpec.ConfigValue<Integer> HOMEWARD_STONE_MAX_DISTANCE;
+    public static final ModConfigSpec.ConfigValue<Boolean> HOMEWARD_STONE_DIMENSIONAL_TRAVEL;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> HAVEN_STONE_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HAVEN_STONE_USE_TIME;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HAVEN_STONE_MAX_DISTANCE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HAVEN_STONE_DIMENSIONAL_TRAVEL;
+    public static final ModConfigSpec.ConfigValue<Integer> HAVEN_STONE_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Integer> HAVEN_STONE_USE_TIME;
+    public static final ModConfigSpec.ConfigValue<Integer> HAVEN_STONE_MAX_DISTANCE;
+    public static final ModConfigSpec.ConfigValue<Boolean> HAVEN_STONE_DIMENSIONAL_TRAVEL;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> DAWN_STONE_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DAWN_STONE_USE_TIME;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DAWN_STONE_MAX_DISTANCE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DAWN_STONE_DIMENSIONAL_TRAVEL;
+    public static final ModConfigSpec.ConfigValue<Integer> DAWN_STONE_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Integer> DAWN_STONE_USE_TIME;
+    public static final ModConfigSpec.ConfigValue<Integer> DAWN_STONE_MAX_DISTANCE;
+    public static final ModConfigSpec.ConfigValue<Boolean> DAWN_STONE_DIMENSIONAL_TRAVEL;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> SUN_STONE_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SUN_STONE_USE_TIME;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SUN_STONE_MAX_DISTANCE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SUN_STONE_DIMENSIONAL_TRAVEL;
+    public static final ModConfigSpec.ConfigValue<Integer> SUN_STONE_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Integer> SUN_STONE_USE_TIME;
+    public static final ModConfigSpec.ConfigValue<Integer> SUN_STONE_MAX_DISTANCE;
+    public static final ModConfigSpec.ConfigValue<Boolean> SUN_STONE_DIMENSIONAL_TRAVEL;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> DUSK_STONE_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DUSK_STONE_USE_TIME;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DUSK_STONE_MAX_DISTANCE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DUSK_STONE_DIMENSIONAL_TRAVEL;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DUSK_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT;
-    public static final ForgeConfigSpec.ConfigValue<Double> DUSK_STONE_MAX_DISTANCE_REDUCTION;
+    public static final ModConfigSpec.ConfigValue<Integer> DUSK_STONE_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Integer> DUSK_STONE_USE_TIME;
+    public static final ModConfigSpec.ConfigValue<Integer> DUSK_STONE_MAX_DISTANCE;
+    public static final ModConfigSpec.ConfigValue<Boolean> DUSK_STONE_DIMENSIONAL_TRAVEL;
+    public static final ModConfigSpec.ConfigValue<Integer> DUSK_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT;
+    public static final ModConfigSpec.ConfigValue<Double> DUSK_STONE_MAX_DISTANCE_REDUCTION;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_USE_TIME;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_MAX_DISTANCE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> TWILIGHT_STONE_DIMENSIONAL_TRAVEL;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT;
-    public static final ForgeConfigSpec.ConfigValue<Double> TWILIGHT_STONE_MAX_DISTANCE_REDUCTION;
+    public static final ModConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_USE_TIME;
+    public static final ModConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_MAX_DISTANCE;
+    public static final ModConfigSpec.ConfigValue<Boolean> TWILIGHT_STONE_DIMENSIONAL_TRAVEL;
+    public static final ModConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT;
+    public static final ModConfigSpec.ConfigValue<Double> TWILIGHT_STONE_MAX_DISTANCE_REDUCTION;
 
     static {
-        BUILDER = new ForgeConfigSpec.Builder();
+        BUILDER = new ModConfigSpec.Builder();
 
         BUILDER.push("Homebound Configs");
 
@@ -154,6 +155,6 @@ public class Config {
 
         BUILDER.pop();
 
-        SERVER_CONFIG = BUILDER.build();
+        SPEC = BUILDER.build();
     }
 }

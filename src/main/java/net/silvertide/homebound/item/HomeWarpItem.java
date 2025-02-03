@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.silvertide.homebound.config.Config;
 import net.silvertide.homebound.events.custom.StartWarpEvent;
 import net.silvertide.homebound.util.*;
@@ -45,7 +45,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
                 return InteractionResultHolder.fail(stack);
             } else {
                 WarpManager warpManager = WarpManager.get();
-                if(!warpManager.isPlayerWarping(serverPlayer) && !MinecraftForge.EVENT_BUS.post(new StartWarpEvent(player, this))) {
+                if(!warpManager.isPlayerWarping(serverPlayer) && !NeoForge.EVENT_BUS.post(new StartWarpEvent(player, this)).isCanceled()) {
                     warpManager.startWarping(serverPlayer, stack);
                     player.startUsingItem(pUsedHand);
                     return InteractionResultHolder.success(stack);
@@ -84,9 +84,10 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 72000;
     }
+
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.BOW;
@@ -123,23 +124,23 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         if(Screen.hasShiftDown()){
-            pTooltipComponents.add(Component.literal("Crouch and use the item to set your home."));
-            addCooldownHoverText(pTooltipComponents, stack);
+            tooltipComponents.add(Component.literal("Crouch and use the item to set your home."));
+            addCooldownHoverText(tooltipComponents, stack);
 
-            pTooltipComponents.add(Component.literal("§aCast Time: " + getWarpUseDuration(stack) / 20.0 + " seconds.§r"));
+            tooltipComponents.add(Component.literal("§aCast Time: " + getWarpUseDuration(stack) / 20.0 + " seconds.§r"));
 
             int maxDistance = getMaxDistance();
-            if(maxDistance > 0) pTooltipComponents.add(Component.literal("§aMax Distance: " + maxDistance + " blocks§r"));
+            if(maxDistance > 0) tooltipComponents.add(Component.literal("§aMax Distance: " + maxDistance + " blocks§r"));
 
             boolean canDimTravel = canDimTravel();
-            pTooltipComponents.add(Component.literal("§aDimensional Travel: " + (canDimTravel ? "Yes" : "§cNo§r") + "§r"));
-            if(this.isSoulbound()) pTooltipComponents.add(Component.literal("§5This item persists death.§r"));
+            tooltipComponents.add(Component.literal("§aDimensional Travel: " + (canDimTravel ? "Yes" : "§cNo§r") + "§r"));
+            if(this.isSoulbound()) tooltipComponents.add(Component.literal("§5This item persists death.§r"));
         } else {
-            pTooltipComponents.add(Component.literal("Find your way home. Press §eSHIFT§r for more info."));
+            tooltipComponents.add(Component.literal("Find your way home. Press §eSHIFT§r for more info."));
         }
-        super.appendHoverText(stack, pLevel, pTooltipComponents, pIsAdvanced);
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
     @Override

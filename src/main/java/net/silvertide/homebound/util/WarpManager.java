@@ -15,13 +15,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.capabilities.WarpPos;
+import net.silvertide.homebound.attachments.WarpPos;
 import net.silvertide.homebound.config.Config;
 import net.silvertide.homebound.item.IWarpItem;
-import net.silvertide.homebound.network.ClientboundSyncWarpScheduleMessage;
-import net.silvertide.homebound.network.PacketHandler;
+import net.silvertide.homebound.network.client.CB_SyncWarpScheduleMessage;
+import net.silvertide.homebound.records.ScheduledWarp;
+import net.silvertide.homebound.records.WarpResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -40,7 +42,7 @@ public class WarpManager {
         if(warpItem.getWarpUseDuration(warpItemStack) > 0) {
             ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(warpItemStack), player.level().getGameTime());
             scheduledWarpMap.put(player.getUUID(), scheduledWarp);
-            PacketHandler.sendToPlayer(player, new ClientboundSyncWarpScheduleMessage(scheduledWarp.startedWarpingGameTimeStamp(), scheduledWarp.scheduledGameTimeTickToWarp()));
+            PacketDistributor.sendToPlayer(player, new CB_SyncWarpScheduleMessage(scheduledWarp.startedWarpingGameTimeStamp(), scheduledWarp.scheduledGameTimeTickToWarp()));
             AttributeUtil.tryAddChannelSlow(player, Config.CHANNEL_SLOW_PERCENTAGE.get());
         } else {
             warpPlayerHome(player);
@@ -49,7 +51,7 @@ public class WarpManager {
     }
     public void cancelWarp(ServerPlayer player) {
         if(isPlayerWarping(player)) {
-            PacketHandler.sendToPlayer(player, new ClientboundSyncWarpScheduleMessage(0L, 0L));
+            PacketDistributor.sendToPlayer(player, new CB_SyncWarpScheduleMessage(0L, 0L));
             AttributeUtil.removeChannelSlow(player);
             scheduledWarpMap.remove(player.getUUID());
         }
@@ -74,41 +76,40 @@ public class WarpManager {
     }
 
     public WarpResult canPlayerWarp(Player player, IWarpItem warpItem) {
-
-        if(!CapabilityUtil.isHomeSet(player)){
-            return new WarpResult(false, "§cNo home set.§r");
-        }
-
-        int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
-        if(remainingCooldown > 0) {
-            String message = "§cYou haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";
-            return new WarpResult(false, message);
-        }
-
-        if(!CapabilityUtil.inValidDimension(player, warpItem)) {
-            String message = "§cCan't warp between dimensions.§r";
-            return new WarpResult(false, message);
-        }
-
-        int maxDistance = warpItem.getMaxDistance();
-        if(maxDistance > 0) {
-
-            int distanceFromWarp = CapabilityUtil.getWarpCap(player).resolve()
-                .map(warpCap -> warpCap.getWarpPos().calculateDistance(new WarpPos(player.getOnPos(), player.level().dimension().location())))
-                .orElse(10000);
-
-            if(distanceFromWarp > maxDistance) {
-                String message = "§cToo far from home. [" + distanceFromWarp + " / " + maxDistance + "]§r";
-                return new WarpResult(false, message);
+        return WarpAttachmentUtil.getWarpAttachment(player).map(warpAttachment -> {
+            // Check if a home exists.
+            if(warpAttachment.warpPos() == null) {
+                return new WarpResult(false, "§cNo home set.§r");
             }
-        }
 
-        return new WarpResult(true, "");
+            // Check cooldown requirements.
+            int remainingCooldown = warpAttachment.getRemainingCooldown(player.level().getGameTime());
+            if(remainingCooldown > 0) {
+                return new WarpResult(false, "§cYou haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r");
+            }
+
+            // Check dimension requirements.
+            if(!WarpAttachmentUtil.inValidDimension(warpAttachment, player, warpItem)) {
+                return new WarpResult(false, "§cCan't warp between dimensions.§r");
+            }
+
+            int maxDistance = warpItem.getMaxDistance();
+            if(maxDistance > 0) {
+
+                int distanceFromWarp = warpAttachment.warpPos() != null ? warpAttachment.warpPos().calculateDistance(player.getOnPos()) : 10000;
+
+                if(distanceFromWarp > maxDistance) {
+                    return new WarpResult(false, "§cToo far from home. [" + distanceFromWarp + " / " + maxDistance + "]§r");
+                }
+            }
+
+            return new WarpResult(true, "");
+        }).orElse(new WarpResult(true, ""));
     }
 
     public void warpPlayerHome(ServerPlayer player) {
-        CapabilityUtil.getWarpCap(player).ifPresent(playerWarpCapability -> {
-            this.warp(player, playerWarpCapability.getWarpPos());
+        WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
+            this.warp(player, warpAttachment.warpPos());
 
             ScheduledWarp scheduledWarp = this.scheduledWarpMap.get(player.getUUID());
             ItemStack warpItemStack = scheduledWarp.warpItemStack();
@@ -117,7 +118,7 @@ public class WarpManager {
             if(!player.getAbilities().instabuild) {
                 int cooldown = warpItem.getWarpCooldown(player, warpItemStack);
                 if(cooldown > 0) {
-                    playerWarpCapability.setCooldown(player.level().getGameTime(), cooldown);
+                    warpAttachment.withAddedCooldown(cooldown, player.level().getGameTime());
                 }
 
                 if(warpItem.isConsumedOnUse()) {

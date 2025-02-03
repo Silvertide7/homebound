@@ -9,7 +9,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import net.silvertide.homebound.util.CapabilityUtil;
+import net.silvertide.homebound.util.WarpAttachmentUtil;
 
 public class CmdNodeAdmin {
     private static final String TARGET_ARG = "Target";
@@ -27,8 +27,8 @@ public class CmdNodeAdmin {
     }
     public static int adminClearCooldown(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         for (ServerPlayer player : EntityArgument.getPlayers(ctx, TARGET_ARG)) {
-            CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
-                warpCap.setCooldown(0,0);
+            WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
+                WarpAttachmentUtil.setWarpAttachment(player, warpAttachment.withCooldown(0));
             });
         }
         return 0;
@@ -36,8 +36,9 @@ public class CmdNodeAdmin {
 
     public static int adminClearHome(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         for (ServerPlayer player : EntityArgument.getPlayers(ctx, TARGET_ARG)) {
-            CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
-                if(warpCap.getWarpPos() != null) warpCap.clearHome();
+            WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
+
+                WarpAttachmentUtil.setWarpAttachment(player, warpAttachment.withWarpPos(null));
             });
         }
         return 0;

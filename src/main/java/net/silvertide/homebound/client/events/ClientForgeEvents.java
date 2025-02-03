@@ -1,34 +1,34 @@
 package net.silvertide.homebound.client.events;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.silvertide.homebound.Homebound;
-import net.silvertide.homebound.client.keybindings.Keybindings;
-import net.silvertide.homebound.network.PacketHandler;
-import net.silvertide.homebound.network.ServerboundUseHomeboundStoneMessage;
+import net.silvertide.homebound.client.keybindings.KeyMappings;
+import net.silvertide.homebound.network.server.SB_UseHomeboundStoneMessage;
 
-@Mod.EventBusSubscriber(modid = Homebound.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Homebound.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClientForgeEvents {
     private static boolean keyWasHeldDownLastTick = false;
     private static int age = 0;
     @SubscribeEvent
-    public static void clientTick(TickEvent.ClientTickEvent clientTickEvent) {
+    public static void clientTick(ClientTickEvent clientTickEvent) {
         Minecraft minecraft = Minecraft.getInstance();
         if(age > 0) age--;
 
         if(minecraft.player == null) return;
 
         if(age == 0) {
-            if(!keyWasHeldDownLastTick && Keybindings.INSTANCE.useHomeboundStoneKey.isDown()) {
+            if(!keyWasHeldDownLastTick && KeyMappings.useHomeboundStoneKey.isDown()) {
                 keyWasHeldDownLastTick = true;
-                PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 1));
-            } else if(keyWasHeldDownLastTick && !Keybindings.INSTANCE.useHomeboundStoneKey.isDown()) {
+                PacketDistributor.sendToServer(new SB_UseHomeboundStoneMessage((byte) 1));
+            } else if(keyWasHeldDownLastTick && !KeyMappings.useHomeboundStoneKey.isDown()) {
                 keyWasHeldDownLastTick = false;
                 age = 10;
-                PacketHandler.sendToServer(new ServerboundUseHomeboundStoneMessage((byte) 0));
+                PacketDistributor.sendToServer(new SB_UseHomeboundStoneMessage((byte) 0));
             }
         }
     }

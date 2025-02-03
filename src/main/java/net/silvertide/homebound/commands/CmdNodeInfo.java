@@ -7,10 +7,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.silvertide.homebound.util.CapabilityUtil;
 import net.silvertide.homebound.util.HomeboundUtil;
+import net.silvertide.homebound.util.WarpAttachmentUtil;
 
 public class CmdNodeInfo {
     private static final String TARGET_ARG = "Target";
@@ -24,15 +23,15 @@ public class CmdNodeInfo {
         ServerPlayer player = ctx.getSource().getPlayer();
         if(player == null) return 0;
 
-        CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
+        WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
             String warpPosString = "Home: §cNot set§r.";
-            if(warpCap.getWarpPos() != null) {
-                warpPosString = "Home: " + warpCap.getWarpPos().toString();
+            if(warpAttachment.warpPos() != null) {
+                warpPosString = "Home: " + warpAttachment.warpPos().toString();
             }
 
             String cooldownString = "Cooldown: §2Ready§r";
-            if(warpCap.hasCooldown(gameTime)) {
-                cooldownString = "Cooldown: §c" + HomeboundUtil.formatTime(warpCap.getRemainingCooldown(gameTime)) + "§r";
+            if(warpAttachment.hasCooldown(gameTime)) {
+                cooldownString = "Cooldown: §c" + HomeboundUtil.formatTime(warpAttachment.getRemainingCooldown(gameTime)) + "§r";
             }
             HomeboundUtil.sendSystemMessage(player, "§3" + warpPosString + "§r");
             HomeboundUtil.sendSystemMessage(player, "§3" + cooldownString + "§r");
