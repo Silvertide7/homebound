@@ -1,31 +1,28 @@
 package net.silvertide.homebound.events;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.config.Config;
-import net.silvertide.homebound.events.custom.StartWarpEvent;
 import net.silvertide.homebound.records.ScheduledBindHome;
 import net.silvertide.homebound.records.ScheduledWarp;
-import net.silvertide.homebound.records.WarpResult;
 import net.silvertide.homebound.util.*;
 import net.silvertide.homebound.item.HomeWarpItem;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid=Homebound.MOD_ID, bus= Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid= Homebound.MOD_ID, bus=EventBusSubscriber.Bus.GAME)
 public class WarpEvents {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onPlayerHurt(LivingHurtEvent event) {
-        if(!event.getEntity().level().isClientSide && event.getEntity() instanceof ServerPlayer player) {
+    public static void onPlayerHurt(LivingDamageEvent event) {
+        if(event.getEntity() instanceof ServerPlayer player) {
             if (Config.HURT_COOLDOWN_TIME.get() > 0 && WarpManager.get().isPlayerWarping(player)) {
                 WarpManager.get().cancelWarp(player);
 
@@ -33,11 +30,10 @@ public class WarpEvents {
                     player.stopUsingItem();
                 }
 
-                // Add a cooldown penalty for taking damage while warping.
-                CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
+                WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
                     long gameTime = player.level().getGameTime();
-                    if(!warpCap.hasCooldown(gameTime)) {
-                        warpCap.setCooldown(gameTime, Config.HURT_COOLDOWN_TIME.get());
+                    if(!warpAttachment.hasCooldown(gameTime)) {
+                        WarpAttachmentUtil.setWarpAttachment(player, warpAttachment.withAddedCooldown(Config.HURT_COOLDOWN_TIME.get(), gameTime));
                     }
                 });
 
@@ -47,8 +43,8 @@ public class WarpEvents {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if(event.haveTime() && event.phase == TickEvent.Phase.END) {
+    public static void onServerTick(ServerTickEvent.Post event) {
+        if(event.hasTime()) {
             if(WarpManager.get().warpIsActive()) {
                 WarpManager warpManager = WarpManager.get();
                 List<ScheduledWarp> scheduledWarpAttributes = warpManager.getWarpAttributeList();
@@ -77,26 +73,12 @@ public class WarpEvents {
     }
 
     @SubscribeEvent
-    public static void onStartWarp(StartWarpEvent warpEvent) {
-        if (warpEvent.isCanceled()) return;
-
-        Player player = warpEvent.getEntity();
-        WarpResult warpResult = WarpManager.get().canPlayerWarp(player, warpEvent.getWarpItem());
-
-        if(!warpResult.success()) {
-            warpEvent.setCanceled(true);
-            HomeboundUtil.displayClientMessage(player, warpResult.message());
-        }
-    }
-
-    @SubscribeEvent
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent loggedOutEvent) {
         if(!loggedOutEvent.getEntity().level().isClientSide()) {
             ServerPlayer serverPlayer = (ServerPlayer) loggedOutEvent.getEntity();
             if(WarpManager.get().isPlayerWarping(serverPlayer)){
                 WarpManager.get().cancelWarp(serverPlayer);
             }
-
             if(HomeManager.get().isPlayerBindingHome(serverPlayer)){
                 HomeManager.get().cancelBindHome(serverPlayer);
             }
@@ -109,7 +91,6 @@ public class WarpEvents {
             if (WarpManager.get().isPlayerWarping(serverPlayer)) {
                 WarpManager.get().cancelWarp(serverPlayer);
             }
-
             if (HomeManager.get().isPlayerBindingHome(serverPlayer)) {
                 HomeManager.get().cancelBindHome(serverPlayer);
             }

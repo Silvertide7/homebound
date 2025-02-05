@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public record WarpAttachment(Optional<WarpPos> warpPos, int cooldown, long lastWarpTimestamp) {
+public record WarpAttachment(WarpPos warpPos, int cooldown, long lastWarpTimestamp) {
     public static final Codec<WarpAttachment> CODEC;
     public static final StreamCodec<FriendlyByteBuf, WarpAttachment> STREAM_CODEC;
 
     static{
         CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                        WarpPos.CODEC.optionalFieldOf("warpPos").forGetter(WarpAttachment::warpPos),
+                        WarpPos.CODEC.fieldOf("warpPos").forGetter(WarpAttachment::warpPos),
                         Codec.INT.fieldOf("cooldown").forGetter(WarpAttachment::cooldown),
                         Codec.LONG.fieldOf("lastWarpTimestamp").forGetter(WarpAttachment::lastWarpTimestamp))
                 .apply(instance, WarpAttachment::new)
@@ -23,26 +23,14 @@ public record WarpAttachment(Optional<WarpPos> warpPos, int cooldown, long lastW
         STREAM_CODEC = new StreamCodec<>() {
             @Override
             public void encode(@NotNull FriendlyByteBuf buf, @NotNull WarpAttachment warpAtt) {
-                if(warpAtt.warpPos().isPresent()) {
-                    buf.writeBoolean(true);
-                    WarpPos.STREAM_CODEC.encode(buf, warpAtt.warpPos().get());
-                } else {
-                    buf.writeBoolean(false);
-                }
-
+                WarpPos.STREAM_CODEC.encode(buf, warpAtt.warpPos());
                 buf.writeInt(warpAtt.cooldown());
                 buf.writeLong(warpAtt.lastWarpTimestamp());
             }
 
             @Override
             public @NotNull WarpAttachment decode(@NotNull FriendlyByteBuf buf) {
-                Optional<WarpPos> incWarpPos = Optional.empty();
-
-                if(buf.readBoolean()) {
-                   incWarpPos = Optional.of(WarpPos.STREAM_CODEC.decode(buf));
-                }
-
-                return new WarpAttachment(incWarpPos, buf.readInt(), buf.readLong());
+                return new WarpAttachment(WarpPos.STREAM_CODEC.decode(buf), buf.readInt(), buf.readLong());
             }
         };
     }
@@ -63,11 +51,7 @@ public record WarpAttachment(Optional<WarpPos> warpPos, int cooldown, long lastW
 
     // Builders
     public WarpAttachment withWarpPos(WarpPos warpPos) {
-        return new WarpAttachment(Optional.of(warpPos), this.cooldown(), this.lastWarpTimestamp());
-    }
-
-    public WarpAttachment withClearedWarpPos() {
-        return new WarpAttachment(Optional.empty(), this.cooldown(), this.lastWarpTimestamp());
+        return new WarpAttachment(warpPos, this.cooldown(), this.lastWarpTimestamp());
     }
 
     public WarpAttachment withCooldown(int cooldown) {

@@ -9,7 +9,7 @@ import net.silvertide.homebound.Homebound;
 
 public final class AttributeUtil {
     private AttributeUtil() {}
-    private static ResourceLocation speedModifierResourceLocation = Homebound.id("homebound_stone_slow");
+    private static final ResourceLocation speedModifierResourceLocation = Homebound.id("homebound_stone_slow");
 
     public static void removeChannelSlow(Player player) {
         AttributeInstance attributeinstance = player.getAttribute(Attributes.MOVEMENT_SPEED);

@@ -7,7 +7,6 @@ import net.silvertide.homebound.compat.CuriosCompat;
 import net.silvertide.homebound.compat.CuriosEvents;
 
 public class CuriosSetup {
-
     public static void init(final FMLCommonSetupEvent ignored) {
         if(ModList.get().isLoaded("curios")) {
             CuriosCompat.isCuriosLoaded = true;

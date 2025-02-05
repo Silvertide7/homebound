@@ -9,8 +9,13 @@ import java.util.Optional;
 
 public final class WarpAttachmentUtil {
     private WarpAttachmentUtil() {}
+
     public static Optional<WarpAttachment> getWarpAttachment(Player player) {
-        return Optional.of(player.getData(AttachmentRegistry.WARP_ATTACHMENT));
+        if(player.hasData(AttachmentRegistry.WARP_ATTACHMENT)) {
+            return Optional.of(player.getData(AttachmentRegistry.WARP_ATTACHMENT));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public static void setWarpAttachment(Player player, WarpAttachment attachment) {
@@ -18,10 +23,8 @@ public final class WarpAttachmentUtil {
     }
 
     public static boolean inValidDimension(WarpAttachment warpAttachment, Player player, IWarpItem warpItem) {
-        boolean isPlayerInWarpPosDimension = warpAttachment.warpPos().isSameDimension(player.level().dimension().location());
+        boolean isPlayerInWarpPosDimension = warpAttachment.warpPos().isInSameDimension(player.level().dimension().location());
         return warpItem.canDimTravel() || isPlayerInWarpPosDimension;
     }
-
-
 
 }

@@ -10,8 +10,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.silvertide.homebound.capabilities.IWarpCap;
-import net.silvertide.homebound.capabilities.WarpPos;
+import net.silvertide.homebound.attachments.WarpPos;
 import net.silvertide.homebound.compat.CuriosCompat;
 import net.silvertide.homebound.item.IWarpItem;
 
@@ -29,20 +28,20 @@ public final class HomeboundUtil {
         if(maxCooldownReduction > 0.0) {
             int blocksPerPercentAdded = warpItem.getBlocksPerBonusReducedBy1Percent();
 
-            IWarpCap playerWarpCap = CapabilityUtil.getWarpCapOrNull(player);
-            if(playerWarpCap == null) return cooldown;
+            return WarpAttachmentUtil.getWarpAttachment(player).map(warpAttachment -> {
+                WarpPos playerPos = WarpPos.fromPlayerPosition(player);
 
-            WarpPos currentPos = CapabilityUtil.createWarpPosOnPlayer(player);
+                int dimensionMultiplier = warpAttachment.warpPos().isInSameDimension(playerPos) ? 1 : 2;
+                int distanceToHome = warpAttachment.warpPos().calculateDistanceFromPosition(playerPos);
+                double distancePenalty = ((double) distanceToHome /blocksPerPercentAdded/100.0)*dimensionMultiplier;
 
-            int dimensionMultiplier = playerWarpCap.getWarpPos().isSameDimension(currentPos) ? 1 : 2;
-            int distanceToHome = playerWarpCap.getWarpPos().calculateDistance(currentPos);
-            double distancePenalty = ((double) distanceToHome /blocksPerPercentAdded/100.0)*dimensionMultiplier;
-
-            if(distancePenalty < maxCooldownReduction) {
-                double cooldownReductionBonus = (1.0-(maxCooldownReduction-distancePenalty));
-                double modifiedCooldown = ((double) cooldown)*cooldownReductionBonus;
-                return (int) modifiedCooldown;
-            }
+                if(distancePenalty < maxCooldownReduction) {
+                    double cooldownReductionBonus = (1.0-(maxCooldownReduction-distancePenalty));
+                    double modifiedCooldown = ((double) cooldown)*cooldownReductionBonus;
+                    return (int) modifiedCooldown;
+                }
+                return cooldown;
+            }).orElse(cooldown);
         }
         return cooldown;
     }

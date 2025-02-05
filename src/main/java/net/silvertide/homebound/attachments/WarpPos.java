@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.silvertide.homebound.util.HomeboundUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,18 +35,26 @@ public record WarpPos(BlockPos blockPos, ResourceLocation dimension) {
         };
     }
 
-    public int calculateDistance(BlockPos currBlockPos) {
+    public static WarpPos fromPlayerPosition(Player player) {
+        return new WarpPos(player.getOnPos(), player.level().dimension().location());
+    }
+
+    public int calculateDistanceFromPosition(WarpPos warpPos) {
+        return calculateDistanceFromPosition(warpPos.blockPos());
+    }
+
+    public int calculateDistanceFromPosition(BlockPos currBlockPos) {
         double xDelta = this.blockPos().getX() - currBlockPos.getX();
         double yDelta = this.blockPos().getY() - currBlockPos.getY();
         double zDelta = this.blockPos().getZ() - currBlockPos.getZ();
         return (int) Math.sqrt(xDelta*xDelta + yDelta*yDelta + zDelta*zDelta);
     }
 
-    public boolean isSameDimension(WarpPos destination) {
+    public boolean isInSameDimension(WarpPos destination) {
         return this.dimension().equals(destination.dimension());
     }
 
-    public boolean isSameDimension(ResourceLocation dimension) {
+    public boolean isInSameDimension(ResourceLocation dimension) {
         return this.dimension().equals(dimension);
     }
 

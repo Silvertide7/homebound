@@ -18,16 +18,13 @@ public class CmdNodeInfo {
         return Commands.literal("info").executes(CmdNodeInfo::getPlayerInfo);
 
     }
-    public static int getPlayerInfo(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+    public static int getPlayerInfo(CommandContext<CommandSourceStack> ctx) {
         long gameTime = ctx.getSource().getLevel().getGameTime();
         ServerPlayer player = ctx.getSource().getPlayer();
         if(player == null) return 0;
 
-        WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
-            String warpPosString = "Home: §cNot set§r.";
-            if(warpAttachment.warpPos() != null) {
-                warpPosString = "Home: " + warpAttachment.warpPos().toString();
-            }
+        WarpAttachmentUtil.getWarpAttachment(player).ifPresentOrElse(warpAttachment -> {
+            String warpPosString = "Home: " + warpAttachment.warpPos();
 
             String cooldownString = "Cooldown: §2Ready§r";
             if(warpAttachment.hasCooldown(gameTime)) {
@@ -35,7 +32,9 @@ public class CmdNodeInfo {
             }
             HomeboundUtil.sendSystemMessage(player, "§3" + warpPosString + "§r");
             HomeboundUtil.sendSystemMessage(player, "§3" + cooldownString + "§r");
-        });
+        },
+        () -> HomeboundUtil.sendSystemMessage(player, "§3No Home Set§r"));
+
         return 0;
     }
 }

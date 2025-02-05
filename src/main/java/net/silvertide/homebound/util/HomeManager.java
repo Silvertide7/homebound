@@ -38,13 +38,15 @@ public class HomeManager {
 
     public boolean canPlayerSetHome(ServerPlayer player) {
         if(Config.CANT_BIND_HOME_ON_COOLDOWN.get()) {
-
-            int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
-            if(remainingCooldown > 0) {
-                String message = "§cCan't set home, you haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";
-                HomeboundUtil.displayClientMessage(player, message);
-                return false;
-            }
+            return WarpAttachmentUtil.getWarpAttachment(player).map(warpAttachment -> {
+                int remainingCooldown = warpAttachment.getRemainingCooldown(player.level().getGameTime());
+                if(remainingCooldown > 0) {
+                    String message = "§cCan't set home, you haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";
+                    HomeboundUtil.displayClientMessage(player, message);
+                    return false;
+                }
+                return true;
+            }).orElse(true);
         }
         return true;
     }
@@ -77,7 +79,7 @@ public class HomeManager {
     public void setPlayerHome(ServerPlayer player) {
 
         WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
-            WarpAttachment updatedWarpAttachment = warpAttachment.withWarpPos(new WarpPos(player.getOnPos(), player.level().dimension().location()));
+            WarpAttachment updatedWarpAttachment = warpAttachment.withWarpPos(WarpPos.fromPlayerPosition(player));
             if(Config.BIND_HOME_COOLDOWN_DURATION.get() > 0) {
                 updatedWarpAttachment = updatedWarpAttachment.withAddedCooldown(Config.BIND_HOME_COOLDOWN_DURATION.get(), player.level().getGameTime());
             }

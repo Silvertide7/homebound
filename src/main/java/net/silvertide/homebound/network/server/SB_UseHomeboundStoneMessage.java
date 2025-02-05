@@ -39,6 +39,7 @@ public record SB_UseHomeboundStoneMessage(byte isKeybindDown) implements CustomP
                         warpItemStack.ifPresentOrElse(stack -> {
                                     IWarpItem warpItem = (IWarpItem) stack.getItem();
 
+
                                     if (NeoForge.EVENT_BUS.post(new StartWarpEvent(serverPlayer, warpItem)).isCanceled()) return;
 
                                     WarpManager.get().startWarping(serverPlayer, stack);

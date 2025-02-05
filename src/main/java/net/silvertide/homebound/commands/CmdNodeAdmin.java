@@ -37,8 +37,7 @@ public class CmdNodeAdmin {
     public static int adminClearHome(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         for (ServerPlayer player : EntityArgument.getPlayers(ctx, TARGET_ARG)) {
             WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
-
-                WarpAttachmentUtil.setWarpAttachment(player, warpAttachment.withWarpPos(null));
+                WarpAttachmentUtil.setWarpAttachment(player, null);
             });
         }
         return 0;

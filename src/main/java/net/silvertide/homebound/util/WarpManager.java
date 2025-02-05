@@ -38,6 +38,13 @@ public class WarpManager {
     public void startWarping(ServerPlayer player, ItemStack warpItemStack) {
         IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
 
+        // Check if we can warp
+        WarpResult warpResult = canPlayerWarp(player, warpItem);
+        if(!warpResult.success()) {
+            HomeboundUtil.displayClientMessage(player, warpResult.message());
+            return;
+        }
+
         // Schedule a warp for the future if the item has a use duration.
         if(warpItem.getWarpUseDuration(warpItemStack) > 0) {
             ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(warpItemStack), player.level().getGameTime());
@@ -95,9 +102,7 @@ public class WarpManager {
 
             int maxDistance = warpItem.getMaxDistance();
             if(maxDistance > 0) {
-
-                int distanceFromWarp = warpAttachment.warpPos() != null ? warpAttachment.warpPos().calculateDistance(player.getOnPos()) : 10000;
-
+                int distanceFromWarp = warpAttachment.warpPos().calculateDistanceFromPosition(player.getOnPos());
                 if(distanceFromWarp > maxDistance) {
                     return new WarpResult(false, "§cToo far from home. [" + distanceFromWarp + " / " + maxDistance + "]§r");
                 }
