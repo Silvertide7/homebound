@@ -1,13 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_haven_stone": {
+    "has_homeward_shard": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "homebound:haven_stone"
-            ]
+            "items": "homebound:homeward_shard"
           }
         ]
       },
@@ -15,21 +13,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "homebound:dawn_stone"
+        "recipe": "homebound:homeward_gem"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_haven_stone",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_homeward_shard"
     ]
   ],
   "rewards": {
     "recipes": [
-      "homebound:dawn_stone"
+      "homebound:homeward_gem"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

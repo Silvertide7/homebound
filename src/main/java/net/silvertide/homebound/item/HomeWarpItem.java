@@ -71,12 +71,14 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
 
     public int getWarpUseDuration(ItemStack stack) {
         int useDuration = getBaseUseDurationInTicks();
-        return EnchantmentUtil.applyEnchantHasteModifier(useDuration, EnchantmentUtil.getHasteEnchantLevel(stack));
+        return useDuration;
+        //return EnchantmentUtil.applyEnchantHasteModifier(useDuration, EnchantmentUtil.getHasteEnchantLevel(stack));
     }
 
     public int getWarpCooldown(ServerPlayer player, ItemStack stack) {
         int baseCooldown = getBaseCooldown();
-        return EnchantmentUtil.applyEnchantCooldownModifier(HomeboundUtil.applyDistanceCooldownModifier(this, player, baseCooldown), EnchantmentUtil.getCooldownEnchantLevel(stack));
+        return baseCooldown;
+        //return EnchantmentUtil.applyEnchantCooldownModifier(HomeboundUtil.applyDistanceCooldownModifier(this, player, baseCooldown), EnchantmentUtil.getCooldownEnchantLevel(stack));
     }
 
     public boolean isConsumedOnUse() {
@@ -110,7 +112,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
 
     protected void addCooldownHoverText(List<Component> pTooltipComponents, ItemStack stack) {
         double distanceBasedCooldownReduction = getDistanceBasedCooldownReduction();
-        int cooldown = EnchantmentUtil.applyEnchantCooldownModifier(getBaseCooldown(), EnchantmentUtil.getCooldownEnchantLevel(stack));
+        int cooldown = getBaseCooldown(); //EnchantmentUtil.applyEnchantCooldownModifier(getBaseCooldown(), EnchantmentUtil.getCooldownEnchantLevel(stack));
         if(distanceBasedCooldownReduction > 0.0) {
             int blocksPerPercentReduced = getBlocksPerBonusReducedBy1Percent();
             double lowestCooldownPossible = (double) cooldown*(1.0-distanceBasedCooldownReduction);

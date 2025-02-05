@@ -1,13 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_ender_pearl": {
+    "has_dusk_stone": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:ender_pearl"
-            ]
+            "items": "homebound:dusk_stone"
           }
         ]
       },
@@ -15,21 +13,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "homebound:homeward_bone"
+        "recipe": "homebound:twilight_stone"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_ender_pearl",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_dusk_stone"
     ]
   ],
   "rewards": {
     "recipes": [
-      "homebound:homeward_bone"
+      "homebound:twilight_stone"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

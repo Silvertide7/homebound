@@ -18,7 +18,7 @@
     "SDS"
   ],
   "result": {
-    "item": "homebound:homeward_stone"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "homebound:homeward_stone"
+  }
 }

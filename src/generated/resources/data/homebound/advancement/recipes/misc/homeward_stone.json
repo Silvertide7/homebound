@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "homebound:homeward_gem"
-            ]
+            "items": "homebound:homeward_gem"
           }
         ]
       },
@@ -22,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_homeward_gem",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_homeward_gem"
     ]
   ],
   "rewards": {
     "recipes": [
       "homebound:homeward_stone"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -109,7 +109,7 @@ public class WarpManager {
             }
 
             return new WarpResult(true, "");
-        }).orElse(new WarpResult(true, ""));
+        }).orElse(new WarpResult(false, "§cNo home set.§r"));
     }
 
     public void warpPlayerHome(ServerPlayer player) {

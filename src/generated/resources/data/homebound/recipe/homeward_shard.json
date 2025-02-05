@@ -15,7 +15,7 @@
     "   "
   ],
   "result": {
-    "item": "homebound:homeward_shard"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "homebound:homeward_shard"
+  }
 }

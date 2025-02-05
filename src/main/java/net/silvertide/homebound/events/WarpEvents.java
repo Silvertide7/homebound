@@ -21,7 +21,7 @@ import java.util.List;
 public class WarpEvents {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onPlayerHurt(LivingDamageEvent event) {
+    public static void onPlayerHurt(LivingDamageEvent.Post event) {
         if(event.getEntity() instanceof ServerPlayer player) {
             if (Config.HURT_COOLDOWN_TIME.get() > 0 && WarpManager.get().isPlayerWarping(player)) {
                 WarpManager.get().cancelWarp(player);

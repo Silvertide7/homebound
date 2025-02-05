@@ -12,7 +12,7 @@
     "   "
   ],
   "result": {
-    "item": "homebound:homeward_gem"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "homebound:homeward_gem"
+  }
 }

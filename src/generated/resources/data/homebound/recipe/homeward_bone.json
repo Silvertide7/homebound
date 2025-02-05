@@ -15,7 +15,7 @@
     " B "
   ],
   "result": {
-    "item": "homebound:homeward_bone"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "homebound:homeward_bone"
+  }
 }

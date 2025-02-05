@@ -1,13 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_dusk_stone": {
+    "has_haven_stone": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "homebound:dusk_stone"
-            ]
+            "items": "homebound:haven_stone"
           }
         ]
       },
@@ -15,21 +13,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "homebound:twilight_stone"
+        "recipe": "homebound:dawn_stone"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_dusk_stone",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_haven_stone"
     ]
   ],
   "rewards": {
     "recipes": [
-      "homebound:twilight_stone"
+      "homebound:dawn_stone"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

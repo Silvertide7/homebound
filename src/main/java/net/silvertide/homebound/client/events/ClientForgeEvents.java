@@ -15,7 +15,7 @@ public class ClientForgeEvents {
     private static boolean keyWasHeldDownLastTick = false;
     private static int age = 0;
     @SubscribeEvent
-    public static void clientTick(ClientTickEvent clientTickEvent) {
+    public static void clientTick(ClientTickEvent.Post clientTickEvent) {
         Minecraft minecraft = Minecraft.getInstance();
         if(age > 0) age--;
 

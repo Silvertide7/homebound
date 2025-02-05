@@ -15,7 +15,7 @@
     "SSS"
   ],
   "result": {
-    "item": "homebound:dusk_stone"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "homebound:dusk_stone"
+  }
 }

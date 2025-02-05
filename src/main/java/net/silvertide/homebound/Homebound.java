@@ -8,14 +8,14 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.silvertide.homebound.config.Config;
 import net.silvertide.homebound.registry.AttachmentRegistry;
-import net.silvertide.homebound.registry.EnchantmentRegistry;
 import net.silvertide.homebound.registry.TabRegistry;
 import net.silvertide.homebound.registry.ItemRegistry;
 import net.silvertide.homebound.setup.CuriosSetup;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-
+//TODO: Using the item doesn't cancel the channel of the item if it fails.
+//TODO: When using the h keybind I speed up instead of slow down.
 @Mod(Homebound.MOD_ID)
 public class Homebound
 {
@@ -27,7 +27,6 @@ public class Homebound
         TabRegistry.register(modEventBus);
         ItemRegistry.register(modEventBus);
         AttachmentRegistry.register(modEventBus);
-        EnchantmentRegistry.register(modEventBus);
 
         modEventBus.addListener(CuriosSetup::init);
 

@@ -15,7 +15,7 @@
     "LLL"
   ],
   "result": {
-    "item": "homebound:hearthwood"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "homebound:hearthwood"
+  }
 }

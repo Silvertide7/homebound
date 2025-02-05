@@ -8,7 +8,7 @@ import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.client.gui.BindHomeBarOverlay;
 import net.silvertide.homebound.client.gui.WarpBarOverlay;
 
-@EventBusSubscriber
+@EventBusSubscriber(modid=Homebound.MOD_ID, bus=EventBusSubscriber.Bus.MOD)
 public class OverlayRegistry {
     @SubscribeEvent
     public static void onRegisterOverlays(RegisterGuiLayersEvent event) {
