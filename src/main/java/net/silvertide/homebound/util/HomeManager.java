@@ -78,15 +78,21 @@ public class HomeManager {
     }
     public void setPlayerHome(ServerPlayer player) {
 
-        WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
+        WarpAttachmentUtil.getWarpAttachment(player).ifPresentOrElse(warpAttachment -> {
             WarpAttachment updatedWarpAttachment = warpAttachment.withWarpPos(WarpPos.fromPlayerPosition(player));
             if(Config.BIND_HOME_COOLDOWN_DURATION.get() > 0) {
                 updatedWarpAttachment = updatedWarpAttachment.withAddedCooldown(Config.BIND_HOME_COOLDOWN_DURATION.get(), player.level().getGameTime());
             }
             WarpAttachmentUtil.setWarpAttachment(player, updatedWarpAttachment);
-            HomeboundUtil.displayClientMessage(player, "§aHome set.§r");
+        },
+        () -> {
+            WarpAttachment newWarpAttachment = new WarpAttachment(WarpPos.fromPlayerPosition(player), 0, 0L);
+            if(Config.BIND_HOME_COOLDOWN_DURATION.get() > 0) {
+                newWarpAttachment = newWarpAttachment.withAddedCooldown(Config.BIND_HOME_COOLDOWN_DURATION.get(), player.level().getGameTime());
+            }
+            WarpAttachmentUtil.setWarpAttachment(player, newWarpAttachment);
         });
-
+        HomeboundUtil.displayClientMessage(player, "§aHome set.§r");
         cancelBindHome(player);
     }
 
