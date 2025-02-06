@@ -38,10 +38,7 @@ public record SB_UseHomeboundStoneMessage(byte isKeybindDown) implements CustomP
                         Optional<ItemStack> warpItemStack = HomeboundUtil.findWarpInitiatiorItemStack(serverPlayer);
                         warpItemStack.ifPresentOrElse(stack -> {
                                     IWarpItem warpItem = (IWarpItem) stack.getItem();
-
-
                                     if (NeoForge.EVENT_BUS.post(new StartWarpEvent(serverPlayer, warpItem)).isCanceled()) return;
-
                                     WarpManager.get().startWarping(serverPlayer, stack);
                                 },
                                 () ->  HomeboundUtil.displayClientMessage(serverPlayer,"No Homebound stone found.")

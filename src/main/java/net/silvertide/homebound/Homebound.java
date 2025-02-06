@@ -14,8 +14,6 @@ import net.silvertide.homebound.setup.CuriosSetup;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-//TODO: Using the item doesn't cancel the channel of the item if it fails.
-//TODO: When using the h keybind I speed up instead of slow down.
 @Mod(Homebound.MOD_ID)
 public class Homebound
 {

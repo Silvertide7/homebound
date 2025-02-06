@@ -19,7 +19,12 @@ public final class WarpAttachmentUtil {
     }
 
     public static void setWarpAttachment(Player player, WarpAttachment attachment) {
-        player.setData(AttachmentRegistry.WARP_ATTACHMENT, attachment);
+        if(attachment == null) {
+            player.removeData(AttachmentRegistry.WARP_ATTACHMENT);
+        } else {
+            player.setData(AttachmentRegistry.WARP_ATTACHMENT, attachment);
+
+        }
     }
 
     public static boolean inValidDimension(WarpAttachment warpAttachment, Player player, IWarpItem warpItem) {

@@ -6,6 +6,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.silvertide.homebound.Homebound;
+import net.silvertide.homebound.config.Config;
 
 public final class AttributeUtil {
     private AttributeUtil() {}
@@ -20,12 +21,12 @@ public final class AttributeUtil {
         }
     }
 
-    public static void tryAddChannelSlow(Player player, double slowPercentage) {
+    public static void addChannelSlow(Player player) {
+        double channelSlow = Math.min(Math.max(Config.CHANNEL_SLOW_PERCENTAGE.get(), 0.0), 1.0);
         AttributeInstance moveSpeedAttr = player.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (moveSpeedAttr == null) {
-            return;
-        }
-        AttributeModifier moveSpeedModifier = new AttributeModifier(speedModifierResourceLocation, slowPercentage, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
-        moveSpeedAttr.addTransientModifier(moveSpeedModifier);
+        if (moveSpeedAttr == null) return;
+
+        AttributeModifier moveSpeedModifier = new AttributeModifier(speedModifierResourceLocation, -channelSlow, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        moveSpeedAttr.addOrUpdateTransientModifier(moveSpeedModifier);
     }
 }

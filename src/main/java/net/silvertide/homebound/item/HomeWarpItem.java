@@ -33,22 +33,28 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand pUsedHand) {
         ItemStack stack = player.getItemInHand(pUsedHand);
-        if (!level.isClientSide()) {
-            ServerPlayer serverPlayer = (ServerPlayer) player;
+
+        if (player instanceof ServerPlayer serverPlayer) {
             if(player.isCrouching()) {
                 HomeManager homeManager = HomeManager.get();
-                if(!homeManager.isPlayerBindingHome(serverPlayer) && homeManager.canPlayerSetHome(serverPlayer)) {
-                    homeManager.startBindingHome(serverPlayer);
+                if(!homeManager.isPlayerBindingHome(serverPlayer)) {
+                    if(!homeManager.startBindingHome(serverPlayer)) {
+                        return InteractionResultHolder.fail(stack);
+                    }
+
                     player.startUsingItem(pUsedHand);
-                    return InteractionResultHolder.success(stack);
+                    return InteractionResultHolder.consume(stack);
                 }
-                return InteractionResultHolder.fail(stack);
             } else {
                 WarpManager warpManager = WarpManager.get();
                 if(!warpManager.isPlayerWarping(serverPlayer) && !NeoForge.EVENT_BUS.post(new StartWarpEvent(player, this)).isCanceled()) {
-                    warpManager.startWarping(serverPlayer, stack);
+
+                    if(!warpManager.startWarping(serverPlayer, stack)) {
+                        return InteractionResultHolder.fail(stack);
+                    };
+
                     player.startUsingItem(pUsedHand);
-                    return InteractionResultHolder.success(stack);
+                    return InteractionResultHolder.consume(stack);
                 }
             }
         }
@@ -57,7 +63,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
 
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
-        if(!level.isClientSide() && entity instanceof ServerPlayer serverPlayer) {
+        if(entity instanceof ServerPlayer serverPlayer) {
             WarpManager warpManager = WarpManager.get();
             if(warpManager.isPlayerWarping(serverPlayer)) {
                 warpManager.cancelWarp(serverPlayer);
@@ -161,7 +167,6 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
             case SUN_STONE -> Config.SUN_STONE_COOLDOWN.get();
             case DUSK_STONE -> Config.DUSK_STONE_COOLDOWN.get();
             case TWILIGHT_STONE -> Config.TWILIGHT_STONE_COOLDOWN.get();
-            default -> 60;
         };
         // We multiply by 60 because we want this value in seconds.
         return cooldownInMinutes*60;
@@ -194,7 +199,6 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
             case SUN_STONE -> Config.SUN_STONE_USE_TIME.get();
             case DUSK_STONE -> Config.DUSK_STONE_USE_TIME.get();
             case TWILIGHT_STONE -> Config.TWILIGHT_STONE_USE_TIME.get();
-            default -> 10;
         };
         return useDurationInSeconds*HomeboundUtil.TICKS_PER_SECOND;
     }
@@ -211,7 +215,6 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
             case SUN_STONE -> Config.SUN_STONE_DIMENSIONAL_TRAVEL.get();
             case DUSK_STONE -> Config.DUSK_STONE_DIMENSIONAL_TRAVEL.get();
             case TWILIGHT_STONE -> Config.TWILIGHT_STONE_DIMENSIONAL_TRAVEL.get();
-            default -> false;
         };
     }
 
@@ -226,7 +229,6 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
             case SUN_STONE -> Config.SUN_STONE_MAX_DISTANCE.get();
             case DUSK_STONE -> Config.DUSK_STONE_MAX_DISTANCE.get();
             case TWILIGHT_STONE -> Config.TWILIGHT_STONE_MAX_DISTANCE.get();
-            default -> 0;
         };
     }
 

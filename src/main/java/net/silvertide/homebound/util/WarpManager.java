@@ -35,14 +35,14 @@ public class WarpManager {
     public static WarpManager get() {
         return INSTANCE;
     }
-    public void startWarping(ServerPlayer player, ItemStack warpItemStack) {
+    public boolean startWarping(ServerPlayer player, ItemStack warpItemStack) {
         IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
 
         // Check if we can warp
         WarpResult warpResult = canPlayerWarp(player, warpItem);
         if(!warpResult.success()) {
             HomeboundUtil.displayClientMessage(player, warpResult.message());
-            return;
+            return false;
         }
 
         // Schedule a warp for the future if the item has a use duration.
@@ -50,11 +50,11 @@ public class WarpManager {
             ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(warpItemStack), player.level().getGameTime());
             scheduledWarpMap.put(player.getUUID(), scheduledWarp);
             PacketDistributor.sendToPlayer(player, new CB_SyncWarpScheduleMessage(scheduledWarp.startedWarpingGameTimeStamp(), scheduledWarp.scheduledGameTimeTickToWarp()));
-            AttributeUtil.tryAddChannelSlow(player, Config.CHANNEL_SLOW_PERCENTAGE.get());
+            AttributeUtil.addChannelSlow(player);
         } else {
             warpPlayerHome(player);
         }
-
+        return true;
     }
     public void cancelWarp(ServerPlayer player) {
         if(isPlayerWarping(player)) {

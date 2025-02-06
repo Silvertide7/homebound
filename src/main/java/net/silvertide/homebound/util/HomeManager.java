@@ -22,18 +22,23 @@ public class HomeManager {
         return INSTANCE;
     }
 
-    public void startBindingHome(ServerPlayer player) {
+    public boolean startBindingHome(ServerPlayer player) {
+        if(!canPlayerSetHome(player)) {
+            return false;
+        }
+
         if(Config.BIND_HOME_USE_DURATION.get() > 0) {
             ScheduledBindHome scheduledBindHome = new ScheduledBindHome(player, Config.BIND_HOME_USE_DURATION.get()*20, player.level().getGameTime());
             long currentGameTime = player.level().getGameTime();
             long finishGameTime = currentGameTime + Config.BIND_HOME_USE_DURATION.get()*HomeboundUtil.TICKS_PER_SECOND;
 
             PacketDistributor.sendToPlayer(player, new CB_SyncHomeScheduleMessage(currentGameTime, finishGameTime));
-            AttributeUtil.tryAddChannelSlow(player, Config.CHANNEL_SLOW_PERCENTAGE.get());
+            AttributeUtil.addChannelSlow(player);
             scheduledBindHomeMap.put(player.getUUID(), scheduledBindHome);
         } else {
             setPlayerHome(player);
         }
+        return true;
     }
 
     public boolean canPlayerSetHome(ServerPlayer player) {

@@ -6,10 +6,14 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.client.data.ClientHomeData;
 import net.silvertide.homebound.util.HomeboundUtil;
 
+
+@OnlyIn(Dist.CLIENT)
 public class BindHomeBarOverlay implements LayeredDraw.Layer {
     private static final BindHomeBarOverlay instance = new BindHomeBarOverlay();
     public static BindHomeBarOverlay get(){
