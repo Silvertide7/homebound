@@ -9,7 +9,6 @@ import top.theillusivec4.curios.api.event.DropRulesEvent;
 import top.theillusivec4.curios.api.type.capability.ICurio;
 
 public class CuriosEvents {
-    // Check if the curios item should not be equipable and prevent it if so
     @SubscribeEvent
     public static void keepCurios(DropRulesEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {

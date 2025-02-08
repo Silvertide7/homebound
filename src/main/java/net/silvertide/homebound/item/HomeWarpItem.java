@@ -90,8 +90,9 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
 
     public int getWarpCooldown(ServerPlayer player, ItemStack stack) {
         int baseCooldown = getBaseCooldown();
-        return baseCooldown;
-        //return EnchantmentUtil.applyEnchantCooldownModifier(HomeboundUtil.applyDistanceCooldownModifier(this, player, baseCooldown), EnchantmentUtil.getCooldownEnchantLevel(stack));
+        int cooldownLevel = EnchantmentUtil.getServerCooldownReductionLevel(stack, player.level());
+        int modifiedCooldownFromDistance = HomeboundUtil.applyDistanceCooldownModifier(this, player, baseCooldown);
+        return EnchantmentUtil.applyCooldownReductionModifier(modifiedCooldownFromDistance, cooldownLevel);
     }
 
     public boolean isConsumedOnUse() {
@@ -208,6 +209,20 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
             case TWILIGHT_STONE -> Config.TWILIGHT_STONE_USE_TIME.get();
         };
         return useDurationInSeconds*HomeboundUtil.TICKS_PER_SECOND;
+    }
+
+    public boolean canUseCuriosSlot() {
+        return switch(id) {
+            case HOMEWARD_BONE -> false;
+            case HEARTHWOOD -> true;
+            case HOMEWARD_GEM -> true;
+            case HOMEWARD_STONE -> true;
+            case HAVEN_STONE -> true;
+            case DAWN_STONE -> true;
+            case SUN_STONE -> true;
+            case DUSK_STONE -> true;
+            case TWILIGHT_STONE -> true;
+        };
     }
 
 

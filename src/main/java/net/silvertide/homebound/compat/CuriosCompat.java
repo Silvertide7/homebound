@@ -12,6 +12,9 @@ public class CuriosCompat {
     public static boolean isCuriosLoaded = false;
 
     public static Optional<ItemStack> findCuriosWarpItemStack(Player player) {
-        return CuriosApi.getCuriosInventory(player).flatMap(handler -> handler.findFirstCurio(stack -> stack.getItem() instanceof IWarpItem).map(SlotResult::stack));
+        return CuriosApi.getCuriosInventory(player)
+                .flatMap(handler -> handler
+                        .findFirstCurio(stack -> stack.getItem() instanceof IWarpItem)
+                        .map(SlotResult::stack));
     }
 }

@@ -1,5 +1,7 @@
 {
   "order": 2000,
   "size": 1,
-  "icon": "homebound:slot/homebound_stone"
+  "render_toggle": false,
+  "icon": "homebound:slot/homebound_stone",
+  "validators": ["homebound:is_homebound_stone"]
 }

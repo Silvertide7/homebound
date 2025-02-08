@@ -114,8 +114,6 @@ public class WarpManager {
 
     public void warpPlayerHome(ServerPlayer player) {
         WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
-            this.warp(player, warpAttachment.warpPos());
-
             ScheduledWarp scheduledWarp = this.scheduledWarpMap.get(player.getUUID());
             ItemStack warpItemStack = scheduledWarp.warpItemStack();
             IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
@@ -123,13 +121,16 @@ public class WarpManager {
             if(!player.getAbilities().instabuild) {
                 int cooldown = warpItem.getWarpCooldown(player, warpItemStack);
                 if(cooldown > 0) {
-                    warpAttachment.withAddedCooldown(cooldown, player.level().getGameTime());
+                    WarpAttachmentUtil.setWarpAttachment(player, warpAttachment.withAddedCooldown(cooldown, player.level().getGameTime()));
                 }
 
                 if(warpItem.isConsumedOnUse()) {
                     warpItemStack.shrink(1);
                 }
             }
+
+            this.warp(player, warpAttachment.warpPos());
+
         });
         cancelWarp(player);
     }
