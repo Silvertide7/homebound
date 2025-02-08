@@ -1,9 +1,7 @@
 package net.silvertide.homebound.registry;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -15,7 +13,6 @@ import net.silvertide.homebound.attachments.WarpPos;
 import java.util.function.Supplier;
 
 public class AttachmentRegistry {
-    // Create the DeferredRegister for attachment types
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Homebound.MOD_ID);
     public static void register(IEventBus modEventBus) { ATTACHMENT_TYPES.register(modEventBus);}
     public static final Supplier<AttachmentType<WarpAttachment>> WARP_ATTACHMENT = ATTACHMENT_TYPES.register(

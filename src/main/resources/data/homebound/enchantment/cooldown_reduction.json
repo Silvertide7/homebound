@@ -1,0 +1,28 @@
+{
+  "description": {
+    "translate": "enchantment.homebound.cooldown_reduction"
+  },
+  "slots": [
+    "any"
+  ],
+  "supported_items": [
+    "homebound:homeward_gem",
+    "homebound:homeward_stone",
+    "homebound:haven_stone",
+    "homebound:dawn_stone",
+    "homebound:sun_stone",
+    "homebound:dusk_stone",
+    "homebound:twilight_stone"
+  ],
+  "max_level": 4,
+  "min_cost": {
+    "base": 2,
+    "per_level_above_first": 6
+  },
+  "max_cost": {
+    "base": 20,
+    "per_level_above_first": 9
+  },
+  "anvil_cost": 4,
+  "weight": 6
+}

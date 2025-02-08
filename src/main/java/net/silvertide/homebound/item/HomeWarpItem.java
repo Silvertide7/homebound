@@ -75,10 +75,17 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
         }
     }
 
-    public int getWarpUseDuration(ItemStack stack) {
+    public int getWarpUseDuration(Level level, ItemStack stack) {
         int useDuration = getBaseUseDurationInTicks();
-        return useDuration;
-        //return EnchantmentUtil.applyEnchantHasteModifier(useDuration, EnchantmentUtil.getHasteEnchantLevel(stack));
+        int channelHasteLevel = EnchantmentUtil.getServerChannelHasteLevel(stack, level);
+        return EnchantmentUtil.applyHasteModifier(useDuration, channelHasteLevel);
+    }
+
+
+    private int getClientWarpUseDuration(ItemStack stack) {
+        int useDuration = getBaseUseDurationInTicks();
+        int channelHasteLevel = EnchantmentUtil.getClientChannelHasteLevel(stack);
+        return EnchantmentUtil.applyHasteModifier(useDuration, channelHasteLevel);
     }
 
     public int getWarpCooldown(ServerPlayer player, ItemStack stack) {
@@ -118,7 +125,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
 
     protected void addCooldownHoverText(List<Component> pTooltipComponents, ItemStack stack) {
         double distanceBasedCooldownReduction = getDistanceBasedCooldownReduction();
-        int cooldown = getBaseCooldown(); //EnchantmentUtil.applyEnchantCooldownModifier(getBaseCooldown(), EnchantmentUtil.getCooldownEnchantLevel(stack));
+        int cooldown = EnchantmentUtil.applyCooldownReductionModifier(getBaseCooldown(), EnchantmentUtil.getClientCooldownReductionLevel(stack));
         if(distanceBasedCooldownReduction > 0.0) {
             int blocksPerPercentReduced = getBlocksPerBonusReducedBy1Percent();
             double lowestCooldownPossible = (double) cooldown*(1.0-distanceBasedCooldownReduction);
@@ -137,7 +144,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
             tooltipComponents.add(Component.literal("Crouch and use the item to set your home."));
             addCooldownHoverText(tooltipComponents, stack);
 
-            tooltipComponents.add(Component.literal("§aCast Time: " + getWarpUseDuration(stack) / 20.0 + " seconds.§r"));
+            tooltipComponents.add(Component.literal("§aCast Time: " + getClientWarpUseDuration(stack) / 20.0 + " seconds.§r"));
 
             int maxDistance = getMaxDistance();
             if(maxDistance > 0) tooltipComponents.add(Component.literal("§aMax Distance: " + maxDistance + " blocks§r"));

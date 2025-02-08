@@ -46,8 +46,8 @@ public class WarpManager {
         }
 
         // Schedule a warp for the future if the item has a use duration.
-        if(warpItem.getWarpUseDuration(warpItemStack) > 0) {
-            ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(warpItemStack), player.level().getGameTime());
+        if(warpItem.getWarpUseDuration(player.level(), warpItemStack) > 0) {
+            ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(player.level(), warpItemStack), player.level().getGameTime());
             scheduledWarpMap.put(player.getUUID(), scheduledWarp);
             PacketDistributor.sendToPlayer(player, new CB_SyncWarpScheduleMessage(scheduledWarp.startedWarpingGameTimeStamp(), scheduledWarp.scheduledGameTimeTickToWarp()));
             AttributeUtil.addChannelSlow(player);
