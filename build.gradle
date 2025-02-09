@@ -148,7 +148,7 @@ dependencies {
 //    testImplementation('org.junit.jupiter:junit-jupiter')
 //    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
 
-    implementation "curse.maven:curios-${projectid_curios}:${version_curios}"
+    compileOnly "curse.maven:curios-${projectid_curios}:${version_curios}"
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
