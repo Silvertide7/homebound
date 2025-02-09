@@ -19,7 +19,6 @@ public class Homebound
 {
     public static final String MOD_ID = "homebound";
     public static final Logger LOGGER = LogUtils.getLogger();
-
     public Homebound(IEventBus modEventBus, ModContainer modContainer)
     {
         TabRegistry.register(modEventBus);

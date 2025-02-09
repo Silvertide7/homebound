@@ -130,9 +130,9 @@ public class WarpManager {
             }
 
             this.warp(player, warpAttachment.warpPos());
-
         });
         cancelWarp(player);
+        player.releaseUsingItem();
     }
 
     public void playWarpEffects(ServerPlayer player) {

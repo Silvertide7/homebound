@@ -57,7 +57,7 @@ public class HomeManager {
     }
 
     public void cancelBindHome(ServerPlayer player) {
-        if(isPlayerBindingHome(player)){
+        if(isPlayerBindingHome(player)) {
             PacketDistributor.sendToPlayer(player, new CB_SyncHomeScheduleMessage(0L, 0L));
             AttributeUtil.removeChannelSlow(player);
             scheduledBindHomeMap.remove(player.getUUID());
@@ -99,6 +99,7 @@ public class HomeManager {
         });
         HomeboundUtil.displayClientMessage(player, "§aHome set.§r");
         cancelBindHome(player);
+        player.releaseUsingItem();
     }
 
     public void triggerHomeBindEffects(ServerPlayer serverPlayer) {

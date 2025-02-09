@@ -67,6 +67,15 @@ neoForge {
     runs {
         client {
             client()
+            programArgument '--username Dev'
+
+            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        client2 {
+            client()
+            programArgument '--username Dev2'
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
@@ -74,7 +83,7 @@ neoForge {
 
         server {
             server()
-            programArgument '--nogui'
+//            programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
