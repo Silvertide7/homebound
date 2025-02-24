@@ -1,21 +1,17 @@
 package net.silvertide.homebound;
 
 import com.mojang.logging.LogUtils;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.silvertide.homebound.commands.CmdRoot;
 import net.silvertide.homebound.compat.CuriosCompat;
 import net.silvertide.homebound.config.Config;
 import net.silvertide.homebound.registry.EnchantmentRegistry;
 import net.silvertide.homebound.registry.TabRegistry;
 import net.silvertide.homebound.registry.ItemRegistry;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 
@@ -25,19 +21,20 @@ public class Homebound
     public static final String MOD_ID = "homebound";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public Homebound()
+    public Homebound(IEventBus modEventBus, ModContainer modContainer)
     {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         TabRegistry.register(modEventBus);
         ItemRegistry.register(modEventBus);
         EnchantmentRegistry.register(modEventBus);
 
-        MinecraftForge.EVENT_BUS.register(this);
-
         if (ModList.get().isLoaded("curios")) {
             MinecraftForge.EVENT_BUS.addListener(CuriosCompat::keepCurios);
         }
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
+
+        modEventBus.addListener(CuriosSetup::init);
+
+        modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfigs.SPEC, String.format("%s-server.toml", MOD_ID));
+
     }
 
     @Mod.EventBusSubscriber(modid=Homebound.MOD_ID, bus=Mod.EventBusSubscriber.Bus.FORGE)
