@@ -13,7 +13,6 @@ public interface IWarpCap extends INBTSerializable<CompoundTag> {
     void setWarpPos(Player player);
     int getCooldown();
     void setCooldown(long currTime, int cooldown);
-    void addCooldown(long currTime, int cooldown);
     int getRemainingCooldown(long currTime);
     long getLastWarpTimestamp();
     boolean hasCooldown(long currTime);

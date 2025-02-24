@@ -37,12 +37,12 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
             ServerPlayer serverPlayer = (ServerPlayer) player;
             if(player.isCrouching()) {
                 HomeManager homeManager = HomeManager.get();
-                if(!homeManager.isPlayerBindingHome(serverPlayer) && homeManager.canPlayerSetHome(serverPlayer)) {
+                if(!homeManager.isPlayerBindingHome(serverPlayer)) {
                     homeManager.startBindingHome(serverPlayer);
                     player.startUsingItem(pUsedHand);
                     return InteractionResultHolder.success(stack);
                 }
-                return InteractionResultHolder.fail(stack);
+                return InteractionResultHolder.success(stack);
             } else {
                 WarpManager warpManager = WarpManager.get();
                 if(!warpManager.isPlayerWarping(serverPlayer) && !MinecraftForge.EVENT_BUS.post(new StartWarpEvent(player, this))) {

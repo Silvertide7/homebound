@@ -11,12 +11,14 @@ import net.silvertide.homebound.network.PacketHandler;
 import java.util.*;
 
 public class HomeManager {
-    private static final HomeManager INSTANCE = new HomeManager();
-    private final Map<UUID, ScheduledBindHome> scheduledBindHomeMap = new HashMap<>();
-    private HomeManager() {}
+    private static final HomeManager instance = new HomeManager();
+    private final Map<UUID, ScheduledBindHome> scheduledBindHomeMap;
+    private HomeManager(){
+        this.scheduledBindHomeMap = new HashMap<>();
+    }
 
     public static HomeManager get() {
-        return INSTANCE;
+        return instance;
     }
 
     public void startBindingHome(ServerPlayer player) {
@@ -30,20 +32,8 @@ public class HomeManager {
         } else {
             setPlayerHome(player);
         }
-    }
 
-    public boolean canPlayerSetHome(ServerPlayer player) {
-        if(Config.CANT_BIND_HOME_ON_COOLDOWN.get()) {
-            int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
-            if(remainingCooldown > 0) {
-                String message = "§cCan't set home, you haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";
-                HomeboundUtil.displayClientMessage(player, message);
-                return false;
-            }
-        }
-        return true;
     }
-
     public void cancelBindHome(ServerPlayer player) {
         if(isPlayerBindingHome(player)){
             PacketHandler.sendToPlayer(player, new ClientboundSyncHomeScheduleMessage(0L, 0L));
@@ -72,9 +62,6 @@ public class HomeManager {
     public void setPlayerHome(ServerPlayer player) {
         CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
             warpCap.setWarpPos(player);
-            if(Config.BIND_HOME_COOLDOWN_DURATION.get() > 0) {
-                warpCap.addCooldown(player.level().getGameTime(), Config.BIND_HOME_COOLDOWN_DURATION.get());
-            }
             HomeboundUtil.displayClientMessage(player, "§aHome set.§r");
         });
         cancelBindHome(player);

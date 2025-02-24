@@ -44,16 +44,6 @@ public class WarpCap implements IWarpCap {
         this.lastWarpTimestamp = timestamp;
         this.cooldown = Math.max(cooldown, 0);
     }
-
-    @Override
-    public void addCooldown(long currTime, int cooldown) {
-        if(!hasCooldown(currTime)) {
-            this.setCooldown(currTime, cooldown);
-        } else {
-            this.cooldown += cooldown;
-        }
-    }
-
     @Override
     public int getRemainingCooldown(long currTime) {
         return this.cooldown - (int) calculateTimePassed(currTime);

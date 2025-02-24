@@ -1,1 +1,1 @@
-Homebound
+Please see mod page for information
