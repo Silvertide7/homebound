@@ -82,19 +82,20 @@ public class WarpEvents {
     public static void onStartWarp(StartWarpEvent warpEvent) {
         if (warpEvent.isCanceled()) return;
 
-        Player player = warpEvent.getEntity();
-        WarpResult warpResult = WarpManager.get().canPlayerWarp(player, warpEvent.getWarpItem());
+        if(warpEvent.getEntity() instanceof ServerPlayer serverPlayer) {
+            WarpResult warpResult = WarpManager.get().canPlayerWarp(serverPlayer, warpEvent.getWarpItem());
 
-        if(!warpResult.success()) {
-            warpEvent.setCanceled(true);
-            HomeboundUtil.displayClientMessage(player, warpResult.message());
+            if(!warpResult.success()) {
+                warpEvent.setCanceled(true);
+                HomeboundUtil.displayClientMessage(serverPlayer, warpResult.message());
+            }
         }
+
     }
 
     @SubscribeEvent
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent loggedOutEvent) {
-        if(!loggedOutEvent.getEntity().level().isClientSide()) {
-            ServerPlayer serverPlayer = (ServerPlayer) loggedOutEvent.getEntity();
+        if(loggedOutEvent.getEntity() instanceof  ServerPlayer serverPlayer) {
             if(WarpManager.get().isPlayerWarping(serverPlayer)){
                 WarpManager.get().cancelWarp(serverPlayer);
             }

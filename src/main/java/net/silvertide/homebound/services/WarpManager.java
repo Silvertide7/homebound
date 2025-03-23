@@ -82,24 +82,31 @@ public class WarpManager {
     }
 
     @SuppressWarnings("unchecked")
-    public WarpResult canPlayerWarp(Player player, IWarpItem warpItem) {
-        if(!CapabilityUtil.isHomeSet(player)){
+    public WarpResult canPlayerWarp(ServerPlayer serverPlayer, IWarpItem warpItem) {
+        if(!CapabilityUtil.isHomeSet(serverPlayer)){
             return new WarpResult(false, "§cNo home set.§r");
         }
 
-        String dimensionLocation = player.level().dimension().location().toString();
+        String dimensionLocation = serverPlayer.level().dimension().location().toString();
         List<String> teleportBlacklist = (List<String>) Config.TELEPORT_DIMENSION_BLACKLIST.get();
         if(!teleportBlacklist.isEmpty() && teleportBlacklist.contains(dimensionLocation)) {
             return new WarpResult(false, "§cYou can't warp home from this dimension.§r");
         }
 
-        int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
+        List<String> structureBlacklist = (List<String>) Config.TELEPORT_STRUCTURE_BLACKLIST.get();
+        if(!structureBlacklist.isEmpty()) {
+            if(HomeboundUtil.withinAnyStructuresBounds(serverPlayer, structureBlacklist)) {
+                return new WarpResult(false, "§cYou can't teleport home from this structure.§r");
+            }
+        }
+
+        int remainingCooldown = CapabilityUtil.getRemainingCooldown(serverPlayer);
         if(remainingCooldown > 0) {
             String message = "§cYou haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";
             return new WarpResult(false, message);
         }
 
-        if(!CapabilityUtil.inValidDimension(player, warpItem)) {
+        if(!CapabilityUtil.inValidDimension(serverPlayer, warpItem)) {
             String message = "§cCan't warp between dimensions.§r";
             return new WarpResult(false, message);
         }
@@ -107,8 +114,8 @@ public class WarpManager {
         int maxDistance = warpItem.getMaxDistance();
         if(maxDistance > 0) {
 
-            int distanceFromWarp = CapabilityUtil.getWarpCap(player).resolve()
-                .map(warpCap -> warpCap.getWarpPos().calculateDistance(new WarpPos(player.getOnPos(), player.level().dimension().location())))
+            int distanceFromWarp = CapabilityUtil.getWarpCap(serverPlayer).resolve()
+                .map(warpCap -> warpCap.getWarpPos().calculateDistance(new WarpPos(serverPlayer.getOnPos(), serverPlayer.level().dimension().location())))
                 .orElse(10000);
 
             if(distanceFromWarp > maxDistance) {
