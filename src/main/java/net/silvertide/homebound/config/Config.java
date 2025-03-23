@@ -16,6 +16,8 @@ public class Config {
     public static final ForgeConfigSpec.ConfigValue<Boolean> CANT_BIND_HOME_ON_COOLDOWN;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> HOME_DIMENSION_BLACKLIST;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> TELEPORT_DIMENSION_BLACKLIST;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> TELEPORT_STRUCTURE_BLACKLIST;
+    public static final ForgeConfigSpec.ConfigValue<Integer> MINIMUM_MOB_DISTANCE;
     public static final ForgeConfigSpec.ConfigValue<Double> CHANNEL_SLOW_PERCENTAGE;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_COOLDOWN;
@@ -97,11 +99,16 @@ public class Config {
         BUILDER.comment("If you wanted to prevent players from using homebound stones and setting their home in the end you would add minecraft:the_end");
         TELEPORT_DIMENSION_BLACKLIST = BUILDER.defineListAllowEmpty("Teleport Dimension Blacklist", new ArrayList<>(), val -> (val instanceof String stringVal && !StringUtil.isNullOrEmpty(stringVal)) && stringVal.contains(":"));
 
+        BUILDER.comment("Adding a dimension to this list will prevent you from using your homebound stone while in the structure, as well as setting your home there.");
+        BUILDER.comment("If you wanted to prevent players from using homebound stones and setting their home in a bastion you would add minecraft:bastion");
+        TELEPORT_STRUCTURE_BLACKLIST = BUILDER.defineListAllowEmpty("Teleport Structure Blacklist", new ArrayList<>(), val -> (val instanceof String stringVal && !StringUtil.isNullOrEmpty(stringVal)) && stringVal.contains(":"));
+
+        BUILDER.comment("How far away you must be from the nearest hostile mob in order to begin teleporting.");
+        BUILDER.comment("I set the max to 32 blocks (2 chunks) for performance reasons.");
+        MINIMUM_MOB_DISTANCE = BUILDER.defineInRange("Minimum Mob Distance", 0, 0, 32);
+
         BUILDER.comment("Slows the player by this amount when using a homebound stone. 1.0 means completely stopped, 0.0 means no slow applied.");
         CHANNEL_SLOW_PERCENTAGE = BUILDER.defineInRange("Channel Slow Percentage", 0.7, 0.0, 1.0);
-
-
-
         BUILDER.pop();
 
         BUILDER.push("Homeward Item Cooldowns");

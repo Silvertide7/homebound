@@ -1,7 +1,12 @@
 package net.silvertide.homebound.util;
 
+import it.unimi.dsi.fastutil.longs.LongSet;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -10,12 +15,16 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraftforge.fml.ModList;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.compat.CuriosCompat;
 import net.silvertide.homebound.item.IWarpItem;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -24,6 +33,32 @@ public final class HomeboundUtil {
     private static final Random SOUND_RNG = new Random();
     private HomeboundUtil() {}
     public static final int TICKS_PER_SECOND = 20;
+
+    public static boolean withinAnyStructuresBounds(ServerPlayer serverPlayer, List<String> structureRLs) {
+        ServerLevel serverLevel = serverPlayer.serverLevel();
+        // Loop through all structures found at the players position.
+        for(Map.Entry<Structure, LongSet> structureEntry : serverLevel.structureManager().getAllStructuresAt(serverPlayer.blockPosition()).entrySet()) {
+            // Determine if this structure is on the list of structures to check for.
+            Registry<Structure> structureRegistry = serverLevel.registryAccess().registryOrThrow(Registries.STRUCTURE);
+            ResourceLocation structureRL = structureRegistry.getKey(structureEntry.getKey());
+            if(structureRL != null && structureRLs.contains(structureRL.toString())) {
+                // Determine if player is within that structures bounds.
+                if(withinStructureBounds(serverPlayer, structureEntry.getKey())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean withinStructureBounds(ServerPlayer serverPlayer, Structure structure) {
+        BlockPos playerPos = serverPlayer.blockPosition();
+        StructureStart structureStart = serverPlayer.serverLevel().structureManager().getStructureAt(playerPos, structure);
+        if(structureStart != StructureStart.INVALID_START) {
+            return structureStart.getBoundingBox().isInside(playerPos);
+        }
+        return false;
+    }
 
     public static int applyDistanceCooldownModifier(IWarpItem warpItem, ServerPlayer player, int cooldown){
         double maxCooldownReduction = warpItem.getDistanceBasedCooldownReduction();

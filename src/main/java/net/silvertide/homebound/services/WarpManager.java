@@ -1,4 +1,4 @@
-package net.silvertide.homebound.util;
+package net.silvertide.homebound.services;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,9 +19,14 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.capabilities.WarpPos;
 import net.silvertide.homebound.config.Config;
+import net.silvertide.homebound.data.ScheduledWarp;
+import net.silvertide.homebound.data.WarpResult;
 import net.silvertide.homebound.item.IWarpItem;
 import net.silvertide.homebound.network.ClientboundSyncWarpScheduleMessage;
 import net.silvertide.homebound.network.PacketHandler;
+import net.silvertide.homebound.util.AttributeUtil;
+import net.silvertide.homebound.util.CapabilityUtil;
+import net.silvertide.homebound.util.HomeboundUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -29,10 +34,13 @@ import java.util.*;
 public class WarpManager {
     private static final WarpManager INSTANCE = new WarpManager();
     private final Map<UUID, ScheduledWarp> scheduledWarpMap = new HashMap<>();
+
     private WarpManager() {}
+
     public static WarpManager get() {
         return INSTANCE;
     }
+
     public void startWarping(ServerPlayer player, ItemStack warpItemStack) {
         IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
 
@@ -59,7 +67,7 @@ public class WarpManager {
         return this.scheduledWarpMap.containsKey(player.getUUID());
     }
 
-    public boolean warpIsActive() { return this.scheduledWarpMap.size() > 0; }
+    public boolean warpIsActive() { return !this.scheduledWarpMap.isEmpty(); }
 
     public List<ScheduledWarp> getWarpAttributeList() {
         return new ArrayList<>(scheduledWarpMap.values());
