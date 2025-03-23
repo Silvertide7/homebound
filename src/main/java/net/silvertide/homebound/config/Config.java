@@ -1,6 +1,10 @@
 package net.silvertide.homebound.config;
 
+import net.minecraft.util.StringUtil;
 import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Config {
     private static final ForgeConfigSpec.Builder BUILDER;
@@ -10,6 +14,8 @@ public class Config {
     public static final ForgeConfigSpec.ConfigValue<Integer> BIND_HOME_USE_DURATION;
     public static final ForgeConfigSpec.ConfigValue<Integer> BIND_HOME_COOLDOWN_DURATION;
     public static final ForgeConfigSpec.ConfigValue<Boolean> CANT_BIND_HOME_ON_COOLDOWN;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> HOME_DIMENSION_BLACKLIST;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> TELEPORT_DIMENSION_BLACKLIST;
     public static final ForgeConfigSpec.ConfigValue<Double> CHANNEL_SLOW_PERCENTAGE;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_COOLDOWN;
@@ -64,28 +70,41 @@ public class Config {
     static {
         BUILDER = new ForgeConfigSpec.Builder();
 
-        BUILDER.push("Homebound Configs");
-
-        BUILDER.comment("General");
+        BUILDER.push("General");
         BUILDER.comment("When you take damage while using a homebound item to teleport home the teleport is canceled and a cooldown is added before you can use it again.");
         BUILDER.comment("This is to prevent players from easily teleporting out of a dangerous situation.");
         BUILDER.comment("This value is how long of a cooldown in seconds is added when damage is taken. Set to 0 to disable taking damage from canceling the teleport");
         HURT_COOLDOWN_TIME = BUILDER.defineInRange("Hurt Cooldown Time", 5, 0, Integer.MAX_VALUE);
+
         BUILDER.comment("How long it takes (in seconds) to bind your home to a location when you are crouching and using a homebound stone.");
         BIND_HOME_USE_DURATION = BUILDER.defineInRange("Bind Home Use Duration", 3, 0, Integer.MAX_VALUE);
+
         BUILDER.comment("Cooldown duration triggered when settings your home in seconds. If 0 then setting your home does not put your teleport on cooldown.");
         BUILDER.comment("If set to 3600 then this will add a 1 hour cooldown to your teleport whenever you set your home. This is cumulative to your current teleport cooldown.");
         BUILDER.comment("This means if your teleport is already on a 30 minute cooldown and the value is 3600, your new cooldown is 1 hour 30 minutes.");
         BUILDER.comment("If you don't have the Cant Bind Home On Cooldown option turned on then you could potentially accrue huge cooldown timers.");
         BIND_HOME_COOLDOWN_DURATION = BUILDER.defineInRange("Bind Home Cooldown Duration", 0, 0, Integer.MAX_VALUE);
+
         BUILDER.comment("If you can bind a home while your warp is on cooldown.");
         BUILDER.comment("If true then you can only bind your home while your teleport is on cooldown. If false then you can set your home anytime.");
         CANT_BIND_HOME_ON_COOLDOWN = BUILDER.define("Cant Bind Home On Cooldown", false);
+
+        BUILDER.comment("Adding a dimension to this list will prevent you from setting your home while in this dimension.");
+        BUILDER.comment("If you wanted to prevent players from setting their home in the end you would add minecraft:the_end");
+        HOME_DIMENSION_BLACKLIST = BUILDER.defineListAllowEmpty("Home Dimension Blacklist", new ArrayList<>(), val -> (val instanceof String stringVal && !StringUtil.isNullOrEmpty(stringVal)) && stringVal.contains(":"));
+
+        BUILDER.comment("Adding a dimension to this list will prevent you from using your homebound stone while in the dimension, as well as setting your home there.");
+        BUILDER.comment("If you wanted to prevent players from using homebound stones and setting their home in the end you would add minecraft:the_end");
+        TELEPORT_DIMENSION_BLACKLIST = BUILDER.defineListAllowEmpty("Teleport Dimension Blacklist", new ArrayList<>(), val -> (val instanceof String stringVal && !StringUtil.isNullOrEmpty(stringVal)) && stringVal.contains(":"));
+
         BUILDER.comment("Slows the player by this amount when using a homebound stone. 1.0 means completely stopped, 0.0 means no slow applied.");
         CHANNEL_SLOW_PERCENTAGE = BUILDER.defineInRange("Channel Slow Percentage", 0.7, 0.0, 1.0);
 
 
-        BUILDER.comment("Homeward Item Cooldowns");
+
+        BUILDER.pop();
+
+        BUILDER.push("Homeward Item Cooldowns");
         BUILDER.comment("All cooldowns are in minutes. All enchantments or cooldown reducing effects will apply to this base cooldown.");
         BUILDER.comment("All use times are in seconds. This is the length of time it takes to activate the stone.");
         BUILDER.comment("All max distances are in blocks. 16 blocks per chunk, so 160 blocks is 10 chunks. Having a value of 0 means no max distance.");

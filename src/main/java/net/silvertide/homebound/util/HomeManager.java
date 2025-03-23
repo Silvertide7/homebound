@@ -32,7 +32,23 @@ public class HomeManager {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public boolean canPlayerSetHome(ServerPlayer player) {
+        String dimensionLocation = player.level().dimension().location().toString();
+        List<String> setHomeBlacklist = (List<String>) Config.HOME_DIMENSION_BLACKLIST.get();
+        if(!setHomeBlacklist.isEmpty() && setHomeBlacklist.contains(dimensionLocation)) {
+            String message = "§cYou can't set a home in this dimension.§r";
+            HomeboundUtil.displayClientMessage(player, message);
+            return false;
+        }
+
+        List<String> teleportBlacklist = (List<String>) Config.TELEPORT_DIMENSION_BLACKLIST.get();
+        if(!teleportBlacklist.isEmpty() && teleportBlacklist.contains(dimensionLocation)) {
+            String message = "§cYou can't set a home in this dimension.§r";
+            HomeboundUtil.displayClientMessage(player, message);
+            return false;
+        }
+
         if(Config.CANT_BIND_HOME_ON_COOLDOWN.get()) {
             int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
             if(remainingCooldown > 0) {

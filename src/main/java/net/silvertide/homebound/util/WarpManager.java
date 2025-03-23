@@ -73,10 +73,16 @@ public class WarpManager {
         return  (timeElapsed / (double) scheduledWarp.useDuration())*100;
     }
 
+    @SuppressWarnings("unchecked")
     public WarpResult canPlayerWarp(Player player, IWarpItem warpItem) {
-
         if(!CapabilityUtil.isHomeSet(player)){
             return new WarpResult(false, "§cNo home set.§r");
+        }
+
+        String dimensionLocation = player.level().dimension().location().toString();
+        List<String> teleportBlacklist = (List<String>) Config.TELEPORT_DIMENSION_BLACKLIST.get();
+        if(!teleportBlacklist.isEmpty() && teleportBlacklist.contains(dimensionLocation)) {
+            return new WarpResult(false, "§cYou can't warp home from this dimension.§r");
         }
 
         int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
