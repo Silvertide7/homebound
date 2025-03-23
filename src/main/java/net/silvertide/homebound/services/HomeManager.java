@@ -1,21 +1,9 @@
 package net.silvertide.homebound.services;
 
-import it.unimi.dsi.fastutil.longs.LongSet;
-import net.minecraft.commands.arguments.ResourceOrTagKeyArgument;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
-import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.levelgen.structure.StructureStart;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.silvertide.homebound.config.Config;
 import net.silvertide.homebound.data.ScheduledBindHome;
 import net.silvertide.homebound.network.ClientboundSyncHomeScheduleMessage;
@@ -50,6 +38,15 @@ public class HomeManager {
 
     @SuppressWarnings("unchecked")
     public boolean canPlayerSetHome(ServerPlayer player) {
+        if(Config.CANT_BIND_HOME_ON_COOLDOWN.get()) {
+            int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
+            if(remainingCooldown > 0) {
+                String message = "§cCan't set home, you haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";
+                HomeboundUtil.displayClientMessage(player, message);
+                return false;
+            }
+        }
+
         ServerLevel serverLevel = player.serverLevel();
         String dimensionLocation = serverLevel.dimension().location().toString();
         List<String> setHomeBlacklist = (List<String>) Config.HOME_DIMENSION_BLACKLIST.get();
@@ -76,14 +73,7 @@ public class HomeManager {
         }
 
 
-        if(Config.CANT_BIND_HOME_ON_COOLDOWN.get()) {
-            int remainingCooldown = CapabilityUtil.getRemainingCooldown(player);
-            if(remainingCooldown > 0) {
-                String message = "§cCan't set home, you haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";
-                HomeboundUtil.displayClientMessage(player, message);
-                return false;
-            }
-        }
+
         return true;
     }
 

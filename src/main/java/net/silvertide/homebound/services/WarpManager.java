@@ -100,6 +100,13 @@ public class WarpManager {
             }
         }
 
+        int minimumHostileMobDist = Config.MINIMUM_MOB_DISTANCE.get();
+        if(minimumHostileMobDist > 0) {
+            if(HomeboundUtil.hostileMobWithinRange(serverPlayer, minimumHostileMobDist)) {
+                return new WarpResult(false, "§cYou can't teleport home, there are monsters nearby.§r");
+            }
+        }
+
         int remainingCooldown = CapabilityUtil.getRemainingCooldown(serverPlayer);
         if(remainingCooldown > 0) {
             String message = "§cYou haven't recovered. [" + HomeboundUtil.formatTime(remainingCooldown) + "]§r";

@@ -11,12 +11,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.fml.ModList;
 import net.silvertide.homebound.capabilities.IWarpCap;
 import net.silvertide.homebound.capabilities.WarpPos;
@@ -27,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-
 
 public final class HomeboundUtil {
     private static final Random SOUND_RNG = new Random();
@@ -58,6 +60,11 @@ public final class HomeboundUtil {
             return structureStart.getBoundingBox().isInside(playerPos);
         }
         return false;
+    }
+
+
+    public static boolean hostileMobWithinRange(ServerPlayer serverPlayer, int minimumHostileMobDist) {
+        return !serverPlayer.serverLevel().getNearbyEntities(Monster.class, TargetingConditions.forCombat(), serverPlayer, AABB.ofSize(serverPlayer.position(), minimumHostileMobDist * 2, minimumHostileMobDist * 2, minimumHostileMobDist * 2)).isEmpty();
     }
 
     public static int applyDistanceCooldownModifier(IWarpItem warpItem, ServerPlayer player, int cooldown){
