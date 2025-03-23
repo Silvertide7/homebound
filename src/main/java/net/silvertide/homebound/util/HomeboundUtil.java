@@ -138,17 +138,6 @@ public final class HomeboundUtil {
         playSound(level, player.getX(), player.getY(), player.getZ(), soundEvent);
     }
 
-    public static String getCooldownMessage(int cooldownRemaining) {
-        return "§cYou haven't recovered. [" + HomeboundUtil.formatTime(cooldownRemaining) + "]§r";
-    }
-    private static String getDimensionMessage() {
-        return "§cCan't warp between dimensions.§r";
-    }
-
-    public static String getDistanceMessage(int maxDistance, int distance) {
-        return "§cToo far from home. [" + distance + " / " + maxDistance + "]§r";
-    }
-
     public static String formatDimension(String dimString) {
         int indexOfColon = dimString.indexOf(":");
         if (indexOfColon != -1) {

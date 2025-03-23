@@ -68,6 +68,12 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
             if(homeManager.isPlayerBindingHome(serverPlayer)) {
                 homeManager.cancelBindHome(serverPlayer);
             }
+
+            if(CapabilityUtil.getRemainingCooldown(serverPlayer) < 1) {
+                CapabilityUtil.getWarpCap(serverPlayer).ifPresent(warpCap -> {
+                    warpCap.setCooldown(serverPlayer.level().getGameTime(), 1);
+                });
+            }
         }
     }
 
