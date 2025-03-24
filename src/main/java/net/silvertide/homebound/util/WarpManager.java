@@ -35,6 +35,7 @@ public class WarpManager {
     public static WarpManager get() {
         return INSTANCE;
     }
+
     public boolean startWarping(ServerPlayer player, ItemStack warpItemStack) {
         IWarpItem warpItem = (IWarpItem) warpItemStack.getItem();
 
@@ -56,6 +57,7 @@ public class WarpManager {
         }
         return true;
     }
+
     public void cancelWarp(ServerPlayer player) {
         if(isPlayerWarping(player)) {
             PacketDistributor.sendToPlayer(player, new CB_SyncWarpScheduleMessage(0L, 0L));
