@@ -1,7 +1,12 @@
 package net.silvertide.homebound.config;
 
 
+import net.minecraft.util.StringUtil;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class Config {
     private static final ModConfigSpec.Builder BUILDER;
@@ -11,6 +16,10 @@ public class Config {
     public static final ModConfigSpec.ConfigValue<Integer> BIND_HOME_USE_DURATION;
     public static final ModConfigSpec.ConfigValue<Integer> BIND_HOME_COOLDOWN_DURATION;
     public static final ModConfigSpec.ConfigValue<Boolean> CANT_BIND_HOME_ON_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> HOME_DIMENSION_BLACKLIST;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> TELEPORT_DIMENSION_BLACKLIST;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> TELEPORT_STRUCTURE_BLACKLIST;
+    public static final ModConfigSpec.ConfigValue<Integer> MINIMUM_MOB_DISTANCE;
     public static final ModConfigSpec.ConfigValue<Double> CHANNEL_SLOW_PERCENTAGE;
 
     public static final ModConfigSpec.ConfigValue<Integer> HOMEWARD_BONE_COOLDOWN;
@@ -62,6 +71,8 @@ public class Config {
     public static final ModConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT;
     public static final ModConfigSpec.ConfigValue<Double> TWILIGHT_STONE_MAX_DISTANCE_REDUCTION;
 
+    private static Predicate<Object> validResourceString = val -> val instanceof String stringVal && !StringUtil.isNullOrEmpty(stringVal) && stringVal.contains(":");
+
     static {
         BUILDER = new ModConfigSpec.Builder();
 
@@ -72,16 +83,36 @@ public class Config {
         BUILDER.comment("This is to prevent players from easily teleporting out of a dangerous situation.");
         BUILDER.comment("This value is how long of a cooldown in seconds is added when damage is taken. Set to 0 to disable taking damage from canceling the teleport");
         HURT_COOLDOWN_TIME = BUILDER.defineInRange("Hurt Cooldown Time", 5, 0, Integer.MAX_VALUE);
+
         BUILDER.comment("How long it takes (in seconds) to bind your home to a location when you are crouching and using a homebound stone.");
         BIND_HOME_USE_DURATION = BUILDER.defineInRange("Bind Home Use Duration", 3, 0, Integer.MAX_VALUE);
+
         BUILDER.comment("Cooldown duration triggered when settings your home in seconds. If 0 then setting your home does not put your teleport on cooldown.");
         BUILDER.comment("If set to 3600 then this will add a 1 hour cooldown to your teleport whenever you set your home. This is cumulative to your current teleport cooldown.");
         BUILDER.comment("This means if your teleport is already on a 30 minute cooldown and the value is 3600, your new cooldown is 1 hour 30 minutes.");
         BUILDER.comment("If you don't have the Cant Bind Home On Cooldown option turned on then you could potentially accrue huge cooldown timers.");
         BIND_HOME_COOLDOWN_DURATION = BUILDER.defineInRange("Bind Home Cooldown Duration", 0, 0, Integer.MAX_VALUE);
+
         BUILDER.comment("If you can bind a home while your warp is on cooldown.");
         BUILDER.comment("If true then you can only bind your home while your teleport is on cooldown. If false then you can set your home anytime.");
         CANT_BIND_HOME_ON_COOLDOWN = BUILDER.define("Cant Bind Home On Cooldown", false);
+
+        BUILDER.comment("Adding a dimension to this list will prevent you from setting your home while in this dimension.");
+        BUILDER.comment("If you wanted to prevent players from setting their home in the end you would add minecraft:the_end");
+        HOME_DIMENSION_BLACKLIST = BUILDER.defineListAllowEmpty("Home Dimension Blacklist", ArrayList::new, validResourceString);
+
+        BUILDER.comment("Adding a dimension to this list will prevent you from using your homebound stone while in the dimension, as well as setting your home there.");
+        BUILDER.comment("If you wanted to prevent players from using homebound stones and setting their home in the end you would add minecraft:the_end");
+        TELEPORT_DIMENSION_BLACKLIST = BUILDER.defineListAllowEmpty("Teleport Dimension Blacklist", ArrayList::new, validResourceString);
+
+        BUILDER.comment("Adding a dimension to this list will prevent you from using your homebound stone while in the structure, as well as setting your home there.");
+        BUILDER.comment("If you wanted to prevent players from using homebound stones and setting their home in a bastion you would add minecraft:bastion");
+        TELEPORT_STRUCTURE_BLACKLIST = BUILDER.defineListAllowEmpty("Teleport Structure Blacklist", ArrayList::new, validResourceString);
+
+        BUILDER.comment("How far away you must be from the nearest hostile mob in order to begin teleporting.");
+        BUILDER.comment("I set the max to 32 blocks (2 chunks) for performance reasons.");
+        MINIMUM_MOB_DISTANCE = BUILDER.defineInRange("Minimum Mob Distance", 0, 0, 32);
+
         BUILDER.comment("Slows the player by this amount when using a homebound stone. 1.0 means completely stopped, 0.0 means no slow applied.");
         CHANNEL_SLOW_PERCENTAGE = BUILDER.defineInRange("Channel Slow Percentage", 0.7, 0.0, 1.0);
 

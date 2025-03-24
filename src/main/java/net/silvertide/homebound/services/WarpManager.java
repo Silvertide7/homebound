@@ -1,4 +1,4 @@
-package net.silvertide.homebound.util;
+package net.silvertide.homebound.services;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -24,6 +24,9 @@ import net.silvertide.homebound.item.IWarpItem;
 import net.silvertide.homebound.network.client.CB_SyncWarpScheduleMessage;
 import net.silvertide.homebound.records.ScheduledWarp;
 import net.silvertide.homebound.records.WarpResult;
+import net.silvertide.homebound.util.AttributeUtil;
+import net.silvertide.homebound.util.HomeboundUtil;
+import net.silvertide.homebound.util.WarpAttachmentUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -84,11 +87,31 @@ public class WarpManager {
         return  (timeElapsed / (double) scheduledWarp.useDuration())*100;
     }
 
-    public WarpResult canPlayerWarp(Player player, IWarpItem warpItem) {
+    public WarpResult canPlayerWarp(ServerPlayer player, IWarpItem warpItem) {
         return WarpAttachmentUtil.getWarpAttachment(player).map(warpAttachment -> {
             // Check if a home exists.
             if(warpAttachment.warpPos() == null) {
                 return new WarpResult(false, "§cNo home set.§r");
+            }
+
+            String dimensionLocation = player.level().dimension().location().toString();
+            List<String> teleportBlacklist = (List<String>) Config.TELEPORT_DIMENSION_BLACKLIST.get();
+            if(!teleportBlacklist.isEmpty() && teleportBlacklist.contains(dimensionLocation)) {
+                return new WarpResult(false, "§cYou can't warp home from this dimension.§r");
+            }
+
+            List<String> structureBlacklist = (List<String>) Config.TELEPORT_STRUCTURE_BLACKLIST.get();
+            if(!structureBlacklist.isEmpty()) {
+                if(HomeboundUtil.withinAnyStructuresBounds(player, structureBlacklist)) {
+                    return new WarpResult(false, "§cYou can't teleport home from this structure.§r");
+                }
+            }
+
+            int minimumHostileMobDist = Config.MINIMUM_MOB_DISTANCE.get();
+            if(minimumHostileMobDist > 0) {
+                if(HomeboundUtil.hostileMobWithinRange(player, minimumHostileMobDist)) {
+                    return new WarpResult(false, "§cYou can't teleport home, there are monsters nearby.§r");
+                }
             }
 
             // Check cooldown requirements.

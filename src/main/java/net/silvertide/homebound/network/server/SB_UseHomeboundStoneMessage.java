@@ -12,7 +12,7 @@ import net.silvertide.homebound.Homebound;
 import net.silvertide.homebound.events.custom.StartWarpEvent;
 import net.silvertide.homebound.item.IWarpItem;
 import net.silvertide.homebound.util.HomeboundUtil;
-import net.silvertide.homebound.util.WarpManager;
+import net.silvertide.homebound.services.WarpManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;

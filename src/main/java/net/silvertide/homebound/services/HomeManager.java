@@ -1,4 +1,4 @@
-package net.silvertide.homebound.util;
+package net.silvertide.homebound.services;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -10,6 +10,9 @@ import net.silvertide.homebound.attachments.WarpPos;
 import net.silvertide.homebound.config.Config;
 import net.silvertide.homebound.network.client.CB_SyncHomeScheduleMessage;
 import net.silvertide.homebound.records.ScheduledBindHome;
+import net.silvertide.homebound.util.AttributeUtil;
+import net.silvertide.homebound.util.HomeboundUtil;
+import net.silvertide.homebound.util.WarpAttachmentUtil;
 
 import java.util.*;
 
@@ -30,7 +33,7 @@ public class HomeManager {
         if(Config.BIND_HOME_USE_DURATION.get() > 0) {
             ScheduledBindHome scheduledBindHome = new ScheduledBindHome(player, Config.BIND_HOME_USE_DURATION.get()*20, player.level().getGameTime());
             long currentGameTime = player.level().getGameTime();
-            long finishGameTime = currentGameTime + Config.BIND_HOME_USE_DURATION.get()*HomeboundUtil.TICKS_PER_SECOND;
+            long finishGameTime = currentGameTime + Config.BIND_HOME_USE_DURATION.get()* HomeboundUtil.TICKS_PER_SECOND;
 
             PacketDistributor.sendToPlayer(player, new CB_SyncHomeScheduleMessage(currentGameTime, finishGameTime));
             AttributeUtil.addChannelSlow(player);
@@ -42,6 +45,31 @@ public class HomeManager {
     }
 
     public boolean canPlayerSetHome(ServerPlayer player) {
+        ServerLevel serverLevel = player.serverLevel();
+        String dimensionLocation = serverLevel.dimension().location().toString();
+        List<String> setHomeBlacklist = (List<String>) Config.HOME_DIMENSION_BLACKLIST.get();
+        if(!setHomeBlacklist.isEmpty() && setHomeBlacklist.contains(dimensionLocation)) {
+            String message = "§cYou can't set a home in this dimension.§r";
+            HomeboundUtil.displayClientMessage(player, message);
+            return false;
+        }
+
+        List<String> dimensionBlacklist = (List<String>) Config.TELEPORT_DIMENSION_BLACKLIST.get();
+        if(!dimensionBlacklist.isEmpty() && dimensionBlacklist.contains(dimensionLocation)) {
+            String message = "§cYou can't set a home in this dimension.§r";
+            HomeboundUtil.displayClientMessage(player, message);
+            return false;
+        }
+
+        List<String> structureBlacklist = (List<String>) Config.TELEPORT_STRUCTURE_BLACKLIST.get();
+        if(!structureBlacklist.isEmpty()) {
+            if(HomeboundUtil.withinAnyStructuresBounds(player, structureBlacklist)) {
+                String message = "§cYou can't set a home in this structure.§r";
+                HomeboundUtil.displayClientMessage(player, message);
+                return false;
+            }
+        }
+
         if(Config.CANT_BIND_HOME_ON_COOLDOWN.get()) {
             return WarpAttachmentUtil.getWarpAttachment(player).map(warpAttachment -> {
                 int remainingCooldown = warpAttachment.getRemainingCooldown(player.level().getGameTime());
