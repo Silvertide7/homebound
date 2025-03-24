@@ -1,25 +1,21 @@
 package net.silvertide.homebound.commands;
 
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.silvertide.homebound.util.CapabilityUtil;
 import net.silvertide.homebound.util.HomeboundUtil;
 
 public class CmdNodeInfo {
-    private static final String TARGET_ARG = "Target";
-
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands.literal("info").executes(CmdNodeInfo::getPlayerInfo);
 
     }
-    public static int getPlayerInfo(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+    public static int getPlayerInfo(CommandContext<CommandSourceStack> ctx) {
         long gameTime = ctx.getSource().getLevel().getGameTime();
         ServerPlayer player = ctx.getSource().getPlayer();
         if(player == null) return 0;

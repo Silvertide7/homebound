@@ -1,6 +1,5 @@
 package net.silvertide.homebound.commands;
 
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -27,9 +26,7 @@ public class CmdNodeAdmin {
     }
     public static int adminClearCooldown(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         for (ServerPlayer player : EntityArgument.getPlayers(ctx, TARGET_ARG)) {
-            CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> {
-                warpCap.setCooldown(0,0);
-            });
+            CapabilityUtil.getWarpCap(player).ifPresent(warpCap -> warpCap.setCooldown(0,0));
         }
         return 0;
     }
