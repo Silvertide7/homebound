@@ -13,9 +13,6 @@ import net.silvertide.homebound.client.data.ClientHomeData;
 import net.silvertide.homebound.client.data.ClientWarpData;
 import net.silvertide.homebound.util.HomeboundUtil;
 
-// Single overlay for both channeling bars (warp + bind home). The two are mutually
-// exclusive on the server, so we render whichever is active. Progress is interpolated
-// with the frame partial tick so the bar animates smoothly instead of stepping per tick.
 @OnlyIn(Dist.CLIENT)
 public class ChannelBarOverlay implements LayeredDraw.Layer {
     private static final ChannelBarOverlay instance = new ChannelBarOverlay();
@@ -55,7 +52,6 @@ public class ChannelBarOverlay implements LayeredDraw.Layer {
         int barX = guiHelper.guiWidth() / 2 - IMAGE_WIDTH / 2;
         int barY = guiHelper.guiHeight() / 2 + guiHelper.guiHeight() / 6;
 
-        // Background, then the progress fill from this bar's texture row.
         guiHelper.blit(TEXTURE, barX, barY, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, 256, 256);
         guiHelper.blit(TEXTURE, barX, barY, 0, IMAGE_HEIGHT * type.progressTexRow,
                 (int) (COMPLETION_BAR_WIDTH * percent + (IMAGE_WIDTH - COMPLETION_BAR_WIDTH) / 2), IMAGE_HEIGHT);
@@ -70,8 +66,6 @@ public class ChannelBarOverlay implements LayeredDraw.Layer {
         guiHelper.drawString(font, type.label, labelX, countdownY - font.lineHeight - 2, 0xFFFFFF);
     }
 
-    // Fraction complete in [0,1], interpolated with the partial tick; clamped so a late
-    // frame can't overshoot the bar or produce negative remaining time.
     private static float progress(long startTick, long totalTicks, long gameTime, float partialTick) {
         if (totalTicks <= 0) return 1f;
         float elapsed = (gameTime - startTick) + partialTick;
