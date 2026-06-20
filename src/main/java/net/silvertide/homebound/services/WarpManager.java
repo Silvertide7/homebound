@@ -49,10 +49,14 @@ public class WarpManager {
             return false;
         }
 
-        // Schedule a warp for the future if the item has a use duration.
-        if(warpItem.getWarpUseDuration(player.level(), warpItemStack) > 0) {
-            ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, warpItem.getWarpUseDuration(player.level(), warpItemStack), player.level().getGameTime());
-            scheduledWarpMap.put(player.getUUID(), scheduledWarp);
+        // Always track the warp so warpPlayerHome can resolve the item being used,
+        // even for an instant warp (use duration of 0).
+        int useDuration = warpItem.getWarpUseDuration(player.level(), warpItemStack);
+        ScheduledWarp scheduledWarp = new ScheduledWarp(player, warpItemStack, useDuration, player.level().getGameTime());
+        scheduledWarpMap.put(player.getUUID(), scheduledWarp);
+
+        // Channel the warp over time, or fire it immediately if it has no use duration.
+        if(useDuration > 0) {
             PacketDistributor.sendToPlayer(player, new CB_SyncWarpScheduleMessage(scheduledWarp.startedWarpingGameTimeStamp(), scheduledWarp.scheduledGameTimeTickToWarp()));
             AttributeUtil.addChannelSlow(player);
         } else {
@@ -69,13 +73,25 @@ public class WarpManager {
         }
     }
 
+    // Applies a short cooldown after an interrupted channel (cancel or damage) so the
+    // warp can't be spammed. Skipped when a cooldown is already running, so it never
+    // shortens an existing one.
+    public void applyInterruptCooldown(ServerPlayer player, int cooldownSeconds) {
+        WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
+            long gameTime = player.level().getGameTime();
+            if(!warpAttachment.hasCooldown(gameTime)) {
+                WarpAttachmentUtil.setWarpAttachment(player, warpAttachment.withAddedCooldown(cooldownSeconds, gameTime));
+            }
+        });
+    }
+
     public boolean isPlayerWarping(ServerPlayer player) {
         return this.scheduledWarpMap.containsKey(player.getUUID());
     }
 
-    public boolean warpIsActive() { return this.scheduledWarpMap.size() > 0; }
+    public boolean warpIsActive() { return !this.scheduledWarpMap.isEmpty(); }
 
-    public List<ScheduledWarp> getWarpAttributeList() {
+    public List<ScheduledWarp> getScheduledWarps() {
         return new ArrayList<>(scheduledWarpMap.values());
     }
 
@@ -125,8 +141,11 @@ public class WarpManager {
                 return new WarpResult(false, "§cCan't warp between dimensions.§r");
             }
 
+            // Distance only makes sense within the home dimension; raw coordinates don't
+            // compare across dimensions. Cross-dimension travel is gated separately above.
             int maxDistance = warpItem.getMaxDistance();
-            if(maxDistance > 0) {
+            boolean inHomeDimension = warpAttachment.warpPos().isInSameDimension(player.level().dimension().location());
+            if(maxDistance > 0 && inHomeDimension) {
                 int distanceFromWarp = warpAttachment.warpPos().calculateDistanceFromPosition(player.getOnPos());
                 if(distanceFromWarp > maxDistance) {
                     return new WarpResult(false, "§cToo far from home. [" + distanceFromWarp + " / " + maxDistance + "]§r");
@@ -161,7 +180,7 @@ public class WarpManager {
     }
 
     public void playWarpEffects(ServerPlayer player) {
-        HomeboundUtil.spawnParticals(player.serverLevel(), player, ParticleTypes.PORTAL, 8);
+        HomeboundUtil.spawnParticles(player.serverLevel(), player, ParticleTypes.PORTAL, 8);
         HomeboundUtil.playSound(player.serverLevel(), player, SoundEvents.BLAZE_BURN);
     }
 
@@ -229,9 +248,8 @@ public class WarpManager {
         if(player.isPassenger()) {
             Entity vehicle = player.getVehicle();
             if(vehicle instanceof AbstractHorse horseLike) {
-                boolean hasOwner = horseLike.getOwnerUUID() != null;
-                boolean riddenByOwner = horseLike.getOwnerUUID().toString().equals(player.getUUID().toString());
-                if(hasOwner && riddenByOwner){
+                UUID ownerUUID = horseLike.getOwnerUUID();
+                if(ownerUUID != null && ownerUUID.equals(player.getUUID())){
                     return horseLike;
                 }
             }

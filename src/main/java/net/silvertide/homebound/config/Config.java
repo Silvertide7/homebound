@@ -123,7 +123,6 @@ public class Config {
         BUILDER.comment("All max distances are in blocks. 16 blocks per chunk, so 160 blocks is 10 chunks. Having a value of 0 means no max distance.");
         BUILDER.comment("Dimensional travel determines if the item can teleport you home from another dimension or not.");
         BUILDER.comment("Blocks per bonus reduced means the number of blocks it takes to reduce the cooldown reduction effect by 1%. If this is set to 50 and the maximum distance reduction multiplier is 0.4 (or 40% cooldown reduction) and you are 51 blocks away from home, the cooldown reduction effect is now 0.39 (39%).");
-        BUILDER.comment("If this is set to 50 and the maximum distance reduction multiplier is 0.4 (or 40% cooldown reduction) and you are 51 blocks away from home, the cooldown reduction effect is now 0.39 (39%).");
         BUILDER.comment("This will reduce by 1% for every 50 blocks away from home until the bonus is no longer applied at 0%. In the example above that would be 2000 blocks.");
 
         BUILDER.comment("--- Homeward Bone ---");

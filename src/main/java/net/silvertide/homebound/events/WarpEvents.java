@@ -32,12 +32,7 @@ public class WarpEvents {
                     player.stopUsingItem();
                 }
 
-                WarpAttachmentUtil.getWarpAttachment(player).ifPresent(warpAttachment -> {
-                    long gameTime = player.level().getGameTime();
-                    if(!warpAttachment.hasCooldown(gameTime)) {
-                        WarpAttachmentUtil.setWarpAttachment(player, warpAttachment.withAddedCooldown(Config.HURT_COOLDOWN_TIME.get(), gameTime));
-                    }
-                });
+                WarpManager.get().applyInterruptCooldown(player, Config.HURT_COOLDOWN_TIME.get());
 
                 HomeboundUtil.displayClientMessage(player, "Warp cancelled from taking damage.");
             }
@@ -49,8 +44,8 @@ public class WarpEvents {
         if(event.hasTime()) {
             if(WarpManager.get().warpIsActive()) {
                 WarpManager warpManager = WarpManager.get();
-                List<ScheduledWarp> scheduledWarpAttributes = warpManager.getWarpAttributeList();
-                scheduledWarpAttributes.forEach(warp -> {
+                List<ScheduledWarp> scheduledWarps = warpManager.getScheduledWarps();
+                scheduledWarps.forEach(warp -> {
                     ServerPlayer serverPlayer = warp.serverPlayer();
                     if(warpManager.warpPercentComplete(serverPlayer) >= 100.0) {
                         warpManager.warpPlayerHome(serverPlayer);

@@ -58,10 +58,6 @@ public record WarpAttachment(WarpPos warpPos, int cooldown, long lastWarpTimesta
         return new WarpAttachment(this.warpPos(), cooldown, this.lastWarpTimestamp());
     }
 
-    public WarpAttachment withLastWarpTimestamp(long lastWarpTimestamp) {
-        return new WarpAttachment(this.warpPos(), this.cooldown(), lastWarpTimestamp);
-    }
-
     public WarpAttachment withAddedCooldown(int cooldown, long currTime) {
         if(cooldown < 0) return this;
 

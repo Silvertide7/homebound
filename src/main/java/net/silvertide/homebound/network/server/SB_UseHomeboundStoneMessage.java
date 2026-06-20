@@ -35,7 +35,7 @@ public record SB_UseHomeboundStoneMessage(byte isKeybindDown) implements CustomP
             if(ctx.player() instanceof ServerPlayer serverPlayer) {
                 if(packet.isKeybindDown == (byte) 1) {
                     if(!WarpManager.get().isPlayerWarping(serverPlayer)) {
-                        Optional<ItemStack> warpItemStack = HomeboundUtil.findWarpInitiatiorItemStack(serverPlayer);
+                        Optional<ItemStack> warpItemStack = HomeboundUtil.findWarpInitiatorItemStack(serverPlayer);
                         warpItemStack.ifPresentOrElse(stack -> {
                                     IWarpItem warpItem = (IWarpItem) stack.getItem();
                                     if (NeoForge.EVENT_BUS.post(new StartWarpEvent(serverPlayer, warpItem)).isCanceled()) return;
@@ -47,6 +47,7 @@ public record SB_UseHomeboundStoneMessage(byte isKeybindDown) implements CustomP
                 } else {
                     if(WarpManager.get().isPlayerWarping(serverPlayer)) {
                         WarpManager.get().cancelWarp(serverPlayer);
+                        WarpManager.get().applyInterruptCooldown(serverPlayer, 1);
                     }
                 }
             }

@@ -31,7 +31,7 @@ public class HomeManager {
         }
 
         if(Config.BIND_HOME_USE_DURATION.get() > 0) {
-            ScheduledBindHome scheduledBindHome = new ScheduledBindHome(player, Config.BIND_HOME_USE_DURATION.get()*20, player.level().getGameTime());
+            ScheduledBindHome scheduledBindHome = new ScheduledBindHome(player, Config.BIND_HOME_USE_DURATION.get()*HomeboundUtil.TICKS_PER_SECOND, player.level().getGameTime());
             long currentGameTime = player.level().getGameTime();
             long finishGameTime = currentGameTime + Config.BIND_HOME_USE_DURATION.get()* HomeboundUtil.TICKS_PER_SECOND;
 
@@ -96,7 +96,7 @@ public class HomeManager {
         return this.scheduledBindHomeMap.containsKey(player.getUUID());
     }
 
-    public boolean bindHomeIsActive() { return this.scheduledBindHomeMap.size() > 0; }
+    public boolean bindHomeIsActive() { return !this.scheduledBindHomeMap.isEmpty(); }
 
     public List<ScheduledBindHome> getBindHomeSchedules() {
         return new ArrayList<>(scheduledBindHomeMap.values());
@@ -132,7 +132,7 @@ public class HomeManager {
 
     public void triggerHomeBindEffects(ServerPlayer serverPlayer) {
         ServerLevel serverLevel = serverPlayer.serverLevel();
-        HomeboundUtil.spawnParticals(serverLevel, serverPlayer, ParticleTypes.CRIT, 20);
+        HomeboundUtil.spawnParticles(serverLevel, serverPlayer, ParticleTypes.CRIT, 20);
         HomeboundUtil.playSound(serverLevel, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), SoundEvents.BEACON_ACTIVATE);
     }
 

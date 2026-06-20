@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 public class TabRegistry {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Homebound.MOD_ID);
     public static void register(IEventBus eventBus) { CREATIVE_MODE_TABS.register(eventBus); }
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> COURSE_TAB = CREATIVE_MODE_TABS.register("homebound_tab",
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> HOMEBOUND_TAB = CREATIVE_MODE_TABS.register("homebound_tab",
             () -> CreativeModeTab.builder()
                     .icon(() -> new ItemStack(ItemRegistry.HAVEN_STONE.get()))
                     .title(Component.translatable("creativetab.homebound_tab"))

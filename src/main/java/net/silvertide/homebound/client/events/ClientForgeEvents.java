@@ -27,7 +27,7 @@ public class ClientForgeEvents {
                 PacketDistributor.sendToServer(new SB_UseHomeboundStoneMessage((byte) 1));
             } else if(keyWasHeldDownLastTick && !KeyMappings.useHomeboundStoneKey.isDown()) {
                 keyWasHeldDownLastTick = false;
-                age = 10;
+                age = 20; // 1 second gate (20 ticks) before the keybind can fire again
                 PacketDistributor.sendToServer(new SB_UseHomeboundStoneMessage((byte) 0));
             }
         }

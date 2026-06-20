@@ -89,7 +89,7 @@ public final class HomeboundUtil {
         return cooldown;
     }
 
-    public static Optional<ItemStack> findWarpInitiatiorItemStack(Player player) {
+    public static Optional<ItemStack> findWarpInitiatorItemStack(Player player) {
         Inventory playerInventory = player.getInventory();
         // check main or offhand
 
@@ -120,7 +120,7 @@ public final class HomeboundUtil {
         return Optional.empty();
     }
 
-    public static void spawnParticals(ServerLevel serverLevel, Player player, ParticleOptions particle, int numParticles){
+    public static void spawnParticles(ServerLevel serverLevel, Player player, ParticleOptions particle, int numParticles){
         Level level = player.level();
         for(int i = 0; i < numParticles; i++){
             serverLevel.sendParticles(particle, player.getX() + level.random.nextDouble() - 0.5, player.getY() + 1.0, player.getZ() + level.random.nextDouble() - 0.5, 1, 0.0D, 0.0D, 0.0D, 1.0D);
@@ -141,17 +141,6 @@ public final class HomeboundUtil {
 
     public static void playSound(Level level, Player player, SoundEvent soundEvent){
         playSound(level, player.getX(), player.getY(), player.getZ(), soundEvent);
-    }
-
-    public static String getCooldownMessage(int cooldownRemaining) {
-        return "§cYou haven't recovered. [" + HomeboundUtil.formatTime(cooldownRemaining) + "]§r";
-    }
-    private static String getDimensionMessage() {
-        return "§cCan't warp between dimensions.§r";
-    }
-
-    public static String getDistanceMessage(int maxDistance, int distance) {
-        return "§cToo far from home. [" + distance + " / " + maxDistance + "]§r";
     }
 
     public static String formatDimension(String dimString) {

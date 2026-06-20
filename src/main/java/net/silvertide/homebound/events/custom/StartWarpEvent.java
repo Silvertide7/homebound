@@ -5,14 +5,11 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.silvertide.homebound.item.IWarpItem;
 /**
- * StartWarpEvent is fired whenever a {@link Player} tries to warp.<br>
+ * Fired whenever a {@link Player} tries to warp, before the warp begins.<br>
  * <br>
- * This event is {@link}.<br>
- * If this event is canceled, the warp does not start.<br>
+ * This event is {@link ICancellableEvent cancellable}; if it is canceled, the warp does not start.<br>
  * <br>
- * This event does not have a result. {@link}<br>
- * <br>
- * This event is fired on the {@link }.<br>
+ * Fired on the main NeoForge event bus ({@code NeoForge.EVENT_BUS}).<br>
  **/
 public class StartWarpEvent extends PlayerEvent implements ICancellableEvent {
     private final IWarpItem warpItem;

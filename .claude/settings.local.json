@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth *)",
+      "Bash(gh api *)",
+      "Bash(gh search *)",
+      "Bash(grep -iA8 -E 'curio|compat|optional|isolat')",
+      "Bash(grep -iB2 -A8 -E 'curios|optional|dependencies')",
+      "Bash(./gradlew compileJava)"
+    ]
+  }
+}

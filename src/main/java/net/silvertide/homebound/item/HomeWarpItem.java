@@ -75,12 +75,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
                 homeManager.cancelBindHome(serverPlayer);
             }
 
-            WarpAttachmentUtil.getWarpAttachment(serverPlayer).ifPresent(warpAttachment -> {
-                long gameTime = serverPlayer.level().getGameTime();
-                if(!warpAttachment.hasCooldown(gameTime)) {
-                    WarpAttachmentUtil.setWarpAttachment(serverPlayer, warpAttachment.withAddedCooldown(1, gameTime));
-                }
-            });
+            warpManager.applyInterruptCooldown(serverPlayer, 1);
         }
     }
 

@@ -13,6 +13,10 @@ out
 *.iml
 .idea
 
+.claude
+claude_reference
+CLAUDE.md
+
 # gradle
 build
 .gradle

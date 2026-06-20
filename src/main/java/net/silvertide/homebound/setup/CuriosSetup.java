@@ -15,7 +15,6 @@ public class CuriosSetup {
         if(ModList.get().isLoaded("curios")) {
             CuriosCompat.isCuriosLoaded = true;
             NeoForge.EVENT_BUS.addListener(CuriosEvents::keepCurios);
-            NeoForge.EVENT_BUS.addListener(CuriosEvents::keepCurios);
 
             CuriosApi.registerCurioPredicate(ResourceLocation.fromNamespaceAndPath("homebound", "is_homebound_stone"), (slotResult) -> {
                 Item stackItem = slotResult.stack().getItem();
