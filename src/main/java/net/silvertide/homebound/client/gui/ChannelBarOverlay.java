@@ -69,6 +69,6 @@ public class ChannelBarOverlay implements LayeredDraw.Layer {
     private static float progress(long startTick, long totalTicks, long gameTime, float partialTick) {
         if (totalTicks <= 0) return 1f;
         float elapsed = (gameTime - startTick) + partialTick;
-        return Math.min(1f, Math.max(0f, elapsed / totalTicks));
+        return Math.clamp(elapsed / totalTicks, 0f, 1f);
     }
 }

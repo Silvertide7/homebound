@@ -6,8 +6,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
 public record WarpAttachment(WarpPos warpPos, int cooldown, long lastWarpTimestamp) {
     public static final Codec<WarpAttachment> CODEC;
     public static final StreamCodec<FriendlyByteBuf, WarpAttachment> STREAM_CODEC;

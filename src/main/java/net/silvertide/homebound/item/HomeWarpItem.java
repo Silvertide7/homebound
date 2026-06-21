@@ -19,7 +19,7 @@ import net.silvertide.homebound.util.*;
 import java.util.List;
 
 public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
-    protected HomeWarpItemId id;
+    protected final HomeWarpItemId id;
     private final boolean soulbound;
     private final boolean isEnchantable;
     private final int enchantability;
@@ -53,7 +53,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
 
                     if(!warpManager.startWarping(serverPlayer, stack)) {
                         return InteractionResultHolder.fail(stack);
-                    };
+                    }
 
                     player.startUsingItem(pUsedHand);
                     return InteractionResultHolder.consume(stack);
@@ -216,17 +216,7 @@ public class HomeWarpItem extends Item implements ISoulboundItem, IWarpItem {
     }
 
     public boolean canUseCuriosSlot() {
-        return switch(id) {
-            case HOMEWARD_BONE -> false;
-            case HEARTHWOOD -> true;
-            case HOMEWARD_GEM -> true;
-            case HOMEWARD_STONE -> true;
-            case HAVEN_STONE -> true;
-            case DAWN_STONE -> true;
-            case SUN_STONE -> true;
-            case DUSK_STONE -> true;
-            case TWILIGHT_STONE -> true;
-        };
+        return id != HomeWarpItemId.HOMEWARD_BONE;
     }
 
 

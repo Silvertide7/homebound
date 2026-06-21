@@ -71,7 +71,7 @@ public class Config {
     public static final ModConfigSpec.ConfigValue<Integer> TWILIGHT_STONE_BLOCKS_PER_BONUS_REDUCED_BY_ONE_PERCENT;
     public static final ModConfigSpec.ConfigValue<Double> TWILIGHT_STONE_MAX_DISTANCE_REDUCTION;
 
-    private static Predicate<Object> validResourceString = val -> val instanceof String stringVal && !StringUtil.isNullOrEmpty(stringVal) && stringVal.contains(":");
+    private static final Predicate<Object> validResourceString = val -> val instanceof String stringVal && !StringUtil.isNullOrEmpty(stringVal) && stringVal.contains(":");
 
     static {
         BUILDER = new ModConfigSpec.Builder();

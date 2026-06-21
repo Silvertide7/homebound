@@ -12,8 +12,6 @@ import net.silvertide.homebound.util.HomeboundUtil;
 import net.silvertide.homebound.util.WarpAttachmentUtil;
 
 public class CmdNodeInfo {
-    private static final String TARGET_ARG = "Target";
-
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands.literal("info").executes(CmdNodeInfo::getPlayerInfo);
 
