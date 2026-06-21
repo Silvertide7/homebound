@@ -91,9 +91,6 @@ public final class HomeboundUtil {
 
     public static Optional<ItemStack> findWarpInitiatorItemStack(Player player) {
         Inventory playerInventory = player.getInventory();
-        // check main or offhand
-
-        // Check the currently selected item (if on the hotbar)
         int currentlySelectedSlotIndex = player.getInventory().selected;
         if (Inventory.isHotbarSlot(currentlySelectedSlotIndex) && player.getInventory().items.get(currentlySelectedSlotIndex).getItem() instanceof IWarpItem) {
             return Optional.of(player.getInventory().items.get(currentlySelectedSlotIndex));
