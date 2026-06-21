@@ -1,4 +1,3 @@
-1.1.1
+1.1.2
 ---
-- Random Fixes and performance increases
-- Updated most png files
+- Add in a few more missed fixes from IntelliJ Problems Report
